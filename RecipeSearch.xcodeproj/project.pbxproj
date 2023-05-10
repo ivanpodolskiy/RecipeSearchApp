@@ -9,22 +9,26 @@
 /* Begin PBXBuildFile section */
 		CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1026C629FC4976000B9CCA /* AppDelegate.swift */; };
 		CE1026C929FC4976000B9CCA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1026C829FC4976000B9CCA /* SceneDelegate.swift */; };
-		CE1026CB29FC4976000B9CCA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1026CA29FC4976000B9CCA /* ViewController.swift */; };
-		CE1026CE29FC4976000B9CCA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE1026CC29FC4976000B9CCA /* Main.storyboard */; };
 		CE1026D029FC4978000B9CCA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE1026CF29FC4978000B9CCA /* Assets.xcassets */; };
 		CE1026D329FC4978000B9CCA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE1026D129FC4978000B9CCA /* LaunchScreen.storyboard */; };
+		CE518EA22A0AE86300AAEFF3 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */; };
+		CE518EA72A0B922100AAEFF3 /* RecipeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */; };
+		CE518EA92A0B939D00AAEFF3 /* RecipeProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */; };
+		CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE1026C329FC4976000B9CCA /* RecipeSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipeSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1026C629FC4976000B9CCA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE1026C829FC4976000B9CCA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		CE1026CA29FC4976000B9CCA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		CE1026CD29FC4976000B9CCA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE1026CF29FC4978000B9CCA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE1026D229FC4978000B9CCA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE1026D429FC4978000B9CCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CE518EA02A0AE3D400AAEFF3 /* .gitignore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = .gitignore.md; sourceTree = "<group>"; };
+		CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCell.swift; sourceTree = "<group>"; };
+		CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeProfile.swift; sourceTree = "<group>"; };
+		CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,10 +62,12 @@
 		CE1026C529FC4976000B9CCA /* RecipeSearch */ = {
 			isa = PBXGroup;
 			children = (
-				CE1026C629FC4976000B9CCA /* AppDelegate.swift */,
 				CE1026C829FC4976000B9CCA /* SceneDelegate.swift */,
-				CE1026CA29FC4976000B9CCA /* ViewController.swift */,
-				CE1026CC29FC4976000B9CCA /* Main.storyboard */,
+				CE1026C629FC4976000B9CCA /* AppDelegate.swift */,
+				CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */,
+				CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */,
+				CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */,
+				CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */,
 				CE1026CF29FC4978000B9CCA /* Assets.xcassets */,
 				CE1026D129FC4978000B9CCA /* LaunchScreen.storyboard */,
 				CE1026D429FC4978000B9CCA /* Info.plist */,
@@ -129,7 +135,6 @@
 			files = (
 				CE1026D329FC4978000B9CCA /* LaunchScreen.storyboard in Resources */,
 				CE1026D029FC4978000B9CCA /* Assets.xcassets in Resources */,
-				CE1026CE29FC4976000B9CCA /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,23 +145,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE1026CB29FC4976000B9CCA /* ViewController.swift in Sources */,
+				CE518EA72A0B922100AAEFF3 /* RecipeCell.swift in Sources */,
 				CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */,
+				CE518EA22A0AE86300AAEFF3 /* SearchViewController.swift in Sources */,
+				CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */,
 				CE1026C929FC4976000B9CCA /* SceneDelegate.swift in Sources */,
+				CE518EA92A0B939D00AAEFF3 /* RecipeProfile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		CE1026CC29FC4976000B9CCA /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CE1026CD29FC4976000B9CCA /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		CE1026D129FC4978000B9CCA /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -292,8 +292,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RecipeSearch/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -319,8 +319,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RecipeSearch/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
