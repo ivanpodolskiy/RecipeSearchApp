@@ -15,6 +15,8 @@
 		CE518EA72A0B922100AAEFF3 /* RecipeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */; };
 		CE518EA92A0B939D00AAEFF3 /* RecipeProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */; };
 		CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */; };
+		CE518EB32A0CF29000AAEFF3 /* RecipeSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */; };
+		CE518EB62A0D0E5E00AAEFF3 /* APIRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCell.swift; sourceTree = "<group>"; };
 		CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeProfile.swift; sourceTree = "<group>"; };
 		CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSearchService.swift; sourceTree = "<group>"; };
+		CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRecipe.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,17 +66,51 @@
 		CE1026C529FC4976000B9CCA /* RecipeSearch */ = {
 			isa = PBXGroup;
 			children = (
+				CE518EB02A0CF23400AAEFF3 /* Model */,
+				CE518EAF2A0CF21B00AAEFF3 /* Flows */,
 				CE1026C829FC4976000B9CCA /* SceneDelegate.swift */,
 				CE1026C629FC4976000B9CCA /* AppDelegate.swift */,
-				CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */,
-				CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */,
-				CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */,
 				CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */,
 				CE1026CF29FC4978000B9CCA /* Assets.xcassets */,
 				CE1026D129FC4978000B9CCA /* LaunchScreen.storyboard */,
 				CE1026D429FC4978000B9CCA /* Info.plist */,
 			);
 			path = RecipeSearch;
+			sourceTree = "<group>";
+		};
+		CE518EAF2A0CF21B00AAEFF3 /* Flows */ = {
+			isa = PBXGroup;
+			children = (
+				CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */,
+				CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */,
+			);
+			path = Flows;
+			sourceTree = "<group>";
+		};
+		CE518EB02A0CF23400AAEFF3 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CE518EB42A0D0E1400AAEFF3 /* Entities */,
+				CE518EB12A0CF23F00AAEFF3 /* Service */,
+				CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		CE518EB12A0CF23F00AAEFF3 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		CE518EB42A0D0E1400AAEFF3 /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,7 +185,9 @@
 			files = (
 				CE518EA72A0B922100AAEFF3 /* RecipeCell.swift in Sources */,
 				CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */,
+				CE518EB32A0CF29000AAEFF3 /* RecipeSearchService.swift in Sources */,
 				CE518EA22A0AE86300AAEFF3 /* SearchViewController.swift in Sources */,
+				CE518EB62A0D0E5E00AAEFF3 /* APIRecipe.swift in Sources */,
 				CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */,
 				CE1026C929FC4976000B9CCA /* SceneDelegate.swift in Sources */,
 				CE518EA92A0B939D00AAEFF3 /* RecipeProfile.swift in Sources */,

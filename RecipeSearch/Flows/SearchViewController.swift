@@ -9,21 +9,25 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
+    private let service = RecipeSreachService()
+    private var result: [RecipeProfile]?
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
         setupLayouts()
         collectionView.reloadData()
-    }
+        }
     
-    private var recipes = [RecipeProfile(title: "salad", description: "27 ca. 4 in.", image: UIImage(named: "salad")!), RecipeProfile(title: "The Greyhound", description: "86 ca. 3 in.", image: UIImage(named: "salad")!), RecipeProfile(title: "The Ludwig", description: "77 ca. 5 in.", image: UIImage(named: "pizza")!)]
-    
-    private let searchBar : UISearchBar = {
-        let searchBar = UISearchBar()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.searchBarStyle = .minimal
-        return searchBar
+    private let searchController: UISearchController = {
+        let sb = UISearchController()
+        sb.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        sb.searchBar.searchBarStyle = .minimal
+        sb.searchBar.tintColor = UIColor.basic
+        sb.searchBar.placeholder = "Search new recipe"
+        return sb
     }()
     
     private let collectionView: UICollectionView = {
@@ -36,12 +40,7 @@ class SearchViewController: UIViewController {
     
     private func setupLayouts() {
         NSLayoutConstraint.activate([
-            
-            self.searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8.0),
-            self.searchBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            self.searchBar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
@@ -49,27 +48,30 @@ class SearchViewController: UIViewController {
     }
     
     private func setupViews() {
-        self.view.addSubview(searchBar)
         self.view.addSubview(collectionView)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+        navigationItem.title = "Recipe Search"
     }
 }
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return recipes.count
+        guard let result = result else { return 0 }
+        return result.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
+        guard let recipes = result else { return cell }
         let recipe = recipes[indexPath.row]
         cell.setupCell(with: recipe)
         return cell
     }
 }
-
 //MARK: - UICollectionViewDelegateFlowLayout
 extension SearchViewController: UICollectionViewDelegateFlowLayout{
     private enum LayoutConstant {
@@ -93,3 +95,15 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
         return finalWidth - 5.0
     }
 }
+
+//MARK: - UISearchResultsUpdating
+//FIX IT!
+extension SearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text else { return}
+        if query.isEmpty == false {
+            service.searchRecipe(search: query ) { recipe in
+                self.result = recipe } } else { result = nil }
+        collectionView.reloadData()
+        }
+    }

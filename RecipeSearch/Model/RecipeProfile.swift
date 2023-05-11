@@ -11,5 +11,7 @@ import UIKit
 struct RecipeProfile {
     var title: String
     var description: String
-    var image: UIImage
+    var image: UIImage?
+    var imageNew: String?
 }
+
