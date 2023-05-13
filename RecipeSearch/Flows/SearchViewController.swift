@@ -11,22 +11,19 @@ class SearchViewController: UIViewController {
     
     private let service = RecipeSreachService()
     private var result: [RecipeProfile]?
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
         setupLayouts()
-        collectionView.reloadData()
-        }
+    }
     
     private let searchController: UISearchController = {
         let sb = UISearchController()
         sb.searchBar.translatesAutoresizingMaskIntoConstraints = false
         sb.searchBar.searchBarStyle = .minimal
         sb.searchBar.tintColor = UIColor.basic
-        sb.searchBar.placeholder = "Search new recipe"
         return sb
     }()
     
@@ -61,11 +58,12 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let result = result else { return 0 }
-        return result.count
+        return  result.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
+        
         guard let recipes = result else { return cell }
         let recipe = recipes[indexPath.row]
         cell.setupCell(with: recipe)
@@ -97,13 +95,30 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
 }
 
 //MARK: - UISearchResultsUpdating
-//FIX IT!
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
+        
         guard let query = searchController.searchBar.text else { return}
-        if query.isEmpty == false {
-            service.searchRecipe(search: query ) { recipe in
-                self.result = recipe } } else { result = nil }
-        collectionView.reloadData()
+        if query.count > 2 {
+            DispatchQueue.global().async {
+                self.service.searchRecipe(search: query) { recipe in
+                    self.result = recipe
+                    DispatchQueue.main.async {
+                        let indexPaths = self.collectionView.indexPathsForVisibleItems
+                        if indexPaths.count > 0 {
+                            self.collectionView.reloadItems(at: indexPaths)
+                        } else {
+                            self.collectionView.reloadData()
+                        }
+                    }
+                }
+            }
+        } else {
+            if result != nil {
+                result = nil
+                self.collectionView.reloadData()
+
+            }
         }
     }
+}

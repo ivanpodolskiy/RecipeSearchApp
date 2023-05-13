@@ -8,7 +8,14 @@
 import UIKit
 
 final class RecipeCell: UICollectionViewCell {
-        
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.titleRecipe.text = nil
+        self.descriptionRecipe.text = nil
+        self.imageRecipe.image = nil
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: .zero)
         setupLayouts()
@@ -18,25 +25,12 @@ final class RecipeCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private(set) lazy var imageRecipe: UIImageView = {
-        let image = UIImageView()
-        image.translatesAutoresizingMaskIntoConstraints = false
-        image.layer.cornerRadius = 8
-        image.clipsToBounds = true
-        return image
+    private(set) lazy var activityIndicator: UIActivityIndicatorView = {
+        var ai = UIActivityIndicatorView(style: .large)
+        ai.translatesAutoresizingMaskIntoConstraints = false
+        return ai
     }()
-    
-    private(set) lazy var viewForImage: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.masksToBounds = false
-        view.backgroundColor = .brown
-        view.layer.shadowRadius = 4
-        view.layer.shadowOpacity = 0.5
-        view.layer.shadowOffset = CGSize(width: 0, height: 4)
-        view.layer.shadowColor = UIColor.black.cgColor
-        return view
-    }()
+ 
     
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
@@ -65,11 +59,53 @@ final class RecipeCell: UICollectionViewCell {
         return button
     }()
     
+    private(set) lazy var viewForImage: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.masksToBounds = false
+        view.backgroundColor = .brown
+        view.layer.shadowRadius = 4
+        view.layer.shadowOpacity = 0.5
+        view.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.layer.shadowColor = UIColor.black.cgColor
+        return view
+    }()
+    
+    private(set) lazy var imageRecipe: UIImageView = {
+        let image = UIImageView()
+        image.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.layer.cornerRadius = 8
+        image.clipsToBounds = true
+        return image
+    }()
+    
+    fileprivate var image: UIImage? {
+        get {
+            return self.imageRecipe.image
+        } set {
+            imageRecipe.image = newValue
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
+        }
+    }
+    
     func setupCell(with recipeProfile: RecipeProfile) {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
         titleRecipe.text = recipeProfile.title
         descriptionRecipe.text = recipeProfile.description
-        imageRecipe.image = recipeProfile.image
+        
+        DispatchQueue.global().async {
+            if let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL) {
+                DispatchQueue.main.async {
+                    self.image = UIImage(data: imageData)
+                }
+            } else {
+                self.image = UIImage(named: "placeholder")
+            }
         }
+    }
     
     private func setupLayouts() {
         viewForImage.addSubview(imageRecipe)
@@ -77,6 +113,7 @@ final class RecipeCell: UICollectionViewCell {
         contentView.addSubview(viewForImage)
         contentView.addSubview(titleRecipe)
         contentView.addSubview(descriptionRecipe)
+        imageRecipe.addSubview(activityIndicator)
       
         NSLayoutConstraint.activate([
             descriptionRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
@@ -96,7 +133,10 @@ final class RecipeCell: UICollectionViewCell {
             buttonFavorite.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
 
             buttonFavorite.widthAnchor.constraint(equalToConstant: 30),
-            buttonFavorite.heightAnchor.constraint(equalToConstant: 30)
+            buttonFavorite.heightAnchor.constraint(equalToConstant: 30),
+
+            activityIndicator.centerXAnchor.constraint(equalTo: imageRecipe.centerXAnchor, constant: 0.0),
+            activityIndicator.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor, constant: 0.0)
         ])
     }
 }

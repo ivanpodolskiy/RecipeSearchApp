@@ -7,14 +7,25 @@
 
 import Foundation
 import UIKit
-//Must do rename!
 
 protocol ReusableView: AnyObject {
     static var identifier: String { get }
 }
-
 extension UIColor {
     static var basic: UIColor {
         return UIColor(red: 29/255.0, green: 80/255.0, blue: 210/255.0, alpha: 1.0)
+    }
+}
+extension UIImageView {
+    func load(url: URL) {
+        DispatchQueue.global().async { [weak self] in
+            if let data = try? Data(contentsOf: url) {
+                if let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.image = image
+                    }
+                }
+            }
+        }
     }
 }

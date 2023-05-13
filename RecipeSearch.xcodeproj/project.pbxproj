@@ -92,7 +92,6 @@
 			children = (
 				CE518EB42A0D0E1400AAEFF3 /* Entities */,
 				CE518EB12A0CF23F00AAEFF3 /* Service */,
-				CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -108,6 +107,7 @@
 		CE518EB42A0D0E1400AAEFF3 /* Entities */ = {
 			isa = PBXGroup;
 			children = (
+				CE518EA82A0B939D00AAEFF3 /* RecipeProfile.swift */,
 				CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */,
 			);
 			path = Entities;

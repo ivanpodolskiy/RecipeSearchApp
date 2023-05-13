@@ -11,37 +11,36 @@ final class RecipeSreachService {
     public func searchRecipe(search text: String, completion: @escaping ([RecipeProfile]) -> ()) {
         var urlComponents = URLComponents(string: "https://api.edamam.com/api/recipes/v2")!
         let params = ["type": "public", "app_id": "71021edf", "app_key": "389c0530b12807d2bd5033fb2694567c","q":"\(text)", "Accept-Language": "en"]
-        
-        urlComponents.queryItems = params.map({ name, value in
-            URLQueryItem(name: name, value: value)
-        })
-        
+        urlComponents.queryItems = params.map({ name, value in URLQueryItem(name: name, value: value) })
         guard let url = urlComponents.url else { fatalError("Could not create URL from components") }
-        
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
-        
         let configuration = URLSessionConfiguration.default
         let session = URLSession(configuration: configuration)
-        var recipe: [RecipeProfile] = []
-
+        
         let task = session.dataTask(with: urlRequest) { data, response, error in
-            if let jsonData = data {
-                let decoder = JSONDecoder()
-    
+            guard let data = data else  { return }
+            let decoder = JSONDecoder()
                 do {
-                    let items =  try decoder.decode(Welcome.self, from: jsonData)
-                    let hits = items.hits
-                    for i in hits {
-                        recipe.append(RecipeProfile(title: i.recipe.label, description: i.recipe.uri, imageNew: i.recipe.image))
+                    let items =  try decoder.decode(Result.self, from: data)
+                    if items.count > 0 {
+                        var resutl: [RecipeProfile] = []
+                        for item in items.hits {
+                            guard let recipe =  item.recipe else { return }
+                            let countIngredient = recipe.ingredients?.count ?? 0
+                            let calories = Int(recipe.calories ?? 0)
+                            resutl.append(RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredient: countIngredient))
+                        }
+                        completion(resutl)
+                    } else {
+                        return
                     }
-                    completion(recipe)
-                }
+                    
+                    }
                 catch {
                     print ("catch \(error)")
                 }
-            }
-        }
+                    }
         task.resume()
     }
 }
