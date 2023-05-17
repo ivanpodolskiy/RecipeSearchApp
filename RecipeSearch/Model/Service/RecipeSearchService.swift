@@ -4,7 +4,6 @@
 //
 //  Created by user on 11.05.2023.
 //
-
 import Foundation
 final class RecipeSreachService {
     
@@ -29,7 +28,7 @@ final class RecipeSreachService {
                             guard let recipe =  item.recipe else { return }
                             let countIngredient = recipe.ingredients?.count ?? 0
                             let calories = Int(recipe.calories ?? 0)
-                            resutl.append(RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredient: countIngredient))
+                            resutl.append(RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredients: countIngredient))
                         }
                         completion(resutl)
                     } else {

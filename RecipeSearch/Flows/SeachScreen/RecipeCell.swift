@@ -4,7 +4,6 @@
 //
 //  Created by user on 10.05.2023.
 //
-//0x7f7cf49113f0; frame = (0 1; 181.667 159
 import UIKit
 
 final class RecipeCell: UICollectionViewCell {
@@ -89,24 +88,7 @@ final class RecipeCell: UICollectionViewCell {
             activityIndicator.stopAnimating()
         }
     }
-    
-    func setupCell(with recipeProfile: RecipeProfile) {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-        titleRecipe.text = recipeProfile.title
-        descriptionRecipe.text = recipeProfile.description
-        
-        DispatchQueue.global().async {
-            if let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL) {
-                DispatchQueue.main.async {
-                    self.image = UIImage(data: imageData)
-                }
-            } else {
-                self.image = UIImage(named: "placeholder")
-            }
-        }
-    }
-    
+
     private func setupLayouts() {
         viewForImage.addSubview(imageRecipe)
         imageRecipe.addSubview(buttonFavorite)
@@ -141,8 +123,30 @@ final class RecipeCell: UICollectionViewCell {
     }
 }
 
+extension RecipeCell {
+    func setupCell(with recipeProfile: RecipeProfile) {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+        titleRecipe.text = recipeProfile.title
+        descriptionRecipe.text = recipeProfile.description
+        
+        DispatchQueue.global().async {
+            if let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL) {
+                DispatchQueue.main.async {
+                    self.image = UIImage(data: imageData)
+                }
+            } else {
+                self.image = UIImage(named: "placeholder")
+            }
+        }
+    }
+}
+                            
+
 extension RecipeCell: ReusableView {
     static var identifier: String {
         return String(describing: self)
     }
 }
+
+

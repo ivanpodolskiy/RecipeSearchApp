@@ -13,7 +13,7 @@ protocol ReusableView: AnyObject {
 }
 extension UIColor {
     static var basic: UIColor {
-        return UIColor(red: 29/255.0, green: 80/255.0, blue: 210/255.0, alpha: 1.0)
+        return UIColor(named: "basic")!
     }
 }
 extension UIImageView {

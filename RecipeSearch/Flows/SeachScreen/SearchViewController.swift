@@ -45,7 +45,7 @@ class SearchViewController: UIViewController {
     }
     
     private func setupViews() {
-        self.view.addSubview(collectionView)
+        view.addSubview(collectionView)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
@@ -68,6 +68,14 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let recipe = recipes[indexPath.row]
         cell.setupCell(with: recipe)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = result else { return }
+        let res = item[indexPath.row]
+        let resipe = RecipeProfile(title: res.title, image: res.image, calories: res.calories, countIngredients: res.countIngredients)
+        let recipeViewController = RecipeViewController(recipe: resipe)
+        navigationController?.pushViewController(recipeViewController, animated: true)
     }
 }
 //MARK: - UICollectionViewDelegateFlowLayout
@@ -92,6 +100,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
         let finalWidth = (width - totalSpacing) / itmesInRow
         return finalWidth - 5.0
     }
+
 }
 
 //MARK: - UISearchResultsUpdating
