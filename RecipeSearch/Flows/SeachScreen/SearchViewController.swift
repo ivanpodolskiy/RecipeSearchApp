@@ -9,6 +9,8 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
+    var oldText: String = ""
+    
     private let service = RecipeSreachService()
     private var result: [RecipeProfile]?
 
@@ -73,8 +75,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = result else { return }
         let res = item[indexPath.row]
-        let resipe = RecipeProfile(title: res.title, image: res.image, calories: res.calories, countIngredients: res.countIngredients)
-        let recipeViewController = RecipeViewController(recipe: resipe)
+        let recipeViewController = RecipeViewController(recipe: res)
         navigationController?.pushViewController(recipeViewController, animated: true)
     }
 }
@@ -105,10 +106,11 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
 
 //MARK: - UISearchResultsUpdating
 extension SearchViewController: UISearchResultsUpdating {
+   
     func updateSearchResults(for searchController: UISearchController) {
-        
         guard let query = searchController.searchBar.text else { return}
-        if query.count > 2 {
+        if query.count > 2 && query != oldText {
+            oldText = query
             DispatchQueue.global().async {
                 self.service.searchRecipe(search: query) { recipe in
                     self.result = recipe
@@ -122,12 +124,10 @@ extension SearchViewController: UISearchResultsUpdating {
                     }
                 }
             }
-        } else {
-            if result != nil {
+        } else if  query.count < 3 && result != nil  {
+                oldText = ""
                 result = nil
                 self.collectionView.reloadData()
-
-            }
         }
     }
 }

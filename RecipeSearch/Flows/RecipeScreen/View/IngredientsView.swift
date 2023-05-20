@@ -20,10 +20,15 @@ class IngredientsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setInformation(_ text: String, count: Int) {
+        self.title.text = "\(count) Ingredients"
+        self.descriptionLabel.text = text
+    }
+    
     private(set) lazy var title: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "3 Ingredients:"
+        label.text = "0 Ingredients:"
         label.textColor = .basic
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 25)
@@ -51,6 +56,7 @@ class IngredientsView: UIView {
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowColor = UIColor.black.cgColor
     }
+    
     private func setupLayout() {
         addSubview(title)
         addSubview(descriptionLabel)

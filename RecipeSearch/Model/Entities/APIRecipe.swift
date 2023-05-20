@@ -4,7 +4,6 @@
 //
 //  Created by user on 11.05.2023.
 //
-
 // MARK: - Result
 struct Result: Codable {
    let count: Int
@@ -26,14 +25,13 @@ struct Recipe: Codable {
     let label, image: String
     let ingredients: [Ingredient]?
     let calories: Double?
-    let healthlabels: [String]?
-    let ingredientlines: [String]?
+    let healthLabels: [String]
+    let ingredientLines: [String]
     
     enum CodingKeys: String, CodingKey {
-    case label, image, ingredients, calories, healthlabels, ingredientlines
+    case label, image, ingredients, calories, healthLabels, ingredientLines
     }
 }
-
 // MARK: - Ingredient
 struct Ingredient: Codable {
     let text: String

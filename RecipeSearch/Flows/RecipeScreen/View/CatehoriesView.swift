@@ -19,6 +19,10 @@ class CatehoriesView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setInformation(_ text: String) {
+        catehoriesLabel.text = text
+    }
+    
     private(set) lazy var catehoriesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +30,6 @@ class CatehoriesView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
         label.textAlignment = .left
-        label.text = "Low-Fat, Low-Sodium, Vegan, Vegetarian, Paleo, Dairy-Free, Gluten-Free, Egg-Free, Peanut-Free, Tree-Nut-Free, Soy-Free, Fish-Free, Shellfish-Free" 
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         return label
     }()

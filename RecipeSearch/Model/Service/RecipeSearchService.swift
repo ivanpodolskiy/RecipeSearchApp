@@ -22,19 +22,18 @@ final class RecipeSreachService {
             let decoder = JSONDecoder()
                 do {
                     let items =  try decoder.decode(Result.self, from: data)
-                    if items.count > 0 {
-                        var resutl: [RecipeProfile] = []
-                        for item in items.hits {
-                            guard let recipe =  item.recipe else { return }
-                            let countIngredient = recipe.ingredients?.count ?? 0
-                            let calories = Int(recipe.calories ?? 0)
-                            resutl.append(RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredients: countIngredient))
-                        }
-                        completion(resutl)
-                    } else {
-                        return
-                    }
+                    guard items.count > 0 else { return }
                     
+                    var resutl: [RecipeProfile] = []
+                    for item in items.hits {
+                        guard let recipe =  item.recipe else { return }
+                        let countIngredient = recipe.ingredients?.count ?? 0
+                        let calories = Int(recipe.calories ?? 0)
+                        let infromation = RecipeInformation(healthlabels: recipe.healthLabels, listIngredients: recipe.ingredientLines)
+                        let finalRecipeProfile = RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredients: countIngredient, recipeInfromation: infromation)
+                        resutl.append(finalRecipeProfile)
+                    }
+                    completion(resutl)
                     }
                 catch {
                     print ("catch \(error)")

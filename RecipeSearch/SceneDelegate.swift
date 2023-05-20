@@ -19,7 +19,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         let searchViewController = SearchViewController()
+        
         let navigationController = UINavigationController(rootViewController: searchViewController)
+//        navigationController.modalTransitionStyle = .flipHorizontal
+  
+        navigationController.navigationBar.tintColor = .blue
         window.rootViewController = navigationController
         self.window = window
         window.makeKeyAndVisible()

@@ -8,6 +8,8 @@ import UIKit
 
 final class RecipeCell: UICollectionViewCell {
     
+    var underView: Bool = false
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.titleRecipe.text = nil

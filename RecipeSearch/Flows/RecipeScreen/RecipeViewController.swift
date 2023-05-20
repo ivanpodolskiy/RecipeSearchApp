@@ -11,16 +11,21 @@ import UIKit
 class RecipeViewController: UIViewController {
    
     private var recipeProfile: RecipeProfile?
-    private let detailRecipeView = DetailRecipeView()
+    private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
     private let catehoriesView = CatehoriesView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        print ("You see Recipe Screen")
         setupLayout()
     }
+    
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView(frame: .zero)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
     
     convenience init() {
         self.init(recipe: nil)
@@ -36,27 +41,39 @@ class RecipeViewController: UIViewController {
     }
 
     private func setupLayout() {
-        view.addSubview(detailRecipeView)
-        view.addSubview(ingredientsView)
-        view.addSubview(catehoriesView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(detailRecipeView)
+        scrollView.addSubview(ingredientsView)
+        scrollView.addSubview(catehoriesView)
+        
         if let recipe = recipeProfile {
             detailRecipeView.loadDataToViews(recipe)
+            let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
+            let healthList = recipe.recipeInfromation.getInfromation(type: .healthList)
+
+            ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
+            catehoriesView.setInformation(healthList)
         }
+        
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             detailRecipeView.leftAnchor.constraint(equalTo: view.leftAnchor),
             detailRecipeView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            detailRecipeView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             detailRecipeView.heightAnchor.constraint(equalToConstant: 225),
             
             ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
             ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
-            ingredientsView.heightAnchor.constraint(equalToConstant: 150),
             
             catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 20),
             catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
             catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
-            catehoriesView.heightAnchor.constraint(equalToConstant: 150)
+            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
         ])
     }
 }

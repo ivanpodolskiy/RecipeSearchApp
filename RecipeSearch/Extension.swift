@@ -29,3 +29,10 @@ extension UIImageView {
         }
     }
 }
+
+extension [String] {
+    func toString(separator: String) -> String {
+        var stringText = self.joined(separator: separator)
+        return stringText
+    }
+}
