@@ -10,7 +10,6 @@ import UIKit
 
 class IngredientsView: UIView {
     
-
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false

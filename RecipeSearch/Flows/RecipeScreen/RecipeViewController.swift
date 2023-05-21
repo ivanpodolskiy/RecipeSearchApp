@@ -66,14 +66,12 @@ class RecipeViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-  
-
+    
     private func setInfoToViews() {
         if let recipe = recipeProfile {
             detailRecipeView.loadDataToViews(recipe)
             let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
             let healthList = recipe.recipeInfromation.getInfromation(type: .healthList)
-
             ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
             catehoriesView.setInformation(healthList)
         }

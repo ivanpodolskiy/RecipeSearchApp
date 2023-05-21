@@ -51,8 +51,6 @@ class SearchViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-       // collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
-        
         searchController.searchResultsUpdater = self
         navigationItem.searchController = searchController
         navigationItem.title = "Recipe Search"
@@ -67,7 +65,6 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
-        
         guard let recipes = result else { return cell }
         let recipe = recipes[indexPath.row]
         cell.setupCell(with: recipe)
@@ -80,12 +77,6 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let recipeViewController = RecipeViewController(recipe: res)
         navigationController?.pushViewController(recipeViewController, animated: true)
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier, for: indexPath)
-//        headerView.frame.size.height = 100
-//        return headerView
-//    }
 }
 //MARK: - UICollectionViewDelegateFlowLayout
 extension SearchViewController: UICollectionViewDelegateFlowLayout{
@@ -108,9 +99,7 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
         let totalSpacing: CGFloat = 2 * spacing + (itmesInRow - 1) * spacing
         let finalWidth = (width - totalSpacing) / itmesInRow
         return finalWidth - 2
-        
     }
-
 }
 
 //MARK: - UISearchResultsUpdating
@@ -128,6 +117,7 @@ extension SearchViewController: UISearchResultsUpdating {
                         if indexPaths.count > 0 {
                             self.collectionView.reloadItems(at: indexPaths)
                         } else {
+                            
                             self.collectionView.reloadData()
                         }
                     }

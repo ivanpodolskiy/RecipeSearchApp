@@ -133,7 +133,6 @@ extension RecipeCell {
         activityIndicator.startAnimating()
         titleRecipe.text = recipeProfile.title
         descriptionRecipe.text = recipeProfile.description
-        
         DispatchQueue.global().async {
             if let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL) {
                 DispatchQueue.main.async {
