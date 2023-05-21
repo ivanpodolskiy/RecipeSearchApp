@@ -10,10 +10,16 @@ import UIKit
 
 class IngredientsView: UIView {
     
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
-        setupLayout()
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = UIColor(red: 252/255.0, green: 221/255.0, blue: 236/255.0, alpha: 1)
+        layer.cornerRadius = 20
+        layer.shadowRadius = 4
+        layer.shadowOpacity = 0.25
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowColor = UIColor.black.cgColor
     }
     
     required init?(coder: NSCoder) {
@@ -46,18 +52,8 @@ class IngredientsView: UIView {
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         return label
     }()
-    
-    private func setupView() {
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor(red: 252/255.0, green: 221/255.0, blue: 236/255.0, alpha: 1)
-        layer.cornerRadius = 20
-        layer.shadowRadius = 4
-        layer.shadowOpacity = 0.25
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowColor = UIColor.black.cgColor
-    }
-    
-    private func setupLayout() {
+
+    override func layoutSubviews() {
         addSubview(title)
         addSubview(descriptionLabel)
         NSLayoutConstraint.activate([

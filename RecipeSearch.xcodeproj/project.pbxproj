@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CE07BD822A191F6700A66347 /* RecipeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE07BD812A191F6700A66347 /* RecipeInformation.swift */; };
+		CE07BD842A1A051D00A66347 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE07BD832A1A051D00A66347 /* HeaderView.swift */; };
 		CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1026C629FC4976000B9CCA /* AppDelegate.swift */; };
 		CE1026C929FC4976000B9CCA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1026C829FC4976000B9CCA /* SceneDelegate.swift */; };
 		CE1026D029FC4978000B9CCA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE1026CF29FC4978000B9CCA /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		CE07BD812A191F6700A66347 /* RecipeInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeInformation.swift; sourceTree = "<group>"; };
+		CE07BD832A1A051D00A66347 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		CE1026C329FC4976000B9CCA /* RecipeSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipeSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1026C629FC4976000B9CCA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE1026C829FC4976000B9CCA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 			children = (
 				CE518EA62A0B922100AAEFF3 /* RecipeCell.swift */,
 				CE518EA12A0AE86300AAEFF3 /* SearchViewController.swift */,
+				CE07BD832A1A051D00A66347 /* HeaderView.swift */,
 			);
 			path = SeachScreen;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				CE518EB62A0D0E5E00AAEFF3 /* APIRecipe.swift in Sources */,
 				CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */,
 				CEB6F72F2A15312000E219ED /* CatehoriesView.swift in Sources */,
+				CE07BD842A1A051D00A66347 /* HeaderView.swift in Sources */,
 				CE07BD822A191F6700A66347 /* RecipeInformation.swift in Sources */,
 				CEB6F7312A156FB800E219ED /* InformationView.swift in Sources */,
 				CE1026C929FC4976000B9CCA /* SceneDelegate.swift in Sources */,

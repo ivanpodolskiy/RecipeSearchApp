@@ -8,24 +8,6 @@ import UIKit
 
 final class RecipeCell: UICollectionViewCell {
     
-    var underView: Bool = false
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.titleRecipe.text = nil
-        self.descriptionRecipe.text = nil
-        self.imageRecipe.image = nil
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: .zero)
-        setupLayouts()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         var ai = UIActivityIndicatorView(style: .large)
         ai.translatesAutoresizingMaskIntoConstraints = false
@@ -90,15 +72,35 @@ final class RecipeCell: UICollectionViewCell {
             activityIndicator.stopAnimating()
         }
     }
-
-    private func setupLayouts() {
+    
+    
+    override init(frame: CGRect) {
+        super.init(frame: .zero)
+        setupSubviews()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.titleRecipe.text = nil
+        self.descriptionRecipe.text = nil
+        self.imageRecipe.image = nil
+    }
+    
+    private func setupSubviews() {
         viewForImage.addSubview(imageRecipe)
         imageRecipe.addSubview(buttonFavorite)
         contentView.addSubview(viewForImage)
         contentView.addSubview(titleRecipe)
         contentView.addSubview(descriptionRecipe)
         imageRecipe.addSubview(activityIndicator)
-      
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
         NSLayoutConstraint.activate([
             descriptionRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
             descriptionRecipe.leftAnchor.constraint(equalTo: leftAnchor),
@@ -110,8 +112,8 @@ final class RecipeCell: UICollectionViewCell {
             
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.bottomAnchor.constraint(equalTo: titleRecipe.topAnchor, constant: -5),
-            imageRecipe.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            imageRecipe.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
+            imageRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             
             buttonFavorite.topAnchor.constraint(equalTo: topAnchor),
             buttonFavorite.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),

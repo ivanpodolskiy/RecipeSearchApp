@@ -39,8 +39,8 @@ class SearchViewController: UIViewController {
     
     private func setupLayouts() {
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
@@ -51,6 +51,8 @@ class SearchViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+       // collectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier)
+        
         searchController.searchResultsUpdater = self
         navigationItem.searchController = searchController
         navigationItem.title = "Recipe Search"
@@ -78,6 +80,12 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let recipeViewController = RecipeViewController(recipe: res)
         navigationController?.pushViewController(recipeViewController, animated: true)
     }
+    
+//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+//        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderView.identifier, for: indexPath)
+//        headerView.frame.size.height = 100
+//        return headerView
+//    }
 }
 //MARK: - UICollectionViewDelegateFlowLayout
 extension SearchViewController: UICollectionViewDelegateFlowLayout{
@@ -87,11 +95,11 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: LayoutConstant.spacing, left: 0, bottom: LayoutConstant.spacing, right: 0)
+        return UIEdgeInsets(top: LayoutConstant.spacing, left: LayoutConstant.spacing, bottom: LayoutConstant.spacing, right: LayoutConstant.spacing)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = itemWidth(for: view.frame.width, spacing: 0)
+        let width = itemWidth(for: view.frame.width, spacing: LayoutConstant.spacing)
         return CGSize(width: width, height: LayoutConstant.itemHeight)
     }
     
@@ -99,7 +107,8 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
         let itmesInRow: CGFloat = 2
         let totalSpacing: CGFloat = 2 * spacing + (itmesInRow - 1) * spacing
         let finalWidth = (width - totalSpacing) / itmesInRow
-        return finalWidth - 5.0
+        return finalWidth - 2
+        
     }
 
 }

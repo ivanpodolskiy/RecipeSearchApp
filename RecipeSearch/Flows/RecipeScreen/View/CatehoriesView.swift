@@ -11,12 +11,27 @@ class CatehoriesView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
-        setupLayout()
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = UIColor(red: 165/255.0, green: 166/255.0, blue: 246/255.0, alpha: 1)
+        layer.cornerRadius = 20
+        layer.shadowRadius = 4
+        layer.shadowOpacity = 0.25
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowColor = UIColor.black.cgColor
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        addSubview(catehoriesLabel)
+        NSLayoutConstraint.activate([
+            catehoriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            catehoriesLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            catehoriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
+            catehoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
+        ])
     }
     
     func setInformation(_ text: String) {
@@ -33,24 +48,4 @@ class CatehoriesView: UIView {
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         return label
     }()
-    
-    private func setupView() {
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor(red: 165/255.0, green: 166/255.0, blue: 246/255.0, alpha: 1)
-        layer.cornerRadius = 20
-        layer.shadowRadius = 4
-        layer.shadowOpacity = 0.25
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowColor = UIColor.black.cgColor
-    }
-    
-    private func setupLayout() {
-        addSubview(catehoriesLabel)
-        NSLayoutConstraint.activate([
-            catehoriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            catehoriesLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            catehoriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            catehoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
-        ])
-    }
 }

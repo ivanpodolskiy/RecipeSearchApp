@@ -18,7 +18,34 @@ class RecipeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        setupLayout()
+        setInfoToViews()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(detailRecipeView)
+        scrollView.addSubview(ingredientsView)
+        scrollView.addSubview(catehoriesView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            detailRecipeView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            detailRecipeView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            
+            ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+            ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
+            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
+            
+            catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 20),
+            catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
+            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        ])
     }
     
     private let scrollView: UIScrollView = {
@@ -39,13 +66,9 @@ class RecipeViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+  
 
-    private func setupLayout() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(detailRecipeView)
-        scrollView.addSubview(ingredientsView)
-        scrollView.addSubview(catehoriesView)
-        
+    private func setInfoToViews() {
         if let recipe = recipeProfile {
             detailRecipeView.loadDataToViews(recipe)
             let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
@@ -54,26 +77,5 @@ class RecipeViewController: UIViewController {
             ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
             catehoriesView.setInformation(healthList)
         }
-        
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            detailRecipeView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            detailRecipeView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            detailRecipeView.heightAnchor.constraint(equalToConstant: 225),
-            
-            ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-            ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
-            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
-            
-            catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 20),
-            catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
-            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
-        ])
     }
 }

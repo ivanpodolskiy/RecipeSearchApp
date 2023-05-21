@@ -16,6 +16,7 @@ class DetailRecipeHeaderView: UIView {
         self.backgroundColor = .white
         setupLayout()
     }
+ 
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -27,6 +28,8 @@ class DetailRecipeHeaderView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textColor = UIColor.basic
         return label
@@ -80,7 +83,7 @@ class DetailRecipeHeaderView: UIView {
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
             titleLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            titleLabel.heightAnchor.constraint(equalToConstant: 30),
+//            titleLabel.heightAnchor.constraint(equalToConstant: 30),
 
             imageRecipe.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             imageRecipe.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
