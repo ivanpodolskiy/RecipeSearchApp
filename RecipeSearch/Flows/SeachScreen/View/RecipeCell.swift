@@ -6,14 +6,14 @@
 //
 import UIKit
 
-final class RecipeCell: UICollectionViewCell {
+ class RecipeCell: UICollectionViewCell {
     
+     //MARK: - Outlets
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         var ai = UIActivityIndicatorView(style: .large)
         ai.translatesAutoresizingMaskIntoConstraints = false
         return ai
     }()
- 
     
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
@@ -32,8 +32,8 @@ final class RecipeCell: UICollectionViewCell {
         description.translatesAutoresizingMaskIntoConstraints = false
         return description
     }()
-    
-    private(set) lazy var buttonFavorite: UIButton = {
+     
+     lazy var buttonFavorite: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)
         button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -56,24 +56,26 @@ final class RecipeCell: UICollectionViewCell {
     
     private(set) lazy var imageRecipe: UIImageView = {
         let image = UIImageView()
+        image.isUserInteractionEnabled = true
         image.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
         image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.cornerRadius = 8
         image.clipsToBounds = true
         return image
     }()
-    
-    fileprivate var image: UIImage? {
-        get {
-            return self.imageRecipe.image
-        } set {
-            imageRecipe.image = newValue
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
-        }
-    }
-    
-    
+     
+     
+     //MARK: - Properties
+     fileprivate var image: UIImage? {
+         get {
+             return self.imageRecipe.image
+         } set {
+             imageRecipe.image = newValue
+             activityIndicator.isHidden = true
+             activityIndicator.stopAnimating()
+         }
+     }
+     //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: .zero)
         setupSubviews()
@@ -88,10 +90,11 @@ final class RecipeCell: UICollectionViewCell {
         self.titleRecipe.text = nil
         self.descriptionRecipe.text = nil
         self.imageRecipe.image = nil
+        self.buttonFavorite.tintColor = .white
     }
     
     private func setupSubviews() {
-        viewForImage.addSubview(imageRecipe)
+        contentView.addSubview(imageRecipe)
         imageRecipe.addSubview(buttonFavorite)
         contentView.addSubview(viewForImage)
         contentView.addSubview(titleRecipe)
@@ -110,6 +113,7 @@ final class RecipeCell: UICollectionViewCell {
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             
+            
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.bottomAnchor.constraint(equalTo: titleRecipe.topAnchor, constant: -5),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
@@ -126,30 +130,44 @@ final class RecipeCell: UICollectionViewCell {
         ])
     }
 }
-
+//MARK: - Extension Functions
 extension RecipeCell {
-    func setupCell(with recipeProfile: RecipeProfile) {
+    func setColorToFavoriteButton(_ status: Bool) {
+        DispatchQueue.main.async {
+            switch status {
+            case false:
+                self.buttonFavorite.tintColor = .white
+
+            case true:
+                self.buttonFavorite.tintColor = .yellow
+            }
+        }
+       
+    }
+    
+    func setupCell(with recipeProfile: RecipeProfile, index: IndexPath) {
+        if recipeProfile.isFavorite {
+            setColorToFavoriteButton(recipeProfile.isFavorite)
+        }
+        buttonFavorite.tag = index.row
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
         titleRecipe.text = recipeProfile.title
         descriptionRecipe.text = recipeProfile.description
         DispatchQueue.global().async {
-            if let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL) {
-                DispatchQueue.main.async {
-                    self.image = UIImage(data: imageData)
-                }
-            } else {
+            guard let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL)else  {
                 self.image = UIImage(named: "placeholder")
+                return
+            }
+            DispatchQueue.main.async {
+                self.image = UIImage(data: imageData)
             }
         }
     }
 }
-                            
 
 extension RecipeCell: ReusableView {
     static var identifier: String {
         return String(describing: self)
     }
 }
-
-

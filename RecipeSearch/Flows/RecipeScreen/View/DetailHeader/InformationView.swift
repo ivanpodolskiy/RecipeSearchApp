@@ -7,15 +7,7 @@
 import UIKit
 
 class InformationView: UIView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    //MARK: - Outlets
     private(set) lazy var namesDataLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
@@ -56,7 +48,7 @@ class InformationView: UIView {
         return label
     }()
     
-    private(set) lazy var buttonFavorite: UIButton = {
+  lazy var buttonFavorite: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)
         button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -74,8 +66,9 @@ class InformationView: UIView {
         label.text = "Instructions"
         return label
     }()
-
-    private func setupLayout() {
+    
+    //MARK: - View Functions
+    override func layoutSubviews() {
         backgroundColor = .basic
         translatesAutoresizingMaskIntoConstraints = false
         layer.cornerRadius = 19
@@ -92,7 +85,6 @@ class InformationView: UIView {
         addSubview(namesDataLabel)
         
         NSLayoutConstraint.activate([
-    
             countCaloriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 15),
             countCaloriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 15),
             countCaloriesLabel.rightAnchor.constraint(equalTo: countDailyValueLabel.leftAnchor, constant: -25),
@@ -121,5 +113,4 @@ class InformationView: UIView {
             linkLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -15),
         ])
     }
-    
 }

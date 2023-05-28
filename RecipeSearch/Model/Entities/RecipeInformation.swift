@@ -18,6 +18,9 @@ struct RecipeInformation {
         self.healthLabels = healthlabels
         self.listIngredients = listIngredients
     }
+}
+
+extension RecipeInformation {
     func getInfromation(type: TypeOfInforamtion ) -> String {
         switch type {
         case .ingredients:

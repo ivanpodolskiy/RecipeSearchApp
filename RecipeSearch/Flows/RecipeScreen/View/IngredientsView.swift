@@ -9,27 +9,7 @@ import Foundation
 import UIKit
 
 class IngredientsView: UIView {
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor(red: 252/255.0, green: 221/255.0, blue: 236/255.0, alpha: 1)
-        layer.cornerRadius = 20
-        layer.shadowRadius = 4
-        layer.shadowOpacity = 0.25
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowColor = UIColor.black.cgColor
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func setInformation(_ text: String, count: Int) {
-        self.title.text = "\(count) Ingredients"
-        self.descriptionLabel.text = text
-    }
-    
+    //MARK: - Ountlets
     private(set) lazy var title: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -52,6 +32,22 @@ class IngredientsView: UIView {
         return label
     }()
 
+    //MARK: - View Functions
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = UIColor(red: 252/255.0, green: 221/255.0, blue: 236/255.0, alpha: 1)
+        layer.cornerRadius = 20
+        layer.shadowRadius = 4
+        layer.shadowOpacity = 0.25
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowColor = UIColor.black.cgColor
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func layoutSubviews() {
         addSubview(title)
         addSubview(descriptionLabel)
@@ -66,5 +62,12 @@ class IngredientsView: UIView {
             descriptionLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -15),
             descriptionLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5)
         ])
+    }
+}
+//MARK: _ Functions
+extension IngredientsView {
+        func setInformation(_ text: String, count: Int) {
+        self.title.text = "\(count) Ingredients"
+        self.descriptionLabel.text = text
     }
 }

@@ -12,7 +12,7 @@ class CustomTabBarController: UITabBarController {
         super.viewDidLoad()
         tabBar.backgroundImage = nil
         tabBar.backgroundColor = UIColor.white.withAlphaComponent(0)
-        viewControllers = [setupVC(.search)]
+        viewControllers = [setupVC(.search), setupVC(.favorite)]
         setupTabBarLayout()
     }
     

@@ -8,7 +8,19 @@
 import UIKit
 
 class CatehoriesView: UIView {
+    //MARK: - Ountlets
+    private(set) lazy var catehoriesLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
+        label.textAlignment = .left
+        label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
+        return label
+    }()
     
+    //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
@@ -33,19 +45,10 @@ class CatehoriesView: UIView {
             catehoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
         ])
     }
-    
-    func setInformation(_ text: String) {
+}
+//MARK: - Functions
+extension CatehoriesView {
+    func setText(_ text: String) {
         catehoriesLabel.text = text
     }
-    
-    private(set) lazy var catehoriesLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
-        label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-        return label
-    }()
 }

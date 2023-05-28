@@ -10,10 +10,12 @@ struct RecipeProfile {
     let calories: Int
     let countIngredients: Int
     let recipeInfromation: RecipeInformation
-    
+    var isFavorite: Bool = false
+}
+
+extension RecipeProfile {
     var description: String {
         return "Callo. \(calories). Ingre. \(countIngredients) "
     }
 }
-
 

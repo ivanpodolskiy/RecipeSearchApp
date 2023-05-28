@@ -6,7 +6,6 @@
 //
 import Foundation
 final class RecipeSreachService {
-    
     public func searchRecipe(search text: String, completion: @escaping ([RecipeProfile]) -> ()) {
         var urlComponents = URLComponents(string: "https://api.edamam.com/api/recipes/v2")!
         let params = ["type": "public", "app_id": "71021edf", "app_key": "389c0530b12807d2bd5033fb2694567c","q":"\(text)", "Accept-Language": "en"]
