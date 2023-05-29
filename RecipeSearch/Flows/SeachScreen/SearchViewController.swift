@@ -31,8 +31,7 @@ class SearchViewController: UIViewController {
     private var oldText: String = ""
     private let service = RecipeSreachService()
     private var result: [RecipeProfile]?
-    private var favoriteRecipesList: [FavoriteRecipes]?
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    private let favoriteRecipeService = FavoriteRecipeService()
         
     //MARK: - View Functions
     override func viewDidLoad() {
@@ -44,8 +43,7 @@ class SearchViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadFavoriteRecipes()
-        updateStatusRecipes()
+        favoriteRecipeService.updateStatusRecipes(for: &result)
     }
     
     private func setupLayouts() {
@@ -76,58 +74,15 @@ class SearchViewController: UIViewController {
         switch selectedRecipe.isFavorite {
         case true:
             selectedRecipe.isFavorite = false
-            guard let favoriteRecipesList = favoriteRecipesList else { return }
-            for item in favoriteRecipesList {
-              if  item.title == selectedRecipe.title {
-                  sender.tintColor = .white
-                  removeFavotireRecipe(item)
-                  break }
-            }
+            favoriteRecipeService.removeFavotireRecipe(name: selectedRecipe.title)
+            sender.tintColor = .white
         case false:
             selectedRecipe.isFavorite = true
-            addFavoriteRecipe(selectedRecipe)
+            favoriteRecipeService.addFavoriteRecipe(selectedRecipe)
+           // addFavoriteRecipe(selectedRecipe)
             sender.tintColor = .yellow
         }
         result?[index] = selectedRecipe
-        loadFavoriteRecipes()
-    }
-}
-
-//MARK: - Functions
-extension SearchViewController {
-    private func loadFavoriteRecipes() {
-        favoriteRecipesList = try? context.fetch(FavoriteRecipes.fetchRequest())
-    }
-    private func updateStatusRecipes() {
-        var newResult = checkFavoriteStatus(recipes: result ?? [])
-        result = newResult
-    }
-    private func addFavoriteRecipe(_ recipe: RecipeProfile) {
-        let favoriteRecipe = FavoriteRecipes(context: self.context)
-        favoriteRecipe.title = recipe.title
-        try? context.save()
-    }
-    
-    private func removeFavotireRecipe(_ removeRecpe: FavoriteRecipes) {
-        do {
-            context.delete(removeRecpe)
-            try context.save()
-        } catch {
-        }
-    }
-    
-    private func checkFavoriteStatus(recipes:  [RecipeProfile]) -> [RecipeProfile] {
-        var far = recipes
-        var i = 0
-        for recipe in far {
-            favoriteRecipesList?.forEach({ favoriteRecipe in
-                if favoriteRecipe.title == recipe.title {
-                    far[i].isFavorite = true
-                }
-                i += 1
-            })
-        }
-       return far
     }
 }
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
@@ -139,7 +94,6 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
-        guard let recipes = result else { return cell }
         guard let recipe = result?[indexPath.row] else { return cell }
         cell.setupCell(with: recipe, index: indexPath)
         cell.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
@@ -182,7 +136,6 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
 }
 //MARK: - UISearchResultsUpdating
 extension SearchViewController: UISearchResultsUpdating {
-   
     func updateSearchResults(for searchController: UISearchController) {
         guard let query = searchController.searchBar.text else { return}
 //        result = nil
@@ -190,18 +143,17 @@ extension SearchViewController: UISearchResultsUpdating {
             oldText = query
             DispatchQueue.global().async {
                 self.service.searchRecipe(search: query) { recipe in
-                    self.result = self.checkFavoriteStatus(recipes: recipe)
+                    self.result = recipe
+                    self.favoriteRecipeService.updateStatusRecipes(for: &self.result)
+                    
                     DispatchQueue.main.async {
-                        
                         let indexPaths = self.collectionView.indexPathsForVisibleItems
                         if indexPaths.count > 0 {
                             self.collectionView.reloadItems(at: indexPaths)
                         } else {
                             self.collectionView.reloadData()
                         }
-                        
                     }
-                    
                 }
             }
         } else if  query.count < 3 && result != nil  {

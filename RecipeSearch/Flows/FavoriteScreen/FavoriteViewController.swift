@@ -19,7 +19,7 @@ class FavoriteViewController: UIViewController {
     
     //MARK: - Properties
     private var favoriteRecipes: [FavoriteRecipes]?
-    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    private let favoriteRecipeService = FavoriteRecipeService()
     
     //MARK: - View Functions
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class FavoriteViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        fetchRecipes()
+        updateTableView()
     }
     
     private func setupViews() {
@@ -53,14 +53,11 @@ class FavoriteViewController: UIViewController {
 
 //MARK: - Functions
 extension FavoriteViewController {
-    private func fetchRecipes() {
-        do {
-            self.favoriteRecipes = try context.fetch(FavoriteRecipes.fetchRequest())
+    private func updateTableView() {
+        self.favoriteRecipes = favoriteRecipeService.fetchFavoriteRecipes()
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
-        } catch {
-        }
     }
 }
 //MARK: - TableView

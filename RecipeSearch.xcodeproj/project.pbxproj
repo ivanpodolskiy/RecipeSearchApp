@@ -20,6 +20,8 @@
 		CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */; };
 		CE518EB32A0CF29000AAEFF3 /* RecipeSearchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */; };
 		CE518EB62A0D0E5E00AAEFF3 /* APIRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */; };
+		CE5D3D752A24BEAA00E7764E /* FavoriteRecipeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5D3D742A24BEAA00E7764E /* FavoriteRecipeService.swift */; };
+		CE5D3D782A24D06800E7764E /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5D3D772A24D06800E7764E /* WebViewController.swift */; };
 		CE6C40482A226CE100271806 /* DataRecipe.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6C40462A226CE100271806 /* DataRecipe.xcdatamodeld */; };
 		CE6C404B2A226FE700271806 /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C404A2A226FE700271806 /* FavoriteViewController.swift */; };
 		CE6C404E2A22762400271806 /* FavoriteRecipes+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6C404C2A22762300271806 /* FavoriteRecipes+CoreDataClass.swift */; };
@@ -48,6 +50,8 @@
 		CE518EAA2A0B97CE00AAEFF3 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSearchService.swift; sourceTree = "<group>"; };
 		CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIRecipe.swift; sourceTree = "<group>"; };
+		CE5D3D742A24BEAA00E7764E /* FavoriteRecipeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteRecipeService.swift; sourceTree = "<group>"; };
+		CE5D3D772A24D06800E7764E /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		CE6C40472A226CE100271806 /* DataRecipe.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataRecipe.xcdatamodel; sourceTree = "<group>"; };
 		CE6C404A2A226FE700271806 /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CE6C404C2A22762300271806 /* FavoriteRecipes+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FavoriteRecipes+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -116,6 +120,7 @@
 		CE518EAF2A0CF21B00AAEFF3 /* Flows */ = {
 			isa = PBXGroup;
 			children = (
+				CE5D3D762A24D05100E7764E /* WebScreen */,
 				CEB6F7252A140D3400E219ED /* SeachScreen */,
 				CEB6F7262A140D5900E219ED /* RecipeScreen */,
 				CE6C40492A226FCE00271806 /* FavoriteScreen */,
@@ -128,17 +133,17 @@
 			children = (
 				CE6C40502A22762A00271806 /* CoreData */,
 				CE518EB42A0D0E1400AAEFF3 /* Entities */,
-				CE518EB12A0CF23F00AAEFF3 /* Service */,
+				CE518EB12A0CF23F00AAEFF3 /* Networking */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		CE518EB12A0CF23F00AAEFF3 /* Service */ = {
+		CE518EB12A0CF23F00AAEFF3 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
 				CE518EB22A0CF29000AAEFF3 /* RecipeSearchService.swift */,
 			);
-			path = Service;
+			path = Networking;
 			sourceTree = "<group>";
 		};
 		CE518EB42A0D0E1400AAEFF3 /* Entities */ = {
@@ -149,6 +154,14 @@
 				CE518EB52A0D0E5E00AAEFF3 /* APIRecipe.swift */,
 			);
 			path = Entities;
+			sourceTree = "<group>";
+		};
+		CE5D3D762A24D05100E7764E /* WebScreen */ = {
+			isa = PBXGroup;
+			children = (
+				CE5D3D772A24D06800E7764E /* WebViewController.swift */,
+			);
+			path = WebScreen;
 			sourceTree = "<group>";
 		};
 		CE6C40492A226FCE00271806 /* FavoriteScreen */ = {
@@ -164,6 +177,7 @@
 			children = (
 				CE6C404C2A22762300271806 /* FavoriteRecipes+CoreDataClass.swift */,
 				CE6C404D2A22762400271806 /* FavoriteRecipes+CoreDataProperties.swift */,
+				CE5D3D742A24BEAA00E7764E /* FavoriteRecipeService.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -284,7 +298,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE518EA72A0B922100AAEFF3 /* RecipeCell.swift in Sources */,
+				CE5D3D782A24D06800E7764E /* WebViewController.swift in Sources */,
 				CEB6F7282A140D8600E219ED /* RecipeViewController.swift in Sources */,
+				CE5D3D752A24BEAA00E7764E /* FavoriteRecipeService.swift in Sources */,
 				CE6C404F2A22762400271806 /* FavoriteRecipes+CoreDataProperties.swift in Sources */,
 				CEB6F72D2A152C9700E219ED /* IngredientsView.swift in Sources */,
 				CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */,

@@ -29,7 +29,7 @@ final class RecipeSreachService {
                         let countIngredient = recipe.ingredients?.count ?? 0
                         let calories = Int(recipe.calories ?? 0)
                         let infromation = RecipeInformation(healthlabels: recipe.healthLabels, listIngredients: recipe.ingredientLines)
-                        let finalRecipeProfile = RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredients: countIngredient, recipeInfromation: infromation)
+                        let finalRecipeProfile = RecipeProfile(title: recipe.label, image: recipe.image, calories: calories, countIngredients: countIngredient, recipeInfromation: infromation, url: recipe.url)
                         resutl.append(finalRecipeProfile)
                     }
                     completion(resutl)

@@ -11,6 +11,7 @@ struct RecipeProfile {
     let countIngredients: Int
     let recipeInfromation: RecipeInformation
     var isFavorite: Bool = false
+    var url: String
 }
 
 extension RecipeProfile {

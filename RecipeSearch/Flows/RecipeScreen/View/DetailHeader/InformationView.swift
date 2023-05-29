@@ -50,10 +50,18 @@ class InformationView: UIView {
     
   lazy var buttonFavorite: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)
-        button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
+      button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
         button.layer.opacity = 0.5
+        return button
+    }()
+    
+   lazy var linkButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.textColor = UIColor.basic
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Instructions", for: .normal)
         return button
     }()
     
@@ -66,6 +74,8 @@ class InformationView: UIView {
         label.text = "Instructions"
         return label
     }()
+    
+    //MARK: - Actions
     
     //MARK: - View Functions
     override func layoutSubviews() {
@@ -81,7 +91,7 @@ class InformationView: UIView {
         addSubview(countDailyValueLabel)
         addSubview(countServingsLabel)
         addSubview(buttonFavorite)
-        addSubview(linkLabel)
+        addSubview(linkButton)
         addSubview(namesDataLabel)
         
         NSLayoutConstraint.activate([
@@ -108,9 +118,9 @@ class InformationView: UIView {
             buttonFavorite.widthAnchor.constraint(equalToConstant: 40),
             buttonFavorite.heightAnchor.constraint(equalToConstant: 40),
 
-            linkLabel.topAnchor.constraint(equalTo: namesDataLabel.bottomAnchor, constant: 35),
-            linkLabel.leftAnchor.constraint(equalTo:  buttonFavorite.rightAnchor, constant: 15),
-            linkLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -15),
+            linkButton.topAnchor.constraint(equalTo: namesDataLabel.bottomAnchor, constant: 30),
+            linkButton.leftAnchor.constraint(equalTo:  buttonFavorite.rightAnchor, constant: 15),
+            linkButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15),
         ])
     }
 }

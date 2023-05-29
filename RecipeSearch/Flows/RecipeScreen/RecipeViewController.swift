@@ -22,7 +22,7 @@ class RecipeViewController: UIViewController {
 
     //MARK: - Properties
     private var recipeProfile: RecipeProfile?
-    private let contex = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    private let favoriteRecipeService = FavoriteRecipeService()
     public var completion: ((Bool?) -> Void)?
     
     //MARK: - Initialization
@@ -47,6 +47,7 @@ class RecipeViewController: UIViewController {
         scrollView.addSubview(ingredientsView)
         scrollView.addSubview(catehoriesView)
         detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
+        detailRecipeView.informationView.linkButton.addTarget(self, action: #selector(showWebScreen(sender: )), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -74,32 +75,27 @@ class RecipeViewController: UIViewController {
     }
     
     //MARK: - Actions
+    @objc func showWebScreen(sender: UIButton) {
+        let url = recipeProfile?.url
+        let name = recipeProfile?.title
+        let wbeController = WebViewController(name: name, url: url)
+        navigationController?.pushViewController(wbeController, animated: false)
+    }
+    
     @objc func switchFavoriteStatus(sender: UILabel) {
         guard let selectedRecipe = recipeProfile else { return }
-        do {
-            let favoriteRecipes = try contex.fetch(FavoriteRecipes.fetchRequest())
             switch selectedRecipe.isFavorite {
             case true:
-                try favoriteRecipes.forEach { fRecipe in
-                   if fRecipe.title == selectedRecipe.title {
-                       sender.tintColor = .white
-                       contex.delete(fRecipe)
-                       try contex.save()
-                   }
-                }
+                favoriteRecipeService.removeFavotireRecipe(name: selectedRecipe.title)
+                sender.tintColor = .white
                 recipeProfile?.isFavorite = false
                 completion?(false)
             case false:
                 sender.tintColor = .yellow
-                let favoriteRecipe = FavoriteRecipes(context: self.contex)
-                favoriteRecipe.title = selectedRecipe.title
+                favoriteRecipeService.addFavoriteRecipe(selectedRecipe)
                 recipeProfile?.isFavorite = true
-                try contex.save()
                 completion?(true)
             }
-        } catch {
-            
-        }
     }
     
     //MARK: - Functions
