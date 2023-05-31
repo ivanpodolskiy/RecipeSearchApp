@@ -43,6 +43,7 @@ class SearchViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
         favoriteRecipeService.updateStatusRecipes(for: &result)
     }
     
@@ -138,7 +139,6 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let query = searchController.searchBar.text else { return}
-//        result = nil
         if query.count > 2 && query != oldText {
             oldText = query
             DispatchQueue.global().async {

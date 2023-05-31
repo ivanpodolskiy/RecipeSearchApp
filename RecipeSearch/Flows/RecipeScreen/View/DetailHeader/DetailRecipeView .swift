@@ -46,12 +46,13 @@ class DetailRecipeHeaderView: UIView {
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         var ai = UIActivityIndicatorView(style: .large)
         ai.translatesAutoresizingMaskIntoConstraints = false
+        ai.startAnimating()
+        ai.isHidden = false
         return ai
     }()
     //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = .white
     }
     
@@ -60,31 +61,27 @@ class DetailRecipeHeaderView: UIView {
     }
     
     override func layoutSubviews() {
-      activityIndicator.startAnimating()
-      activityIndicator.isHidden = false
       addSubview(titleLabel)
       addSubview(viewForImage)
       addSubview(informationView)
       viewForImage.addSubview(imageRecipe)
       imageRecipe.addSubview(activityIndicator)
       
+    informationView.translatesAutoresizingMaskIntoConstraints = false
       NSLayoutConstraint.activate([
           titleLabel.topAnchor.constraint(equalTo: topAnchor),
           titleLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-          titleLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-          
-          imageRecipe.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
-          imageRecipe.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-          imageRecipe.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-         
-          informationView.topAnchor.constraint(equalTo: imageRecipe.topAnchor, constant: 23),
-          informationView.bottomAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: -23),
-          informationView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-          informationView.leftAnchor.constraint(equalTo: imageRecipe.rightAnchor, constant: 10),
 
+          imageRecipe.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+          imageRecipe.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
           imageRecipe.widthAnchor.constraint(equalToConstant: 180),
           imageRecipe.heightAnchor.constraint(equalToConstant: 185),
-          
+          imageRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
+       
+          informationView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+          informationView.leftAnchor.constraint(equalTo: imageRecipe.rightAnchor, constant: 10),
+          informationView.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor),
+        
           activityIndicator.centerXAnchor.constraint(equalTo: imageRecipe.centerXAnchor, constant: 0.0),
           activityIndicator.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor, constant: 0.0)
       ])

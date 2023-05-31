@@ -23,7 +23,6 @@ class CatehoriesView: UIView {
     //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: frame)
-        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = UIColor(red: 165/255.0, green: 166/255.0, blue: 246/255.0, alpha: 1)
         layer.cornerRadius = 20
         layer.shadowRadius = 4

@@ -27,7 +27,7 @@ class CustomTabBarController: UITabBarController {
     }
     
     private func setupTabBarLayout() {
-        let positionOnX: CGFloat = 10
+        let positionOnX: CGFloat = 15
         let positionOnY: CGFloat = 14
         let width = tabBar.bounds.width - positionOnX * 2
         let height = tabBar.bounds.height + positionOnY * 2
@@ -37,6 +37,6 @@ class CustomTabBarController: UITabBarController {
         roundLayer.fillColor = UIColor.basic.cgColor
         tabBar.layer.insertSublayer(roundLayer, at: 0)
         tabBar.itemWidth = width 
-        tabBar.itemPositioning = .centered
+        tabBar.itemPositioning = .automatic
     }
 }

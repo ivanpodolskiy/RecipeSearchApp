@@ -52,8 +52,7 @@ class FavoriteRecipeService {
     }
 
     private func checkFavoriteStatus(recipes:  [RecipeProfile]) -> [RecipeProfile] {
-         var favoriteRecipesList = fetchFavoriteRecipes()
-
+        let favoriteRecipesList = fetchFavoriteRecipes()
         var far = recipes
         var i = 0
         for recipe in far {

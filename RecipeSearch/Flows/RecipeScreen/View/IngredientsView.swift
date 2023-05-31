@@ -13,7 +13,6 @@ class IngredientsView: UIView {
     private(set) lazy var title: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "0 Ingredients:"
         label.textColor = .basic
         label.textAlignment = .left
         label.font = UIFont.boldSystemFont(ofSize: 25)
@@ -25,7 +24,6 @@ class IngredientsView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.text = " 2 ounces vodka \n 3 to 4 ounces freshly squeezed grapefruit juice \n Wedge of lime"
         label.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
         label.textAlignment = .left
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
@@ -49,6 +47,7 @@ class IngredientsView: UIView {
     }
     
     override func layoutSubviews() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         addSubview(title)
         addSubview(descriptionLabel)
         NSLayoutConstraint.activate([

@@ -16,7 +16,7 @@ class FavoriteViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
-    
+        
     //MARK: - Properties
     private var favoriteRecipes: [FavoriteRecipes]?
     private let favoriteRecipeService = FavoriteRecipeService()
@@ -24,24 +24,18 @@ class FavoriteViewController: UIViewController {
     //MARK: - View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         self.navigationItem.title = "Favorite Recipes"
-        //set style text and add color for navigationItem.title
-        setupViews()
-        setupLayouts()
+        view.addSubview(tableView)
+        view.backgroundColor = .white
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         updateTableView()
     }
-    
-    private func setupViews() {
-        view.addSubview(tableView)
-        tableView.dataSource = self
-        tableView.delegate = self
-    }
-    
-    private func setupLayouts() {
+
+    override func viewDidLayoutSubviews() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -64,9 +58,9 @@ extension FavoriteViewController {
 extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        guard let item = favoriteRecipes else { return cell }
+        guard let items = favoriteRecipes else { return cell }
         
-        cell.textLabel?.text = item[indexPath.row].title
+        cell.textLabel?.text = items[indexPath.row].title
         return  cell
     }
     
@@ -75,5 +69,17 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
             return recipes.count
         }
         return 0
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .destructive, title: "Delete") { action, view, completionHandler in
+            guard let items = self.favoriteRecipes else { return }
+            if let title = items[indexPath.row].title {
+                self.favoriteRecipeService.removeFavotireRecipe(name: title)
+                self.updateTableView()
+            }
+          
+        }
+        return UISwipeActionsConfiguration(actions: [action])
     }
 }

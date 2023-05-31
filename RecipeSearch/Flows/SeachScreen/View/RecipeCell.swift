@@ -112,8 +112,7 @@ import UIKit
             titleRecipe.bottomAnchor.constraint(equalTo: descriptionRecipe.topAnchor),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
-            
-            
+                        
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.bottomAnchor.constraint(equalTo: titleRecipe.topAnchor, constant: -5),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),

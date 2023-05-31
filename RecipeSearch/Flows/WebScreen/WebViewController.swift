@@ -24,7 +24,6 @@ class WebViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-  
     override func loadView() {
         super.loadView()
         webView.navigationDelegate = self
@@ -35,6 +34,7 @@ class WebViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(webView)
         view.addSubview(progressView)
+        self.tabBarController?.tabBar.isHidden = true
         title = name
         webView.frame = view.bounds
         progressView.frame = CGRect(x: 10, y: 93, width: view.frame.size.width - 20, height: 50)
@@ -51,8 +51,8 @@ class WebViewController: UIViewController {
     
     private let progressView: UIProgressView = {
         let progressView = UIProgressView()
-        progressView.trackTintColor = .green
-        progressView.progressTintColor = .black
+        progressView.trackTintColor = .white
+        progressView.progressTintColor = .basic
         return progressView
     }()
     
@@ -88,7 +88,6 @@ class WebViewController: UIViewController {
             }
         }
     }
-    
 }
 //MARK: - WKNavigationDelegate
 extension WebViewController: WKNavigationDelegate {

@@ -36,10 +36,10 @@ extension CustomTabBarItem {
     var selectedIcon: UIImage? {
         switch self {
         case .search:
-            return UIImage(systemName: "magnifyingglass")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            return UIImage(systemName: "magnifyingglass")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
             
         case .favorite:
-            return UIImage(systemName: "star.fill")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+            return UIImage(systemName: "star.fill")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
         }
         
     }

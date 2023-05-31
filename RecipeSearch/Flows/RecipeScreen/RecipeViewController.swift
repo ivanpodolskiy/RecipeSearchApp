@@ -16,6 +16,13 @@ class RecipeViewController: UIViewController {
         return scrollView
     }()
     
+    private let alertController: UIAlertController = {
+        let alert = UIAlertController(title: "Error", message: "Link is not available", preferredStyle: .alert)
+        let actionAlert = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(actionAlert)
+        return alert
+    }()
+    
     private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
     private let catehoriesView = CatehoriesView()
@@ -42,31 +49,37 @@ class RecipeViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        ingredientsView.translatesAutoresizingMaskIntoConstraints = false
+        catehoriesView.translatesAutoresizingMaskIntoConstraints = false
+        detailRecipeView.translatesAutoresizingMaskIntoConstraints  = false
         view.addSubview(scrollView)
+        view.addSubview(ingredientsView)
+        view.addSubview(catehoriesView)
         scrollView.addSubview(detailRecipeView)
         scrollView.addSubview(ingredientsView)
         scrollView.addSubview(catehoriesView)
+        
         detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
         detailRecipeView.informationView.linkButton.addTarget(self, action: #selector(showWebScreen(sender: )), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
+            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             detailRecipeView.leftAnchor.constraint(equalTo: view.leftAnchor),
             detailRecipeView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             
+            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
             ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
-            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
-            
-            catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 20),
+                 
+            catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 10),
             catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
             catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
-            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
         ])
     }
     
@@ -76,11 +89,16 @@ class RecipeViewController: UIViewController {
     
     //MARK: - Actions
     @objc func showWebScreen(sender: UIButton) {
-        let url = recipeProfile?.url
-        let name = recipeProfile?.title
-        let wbeController = WebViewController(name: name, url: url)
-        navigationController?.pushViewController(wbeController, animated: false)
-    }
+            if let recipe =  recipeProfile   {
+                let name = recipe.title
+                let url = recipe.url
+                print (url)
+                let wbeController = WebViewController(name: name, url: url)
+                navigationController?.pushViewController(wbeController, animated: false)
+            } else {
+                showAlert()
+            }
+        }
     
     @objc func switchFavoriteStatus(sender: UILabel) {
         guard let selectedRecipe = recipeProfile else { return }
@@ -107,5 +125,9 @@ class RecipeViewController: UIViewController {
             ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
             catehoriesView.setText(healthList)
         }
+    }
+    
+    private func showAlert() {
+        self.present(alertController, animated: true)
     }
 }
