@@ -52,7 +52,7 @@
                </Location>
                <Location
                   uuid = "7FDF26F7-1D2D-46E9-8CEB-D4DFCA9FF893 - 6c8f8edb44c44d8a"
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 (Swift.Array&lt;RecipeSearch.RecipeProfile&gt;) -&gt; () in closure #1 () -&gt; () in RecipeSearch.SearchViewController.updateSearchResults(for: __C.UISearchController) -&gt; ()"
@@ -190,8 +190,8 @@
             filePath = "RecipeSearch/Flows/SeachScreen/View/RecipeCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
             landmarkName = "setupCell(with:index:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -222,8 +222,8 @@
             filePath = "RecipeSearch/Flows/SeachScreen/View/RecipeCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
+            startingLineNumber = "141"
+            endingLineNumber = "141"
             landmarkName = "setColorToFavoriteButton(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -295,95 +295,17 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0CBA2031-E74B-4057-B969-CC748BC0BFB5"
+            uuid = "E09C7324-6604-412D-ACF7-BB26C7651008"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
+            filePath = "RecipeSearch/Flows/SeachScreen/View/RecipeCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
-            landmarkName = "FavoriteViewController"
-            landmarkType = "21">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C4538930-45D6-49B6-8F04-E6C66A941379"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
-            landmarkName = "tableView(_:trailingSwipeActionsConfigurationForRowAt:)"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "prepareForReuse()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C4538930-45D6-49B6-8F04-E6C66A941379 - b4db395a4e7aec6b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "RecipeSearch.FavoriteViewController.tableView(_: __C.UITableView, trailingSwipeActionsConfigurationForRowAt: Foundation.IndexPath) -&gt; Swift.Optional&lt;__C.UISwipeActionsConfiguration&gt;"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "83"
-                  endingLineNumber = "83"
-                  offsetFromSymbolStart = "165">
-               </Location>
-               <Location
-                  uuid = "C4538930-45D6-49B6-8F04-E6C66A941379 - b4db395a4e7aec8a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "RecipeSearch.FavoriteViewController.tableView(_: __C.UITableView, trailingSwipeActionsConfigurationForRowAt: Foundation.IndexPath) -&gt; Swift.Optional&lt;__C.UISwipeActionsConfiguration&gt;"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "82"
-                  endingLineNumber = "82"
-                  offsetFromSymbolStart = "165">
-               </Location>
-               <Location
-                  uuid = "C4538930-45D6-49B6-8F04-E6C66A941379 - b9eba8bbb1acc50b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (__C.UIContextualAction, __C.UIView, (Swift.Bool) -&gt; ()) -&gt; () in RecipeSearch.FavoriteViewController.tableView(_: __C.UITableView, trailingSwipeActionsConfigurationForRowAt: Foundation.IndexPath) -&gt; Swift.Optional&lt;__C.UISwipeActionsConfiguration&gt;"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "83"
-                  endingLineNumber = "83"
-                  offsetFromSymbolStart = "217">
-               </Location>
-               <Location
-                  uuid = "C4538930-45D6-49B6-8F04-E6C66A941379 - b9eba8bbb1acc50b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (__C.UIContextualAction, __C.UIView, (Swift.Bool) -&gt; ()) -&gt; () in RecipeSearch.FavoriteViewController.tableView(_: __C.UITableView, trailingSwipeActionsConfigurationForRowAt: Foundation.IndexPath) -&gt; Swift.Optional&lt;__C.UISwipeActionsConfiguration&gt;"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "83"
-                  endingLineNumber = "83"
-                  offsetFromSymbolStart = "355">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

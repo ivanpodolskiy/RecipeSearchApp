@@ -20,7 +20,7 @@ extension CustomTabBarItem {
             return nc
             
         case .favorite:
-            let nc = UINavigationController(rootViewController: FavoriteViewController())
+            let nc = UINavigationController(rootViewController: FavoriteCollectionController())
             return nc
         }
     }

@@ -12,7 +12,8 @@ class FavoriteRecipeService {
     
     private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-        func updateStatusRecipes(for result: inout [RecipeProfile]? ) {
+    //MARK: Functions
+    func updateStatusRecipes(for result: inout [RecipeProfile]? ) {
        if result != nil {
            let newResult = checkFavoriteStatus(recipes: result!)
            result = newResult
@@ -21,6 +22,7 @@ class FavoriteRecipeService {
     func addFavoriteRecipe(_ recipe: RecipeProfile) {
        let favoriteRecipe = FavoriteRecipes(context: self.context)
        favoriteRecipe.title = recipe.title
+        favoriteRecipe.image = recipe.image
        try? context.save()
    }
     
@@ -33,6 +35,7 @@ class FavoriteRecipeService {
               break }
         }
     }
+    
      func fetchFavoriteRecipes() -> [FavoriteRecipes] {
         do {
             let favoriteRecipesList = try context.fetch(FavoriteRecipes.fetchRequest())
@@ -42,7 +45,15 @@ class FavoriteRecipeService {
             return []
         }
     }
+    
+    func deleteAll() {
+         let fetchRequest1: NSFetchRequest<NSFetchRequestResult> = FavoriteRecipes.fetchRequest()
+         let batchDeleteRequest1 = NSBatchDeleteRequest(fetchRequest: fetchRequest1)
+      _ = try? context.execute(batchDeleteRequest1)
+        try? context.save()
+   }
 
+    //MARK: Privte Functions
     private func removeFavotireRecipe(_ removeRecpe: FavoriteRecipes) {
         do {
             context.delete(removeRecpe)
@@ -60,8 +71,8 @@ class FavoriteRecipeService {
                 if favoriteRecipe.title == recipe.title {
                     far[i].isFavorite = true
                 }
-                i += 1
             })
+            i += 1
         }
        return far
     }

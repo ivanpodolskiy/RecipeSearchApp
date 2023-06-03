@@ -12,11 +12,11 @@ class SearchViewController: UIViewController {
     
     //MARK: - Outlets
     private let searchController: UISearchController = {
-        let sb = UISearchController()
-        sb.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        sb.searchBar.searchBarStyle = .minimal
-        sb.searchBar.tintColor = UIColor.basic
-        return sb
+        let searchController = UISearchController()
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.tintColor = UIColor.basic
+        return searchController
     }()
     
     private let collectionView: UICollectionView = {

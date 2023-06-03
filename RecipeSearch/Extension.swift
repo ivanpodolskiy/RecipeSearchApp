@@ -32,7 +32,7 @@ extension UIImageView {
 
 extension [String] {
     func toString(separator: String) -> String {
-        var stringText = self.joined(separator: separator)
+        let stringText = self.joined(separator: separator)
         return stringText
     }
 }
@@ -44,5 +44,13 @@ extension UITabBar {
         var sizeThatFits = super.sizeThatFits(size)
         sizeThatFits.height = 71
         return sizeThatFits
+    }
+}
+
+extension CGFloat {
+    static func itemWidth(for width: CGFloat, spacing: CGFloat, itemsInRow: CGFloat) -> CGFloat {
+        let totalSpacing: CGFloat = 2 * spacing + (itemsInRow - 1) * spacing
+        let finalWidth = (width - totalSpacing) / itemsInRow
+        return finalWidth - 2
     }
 }

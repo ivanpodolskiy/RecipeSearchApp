@@ -21,7 +21,6 @@ extension FavoriteRecipes {
     @NSManaged public var calories: Int64
     @NSManaged public var countUngredients: Int64
     @NSManaged public var url: String?
-
 }
 
 extension FavoriteRecipes : Identifiable {

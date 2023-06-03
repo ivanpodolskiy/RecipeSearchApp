@@ -70,9 +70,12 @@ import UIKit
          get {
              return self.imageRecipe.image
          } set {
-             imageRecipe.image = newValue
-             activityIndicator.isHidden = true
-             activityIndicator.stopAnimating()
+             DispatchQueue.main.async {
+                 self.imageRecipe.image = newValue
+                 self.activityIndicator.isHidden = true
+                 self.activityIndicator.stopAnimating()
+             }
+ 
          }
      }
      //MARK: - View Functions
