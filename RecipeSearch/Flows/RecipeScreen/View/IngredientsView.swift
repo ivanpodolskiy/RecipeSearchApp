@@ -29,7 +29,7 @@ class IngredientsView: UIView {
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         return label
     }()
-
+    
     //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,7 +65,7 @@ class IngredientsView: UIView {
 }
 //MARK: _ Functions
 extension IngredientsView {
-        func setInformation(_ text: String, count: Int) {
+    func setInformation(_ text: String, count: Int) {
         self.title.text = "\(count) Ingredients"
         self.descriptionLabel.text = text
     }

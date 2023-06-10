@@ -9,7 +9,25 @@ import UIKit
 import CoreData
 
 class SearchViewController: UIViewController {
+    //MARK: - Properties
+    private var oldText: String = ""
+    private let RecipeService = RecipeSreachService()
+    private var result: [RecipeProfile]?
+    private let favoriteRecipeService = FavoriteRecipeService()
+    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        setupViews()
+        setupLayouts()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
+        favoriteRecipeService.updateStatusRecipes(for: &result)
+    }
     //MARK: - Outlets
     private let searchController: UISearchController = {
         let searchController = UISearchController()
@@ -27,26 +45,7 @@ class SearchViewController: UIViewController {
         return collectionView
     }()
     
-    //MARK: - Properties
-    private var oldText: String = ""
-    private let service = RecipeSreachService()
-    private var result: [RecipeProfile]?
-    private let favoriteRecipeService = FavoriteRecipeService()
-        
     //MARK: - View Functions
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        setupViews()
-        setupLayouts()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = false
-        favoriteRecipeService.updateStatusRecipes(for: &result)
-    }
-    
     private func setupLayouts() {
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -74,16 +73,36 @@ class SearchViewController: UIViewController {
         }
         switch selectedRecipe.isFavorite {
         case true:
+            guard let  categoryName = sender.titleLabel?.text else { return }
             selectedRecipe.isFavorite = false
-            favoriteRecipeService.removeFavotireRecipe(name: selectedRecipe.title)
+            favoriteRecipeService.removeRecipe(recipeName: selectedRecipe.title, categoryName: categoryName)
             sender.tintColor = .white
+            result?[index] = selectedRecipe
+            
         case false:
-            selectedRecipe.isFavorite = true
-            favoriteRecipeService.addFavoriteRecipe(selectedRecipe)
-           // addFavoriteRecipe(selectedRecipe)
-            sender.tintColor = .yellow
+            let titles = favoriteRecipeService.fetchAllTitleCategories()
+            lazy var  selectionCategoryView = SelectionCategoryView(category: titles)
+            selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
+            selectionCategoryView.modalPresentationStyle = .custom
+            
+            selectionCategoryView.completion = { [weak self] selected in
+                guard let self = self else { return  }
+                switch selected {
+                case .oldCategory(let name):
+                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: true)
+                    sender.tintColor = .yellow
+                    selectedRecipe.isFavorite = true
+                    result?[index] = selectedRecipe
+                    
+                case .newCategory(let name):
+                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: false)
+                    selectedRecipe.isFavorite = true
+                    sender.tintColor = .yellow
+                    result?[index] = selectedRecipe
+                }
+            }
+            present(selectionCategoryView, animated: true)
         }
-        result?[index] = selectedRecipe
     }
 }
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
@@ -112,8 +131,8 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             }
         }
         navigationController?.pushViewController(recipeViewController, animated: true)
-        }
     }
+}
 //MARK: - UICollectionViewDelegateFlowLayout
 extension SearchViewController: UICollectionViewDelegateFlowLayout{
     private enum LayoutConstant {
@@ -142,7 +161,7 @@ extension SearchViewController: UISearchResultsUpdating {
         if query.count > 2 && query != oldText {
             oldText = query
             DispatchQueue.global().async {
-                self.service.searchRecipe(search: query) { recipe in
+                self.RecipeService.searchRecipe(search: query) { recipe in
                     self.result = recipe
                     self.favoriteRecipeService.updateStatusRecipes(for: &self.result)
                     

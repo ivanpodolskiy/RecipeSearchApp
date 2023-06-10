@@ -28,18 +28,6 @@ class InformationView: UIView {
         return button
     }()
     
-    private(set) lazy var linkLabel: UILabel = {
-        var label = UILabel()
-        label.textAlignment = .center
-        label.font = .boldSystemFont(ofSize: 20)
-        label.textColor = .white
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Instructions"
-        return label
-    }()
-    
-    
-    
     //MARK: - View Functions
     
     override init(frame: CGRect) {

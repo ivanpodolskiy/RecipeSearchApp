@@ -26,26 +26,35 @@ class RecipeViewController: UIViewController {
     private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
     private let catehoriesView = CatehoriesView()
-
     //MARK: - Properties
     private var recipeProfile: RecipeProfile?
     private let favoriteRecipeService = FavoriteRecipeService()
     public var completion: ((Bool?) -> Void)?
+    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
     
     //MARK: - Initialization
-    init(recipe: RecipeProfile?) {
+    init(recipe: RecipeProfile) {
         self.recipeProfile = recipe
         super.init(nibName: nil, bundle: nil)
     }
-    convenience init() {
-        self.init(recipe: nil)
-    }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     //MARK: - View Founctions
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setInfoToViews()
+    }
+    
+    private func setInfoToViews() {
+        guard let recipe = recipeProfile else { return }
+        detailRecipeView.loadDataToViews(recipe)
+        let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
+        let healthList = recipe.recipeInfromation.getInfromation(type: .healthList)
+        ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
+        catehoriesView.setText(healthList)
     }
     
     override func viewDidLayoutSubviews() {
@@ -59,7 +68,7 @@ class RecipeViewController: UIViewController {
         scrollView.addSubview(ingredientsView)
         scrollView.addSubview(catehoriesView)
         
-        detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
+        detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(presentViewControllerWithCustomPresentation(sender: )), for: .touchUpInside)
         detailRecipeView.informationView.linkButton.addTarget(self, action: #selector(showWebScreen(sender: )), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
@@ -75,7 +84,7 @@ class RecipeViewController: UIViewController {
             ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
             ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
             ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
-                 
+            
             catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 10),
             catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
             catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
@@ -83,51 +92,58 @@ class RecipeViewController: UIViewController {
         ])
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     //MARK: - Actions
     @objc func showWebScreen(sender: UIButton) {
-            if let recipe =  recipeProfile   {
-                let name = recipe.title
-                let url = recipe.url
-                print (url)
-                let wbeController = WebViewController(name: name, url: url)
-                navigationController?.pushViewController(wbeController, animated: false)
-            } else {
-                showAlert()
-            }
+        if let recipe =  recipeProfile   {
+            let name = recipe.title
+            let url = recipe.url
+            let wbeController = WebViewController(name: name, url: url)
+            navigationController?.pushViewController(wbeController, animated: false)
+        } else {
+            self.present(alertController, animated: true)
         }
+    }
     
     @objc func switchFavoriteStatus(sender: UILabel) {
-        guard let selectedRecipe = recipeProfile else { return }
-            switch selectedRecipe.isFavorite {
-            case true:
-                favoriteRecipeService.removeFavotireRecipe(name: selectedRecipe.title)
-                sender.tintColor = .white
-                recipeProfile?.isFavorite = false
-                completion?(false)
-            case false:
-                sender.tintColor = .yellow
-                favoriteRecipeService.addFavoriteRecipe(selectedRecipe)
-                recipeProfile?.isFavorite = true
-                completion?(true)
+        guard var selectedRecipe = recipeProfile else { return }
+        
+        switch selectedRecipe.isFavorite {
+        case true:
+            selectedRecipe.isFavorite = false
+            favoriteRecipeService.removeRecipe(recipeName: selectedRecipe.title)
+            sender.tintColor = .white
+            recipeProfile = selectedRecipe
+            
+        case false:
+            let titles = favoriteRecipeService.fetchAllTitleCategories()
+            lazy var  selectionCategoryView = SelectionCategoryView(category: titles)
+            selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
+            selectionCategoryView.modalPresentationStyle = .custom
+            
+            selectionCategoryView.completion = { [weak self] selected in
+                guard let self = self else { return  }
+                switch selected {
+                case .oldCategory(let name):
+                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: true)
+                    sender.tintColor = .yellow
+                    selectedRecipe.isFavorite = true
+                    recipeProfile = selectedRecipe
+                    
+                case .newCategory(let name):
+                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: false)
+                    selectedRecipe.isFavorite = true
+                    sender.tintColor = .yellow
+                    recipeProfile = selectedRecipe
+                }
             }
-    }
-    
-    //MARK: - Functions
-    private func setInfoToViews() {
-        if let recipe = recipeProfile {
-            detailRecipeView.loadDataToViews(recipe)
-            let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
-            let healthList = recipe.recipeInfromation.getInfromation(type: .healthList)
-            ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
-            catehoriesView.setText(healthList)
+            present(selectionCategoryView, animated: true)
         }
     }
     
-    private func showAlert() {
-        self.present(alertController, animated: true)
+    @objc func presentViewControllerWithCustomPresentation(sender: UIButton) {
+        lazy var selectionCategoryView = SelectionCategoryView(category: favoriteRecipeService.fetchAllTitleCategories())
+        selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
+        selectionCategoryView.modalPresentationStyle = .custom
+        present(selectionCategoryView, animated: true)
     }
 }

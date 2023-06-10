@@ -28,7 +28,6 @@ extension CustomTabBarItem {
         switch self {
         case .search:
             return UIImage(systemName: "magnifyingglass")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
-            
         case .favorite:
             return UIImage(systemName: "star")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
         }
@@ -37,11 +36,9 @@ extension CustomTabBarItem {
         switch self {
         case .search:
             return UIImage(systemName: "magnifyingglass")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
-            
         case .favorite:
             return UIImage(systemName: "star.fill")?.withTintColor(.white.withAlphaComponent(0.4), renderingMode: .alwaysOriginal)
         }
-        
     }
     var title: String {
         return self.rawValue.capitalized

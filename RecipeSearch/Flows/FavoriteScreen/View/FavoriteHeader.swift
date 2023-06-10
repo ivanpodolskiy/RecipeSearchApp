@@ -27,7 +27,6 @@ class FavoriteHeader: UICollectionReusableView {
         addSubview(label)
         label.frame = bounds
     }
-    
 }
 
 extension FavoriteHeader {

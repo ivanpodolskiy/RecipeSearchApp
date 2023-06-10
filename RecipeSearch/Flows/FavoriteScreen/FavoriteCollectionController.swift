@@ -19,9 +19,10 @@ class FavoriteCollectionController: UIViewController {
     }()
     
     //MARK: - Properties
-    private var favoriteRecipes: [FavoriteRecipes]?
+    private var favoriteCategories: [FavoriteList]?
     private let favoriteRecipesService = FavoriteRecipeService()
-   
+    
+    
     //MARK: - View Functions
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +42,7 @@ class FavoriteCollectionController: UIViewController {
         collectionView.dataSource = self
         collectionView.collectionViewLayout = createLayout()
     }
- 
+    
     private func setupLayouts() {
         navigationItem.rightBarButtonItem = getBarButtonItem()
         view.addSubview(collectionView)
@@ -64,7 +65,7 @@ class FavoriteCollectionController: UIViewController {
         section.boundarySupplementaryItems = [self.supplementaryHeaderItem()]
         return UICollectionViewCompositionalLayout(section: section)
     }
-     
+    
     private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
         let header =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(25)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         header.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0)
@@ -83,13 +84,13 @@ class FavoriteCollectionController: UIViewController {
 //MARK: - Functions
 extension FavoriteCollectionController {
     private func updateCollectionView() {
-        self.favoriteRecipes = favoriteRecipesService.fetchFavoriteRecipes()
+        self.favoriteCategories = favoriteRecipesService.fetchAllCategories()
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
     
-   private func getBarButtonItem() ->  UIBarButtonItem {
+    private func getBarButtonItem() ->  UIBarButtonItem {
         let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeAll(sender: )))
         return barButtonItem
     }
@@ -97,23 +98,22 @@ extension FavoriteCollectionController {
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension FavoriteCollectionController: UICollectionViewDelegate, UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        if favoriteRecipes?.count != 0 {
-            return 1
+        if let list = favoriteCategories {
+            return list.count
         }
         return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let recipes = favoriteRecipes {
-            return recipes.count
-        }
-        return 0
+        guard let list = favoriteCategories else { return 0}
+        guard let recipes = list[section].recipes else { return 0}
+        return recipes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoriteRecipeCell.identifier, for: indexPath) as! FavoriteRecipeCell
-        guard let items = favoriteRecipes else { return cell}
-        let item = items[indexPath.row]
+        guard let list = favoriteRecipesService.fetchRecipes(section: indexPath.section) else  { return cell }
+        let item = list[indexPath.row]
         cell.setupCell(with: item)
         return cell
     }
@@ -122,7 +122,8 @@ extension FavoriteCollectionController: UICollectionViewDelegate, UICollectionVi
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FavoriteHeader.identifier, for: indexPath) as! FavoriteHeader
-            header.setText("Recipes")
+            guard let list = favoriteRecipesService.fetchAllCategories(), let nameCategory = list[indexPath.section].nameCategory   else { return header}
+            header.setText(nameCategory)
             return header
         default:
             return UICollectionReusableView()

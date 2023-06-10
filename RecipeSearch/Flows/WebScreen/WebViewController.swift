@@ -9,15 +9,11 @@ import UIKit
 import WebKit
 
 class WebViewController: UIViewController {
-    //MARK: Initialization
-    convenience init() {
-        self.init(name: nil, url: nil)
-    }
 
-    init(name: String?, url: String?) {
-        self.name = name!
+    init(name: String, url: String) {
+        self.name = name
         super.init(nibName: nil, bundle: nil)
-        self.loadUrl(link: url!)
+        self.loadUrl(link: url)
     }
 
     required init?(coder: NSCoder) {
