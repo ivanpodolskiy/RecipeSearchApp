@@ -9,6 +9,7 @@ import UIKit
 import CoreData
 
 class SearchViewController: UIViewController {
+    
     //MARK: - Properties
     private var oldText: String = ""
     private let RecipeService = RecipeSreachService()
@@ -16,17 +17,24 @@ class SearchViewController: UIViewController {
     private let favoriteRecipeService = FavoriteRecipeService()
     private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
     
+    //MARK: - View functions
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        setupViews()
-        setupLayouts()
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
+        navigationItem.title = "Recipe Search"
+        startLaunchAnimtaion()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
-        favoriteRecipeService.updateStatusRecipes(for: &result)
+        upadteRecipesStatus()
+        
     }
     //MARK: - Outlets
     private let searchController: UISearchController = {
@@ -45,8 +53,8 @@ class SearchViewController: UIViewController {
         return collectionView
     }()
     
-    //MARK: - View Functions
-    private func setupLayouts() {
+    override func viewWillLayoutSubviews() {
+        view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -55,14 +63,51 @@ class SearchViewController: UIViewController {
         ])
     }
     
-    private func setupViews() {
-        view.addSubview(collectionView)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-        searchController.searchResultsUpdater = self
-        navigationItem.searchController = searchController
-        navigationItem.title = "Recipe Search"
+    private func upadteRecipesStatus() {
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            self.favoriteRecipeService.updateStatusRecipes(for: &result)
+        }
+    }
+    
+    //MARK: - Animation function
+    
+    private func startLaunchAnimtaion() {
+        
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let sceneDelegate = windowScene.delegate as? SceneDelegate else {return }
+        
+        let viewA = UIView()
+        viewA.backgroundColor = .basic
+        sceneDelegate.window?.addSubview(viewA)
+        viewA.frame = view.bounds
+        
+        let positionOnX: CGFloat = 15
+        let positionOnY: CGFloat = 14
+        
+        let width = (tabBarController?.tabBar.bounds.width)! - positionOnX * 2
+        let height: CGFloat = 77
+        
+        let frame =  CGRect(x: positionOnX, y: ((tabBarController?.tabBar.frame.minY)! - positionOnY) , width: width, height: height)
+        
+        lazy var animator1 =  {             UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
+                viewA.frame =  frame
+                viewA.layer.cornerRadius = height / 2
+            }
+        }()
+        
+        lazy var animator2 = {
+            UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) {
+                viewA.layer.opacity = 0
+            }
+        }()
+        animator1.addCompletion {_ in
+            animator2.startAnimation()
+        }
+        animator2.addCompletion {  _ in
+            viewA.removeFromSuperview()
+        }
+        animator1.startAnimation()
     }
     
     //MARK: - Actions

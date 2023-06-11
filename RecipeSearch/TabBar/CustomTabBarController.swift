@@ -38,5 +38,7 @@ class CustomTabBarController: UITabBarController {
         tabBar.layer.insertSublayer(roundLayer, at: 0)
         tabBar.itemWidth = width 
         tabBar.itemPositioning = .automatic
+        
+        print (" width \(width) height \(height) ")
     }
 }
