@@ -8,7 +8,6 @@ import UIKit
 
 class InformationView: UIView {
     //MARK: - Outlets
-    
     private let valuesView = ValuesView()
 
     lazy var buttonFavorite: UIButton = {
@@ -29,7 +28,6 @@ class InformationView: UIView {
     }()
     
     //MARK: - View Functions
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .basic

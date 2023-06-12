@@ -24,7 +24,7 @@ class ValuesView: UIView {
         label.textAlignment = .center
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
-        label.text = "83"
+        label.text = "0"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -34,7 +34,7 @@ class ValuesView: UIView {
         label.textAlignment = .center
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
-        label.text = "4%"
+        label.text = "0%"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -44,7 +44,7 @@ class ValuesView: UIView {
         label.textAlignment = .center
         label.textColor = .white
         label.font = .boldSystemFont(ofSize: 25)
-        label.text = "2"
+        label.text = "0"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

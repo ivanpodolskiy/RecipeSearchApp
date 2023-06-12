@@ -398,8 +398,8 @@
             filePath = "RecipeSearch/Flows/SelectionCategoryScreen/SelectionCategoryView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
             landmarkName = "setupLayout()"
             landmarkType = "7">
             <Locations>

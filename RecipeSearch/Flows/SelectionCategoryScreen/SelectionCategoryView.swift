@@ -85,6 +85,7 @@ class SelectionCategoryView: UIViewController {
             let textField = alertController.textFields![0]
             self.completion?(Selected.newCategory(textField.text!))
             textField.text = nil
+            self.dismiss(animated: true)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
             self.dismiss(animated: true)

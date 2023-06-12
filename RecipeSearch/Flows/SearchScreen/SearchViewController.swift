@@ -9,7 +9,6 @@ import UIKit
 import CoreData
 
 class SearchViewController: UIViewController {
-    
     //MARK: - Properties
     private var oldText: String = ""
     private let RecipeService = RecipeSreachService()
@@ -25,6 +24,7 @@ class SearchViewController: UIViewController {
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
         searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
         navigationItem.title = "Recipe Search"
         startLaunchAnimtaion()
@@ -34,7 +34,6 @@ class SearchViewController: UIViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.tabBar.isHidden = false
         upadteRecipesStatus()
-        
     }
     //MARK: - Outlets
     private let searchController: UISearchController = {
@@ -71,9 +70,7 @@ class SearchViewController: UIViewController {
     }
     
     //MARK: - Animation function
-    
     private func startLaunchAnimtaion() {
-        
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let sceneDelegate = windowScene.delegate as? SceneDelegate else {return }
         
@@ -90,16 +87,14 @@ class SearchViewController: UIViewController {
         
         let frame =  CGRect(x: positionOnX, y: ((tabBarController?.tabBar.frame.minY)! - positionOnY) , width: width, height: height)
         
-        lazy var animator1 =  {             UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
+        lazy var animator1 =  {
+            UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
                 viewA.frame =  frame
                 viewA.layer.cornerRadius = height / 2
             }
         }()
-        
         lazy var animator2 = {
-            UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) {
-                viewA.layer.opacity = 0
-            }
+            UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) { viewA.layer.opacity = 0 }
         }()
         animator1.addCompletion {_ in
             animator2.startAnimation()
@@ -113,9 +108,7 @@ class SearchViewController: UIViewController {
     //MARK: - Actions
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag
-        guard var selectedRecipe = result?[index] else {
-            return
-        }
+        guard var selectedRecipe = result?[index] else { return }
         switch selectedRecipe.isFavorite {
         case true:
             guard let  categoryName = sender.titleLabel?.text else { return }
@@ -171,9 +164,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let recipeViewController = RecipeViewController(recipe: res)
         let cell =  collectionView.cellForItem(at: indexPath) as? RecipeCell
         recipeViewController.completion = { status in
-            if let status = status {
-                cell?.setColorToFavoriteButton( status)
-            }
+            if let status = status { cell?.setColorToFavoriteButton( status) }
         }
         navigationController?.pushViewController(recipeViewController, animated: true)
     }
@@ -202,29 +193,53 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
 //MARK: - UISearchResultsUpdating
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard let query = searchController.searchBar.text else { return}
+        guard let query = searchController.searchBar.text, query.isEmpty == false else {return}
         if query.count > 2 && query != oldText {
             oldText = query
-            DispatchQueue.global().async {
-                self.RecipeService.searchRecipe(search: query) { recipe in
-                    self.result = recipe
-                    self.favoriteRecipeService.updateStatusRecipes(for: &self.result)
-                    
-                    DispatchQueue.main.async {
-                        let indexPaths = self.collectionView.indexPathsForVisibleItems
-                        if indexPaths.count > 0 {
-                            self.collectionView.reloadItems(at: indexPaths)
-                        } else {
-                            self.collectionView.reloadData()
-                        }
-                    }
-                }
-            }
+            upadateData(query)
         } else if  query.count < 3 && result != nil  {
             oldText = ""
             result = nil
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
+    }
+    
+    private func upadateData(_ query: String) {
+        DispatchQueue.global().async {
+            self.RecipeService.searchRecipe(search: query) { [weak self] recipe in
+                guard  let self = self else { return }
+                switch recipe {
+                case .some(let unwrappeRecipe):
+                    let oldCount = self.result?.count ?? 0
+                    self.result = unwrappeRecipe
+                    print ("unwrappeRecipe \(unwrappeRecipe.count), oldCount = \(oldCount)")
+                    self.favoriteRecipeService.updateStatusRecipes(for: &self.result)
+                    
+                    if oldCount == unwrappeRecipe.count && oldCount > 0 {
+                        DispatchQueue.main.async {
+                            let indexPaths = self.collectionView.indexPathsForVisibleItems
+                            if indexPaths.count > 0 { self.collectionView.reloadItems(at: indexPaths) }
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.collectionView.reloadData()
+                        }
+                    }
+                case .none:
+                    self.result = nil
+                    DispatchQueue.main.async { self.collectionView.reloadData() }
+                }
+            }
         }
     }
 }
 
+extension SearchViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        oldText = ""
+        self.result = nil
+        DispatchQueue.main.async { self.collectionView.reloadData() }
+    }
+}

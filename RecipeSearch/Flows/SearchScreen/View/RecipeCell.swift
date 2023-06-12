@@ -7,7 +7,6 @@
 import UIKit
 
  class RecipeCell: UICollectionViewCell {
-    
      //MARK: - Outlets
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         var ai = UIActivityIndicatorView(style: .large)
@@ -64,7 +63,6 @@ import UIKit
         return image
     }()
      
-     
      //MARK: - Properties
      fileprivate var image: UIImage? {
          get {
@@ -75,7 +73,6 @@ import UIKit
                  self.activityIndicator.isHidden = true
                  self.activityIndicator.stopAnimating()
              }
- 
          }
      }
      //MARK: - View Functions
