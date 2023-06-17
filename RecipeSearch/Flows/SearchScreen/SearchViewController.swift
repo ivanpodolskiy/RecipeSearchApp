@@ -10,36 +10,17 @@ import CoreData
 
 class SearchViewController: UIViewController {
     //MARK: - Properties
-    private var oldText: String = ""
     private let RecipeService = RecipeSreachService()
-    private var result: [RecipeProfile]?
     private let favoriteRecipeService = FavoriteRecipeService()
+
+    private var result: [RecipeProfile]?
     private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
+    private var oldText: String = ""
     
-    //MARK: - View functions
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
-        navigationItem.searchController = searchController
-        navigationItem.title = "Recipe Search"
-        startLaunchAnimtaion()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = false
-        upadteRecipesStatus()
-    }
     //MARK: - Outlets
     private let searchController: UISearchController = {
         let searchController = UISearchController()
         searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchController.searchBar.searchBarStyle = .minimal
         searchController.searchBar.tintColor = UIColor.basic
         return searchController
     }()
@@ -52,6 +33,29 @@ class SearchViewController: UIViewController {
         return collectionView
     }()
     
+    //MARK: - View functions
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        navigationItem.searchController = searchController
+        navigationItem.title = "Recipe Search"
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        searchController.searchBar.showsBookmarkButton = true
+        searchController.searchBar.setImage(UIImage(systemName: "line.3.horizontal.decrease.circle"), for: .bookmark, state: .normal)
+        startLaunchAnimtaion()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.tabBarController?.tabBar.isHidden = false
+        upadteRecipesStatus()
+    }
+    
     override func viewWillLayoutSubviews() {
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
@@ -63,12 +67,21 @@ class SearchViewController: UIViewController {
     }
     
     private func upadteRecipesStatus() {
+        var indexes: [IndexPath] = []
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            self.favoriteRecipeService.updateStatusRecipes(for: &result)
+            guard let self = self, let oldRecipes = result else {return }
+            favoriteRecipeService.updateFavoriteStatus(for: &result)
+            guard let result = result else { return }
+            
+            for index in 0..<result.count {
+                if oldRecipes[index].isFavorite != result[index].isFavorite {
+                    indexes.append(IndexPath(row: index, section: 0))
+                }
+            }
+            DispatchQueue.main.async { self.collectionView.reloadItems(at: indexes) }
         }
     }
-    
+
     //MARK: - Animation function
     private func startLaunchAnimtaion() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -78,13 +91,10 @@ class SearchViewController: UIViewController {
         viewA.backgroundColor = .basic
         sceneDelegate.window?.addSubview(viewA)
         viewA.frame = view.bounds
-        
         let positionOnX: CGFloat = 15
         let positionOnY: CGFloat = 14
-        
         let width = (tabBarController?.tabBar.bounds.width)! - positionOnX * 2
         let height: CGFloat = 77
-        
         let frame =  CGRect(x: positionOnX, y: ((tabBarController?.tabBar.frame.minY)! - positionOnY) , width: width, height: height)
         
         lazy var animator1 =  {
@@ -93,15 +103,12 @@ class SearchViewController: UIViewController {
                 viewA.layer.cornerRadius = height / 2
             }
         }()
+        
         lazy var animator2 = {
             UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) { viewA.layer.opacity = 0 }
         }()
-        animator1.addCompletion {_ in
-            animator2.startAnimation()
-        }
-        animator2.addCompletion {  _ in
-            viewA.removeFromSuperview()
-        }
+        animator1.addCompletion {_ in animator2.startAnimation() }
+        animator2.addCompletion {  _ in viewA.removeFromSuperview() }
         animator1.startAnimation()
     }
     
@@ -109,14 +116,13 @@ class SearchViewController: UIViewController {
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag
         guard var selectedRecipe = result?[index] else { return }
+    
         switch selectedRecipe.isFavorite {
         case true:
-            guard let  categoryName = sender.titleLabel?.text else { return }
-            selectedRecipe.isFavorite = false
-            favoriteRecipeService.removeRecipe(recipeName: selectedRecipe.title, categoryName: categoryName)
+            let recipeName = selectedRecipe.title
+            favoriteRecipeService.removeRecipe(recipeName: recipeName)
             sender.tintColor = .white
-            result?[index] = selectedRecipe
-            
+            result?[index].isFavorite = false
         case false:
             let titles = favoriteRecipeService.fetchAllTitleCategories()
             lazy var  selectionCategoryView = SelectionCategoryView(category: titles)
@@ -164,8 +170,8 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         let recipeViewController = RecipeViewController(recipe: res)
         let cell =  collectionView.cellForItem(at: indexPath) as? RecipeCell
         recipeViewController.completion = { status in
-            if let status = status { cell?.setColorToFavoriteButton( status) }
-        }
+            guard let status = status else { return }
+            cell?.setColorToFavoriteButton( status) }
         navigationController?.pushViewController(recipeViewController, animated: true)
     }
 }
@@ -215,7 +221,7 @@ extension SearchViewController: UISearchResultsUpdating {
                     let oldCount = self.result?.count ?? 0
                     self.result = unwrappeRecipe
                     print ("unwrappeRecipe \(unwrappeRecipe.count), oldCount = \(oldCount)")
-                    self.favoriteRecipeService.updateStatusRecipes(for: &self.result)
+                    self.favoriteRecipeService.updateFavoriteStatus(for: &self.result)
                     
                     if oldCount == unwrappeRecipe.count && oldCount > 0 {
                         DispatchQueue.main.async {
@@ -242,4 +248,28 @@ extension SearchViewController: UISearchBarDelegate {
         self.result = nil
         DispatchQueue.main.async { self.collectionView.reloadData() }
     }
+    
+    //MARK: - Filter
+    /*
+     let filterViewController = FilterViewController()
+
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        
+        self.view.addSubview(FilterViewController())
+        self.searchController.searchBar.setImage(UIImage(systemName: "x.circle"), for: .bookmark, state: .disabled)
+        self.setFilterView()
+    }
+    
+    
+    func setFilterView() {
+        filterViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(filterViewController.view)
+        NSLayoutConstraint.activate([
+            filterViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            filterViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            filterViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            filterViewController.view.heightAnchor.constraint(equalToConstant: 130)
+        ])
+    }
+     */
 }

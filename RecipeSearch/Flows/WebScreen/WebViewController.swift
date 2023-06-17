@@ -9,13 +9,13 @@ import UIKit
 import WebKit
 
 class WebViewController: UIViewController {
-
-    init(name: String, url: String) {
-        self.name = name
+    
+    init?(name: String, url: String) {
         super.init(nibName: nil, bundle: nil)
-        self.loadUrl(link: url)
+        self.title = name
+        if !self.loadUrl(link: url){ return nil }
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -31,15 +31,13 @@ class WebViewController: UIViewController {
         view.addSubview(webView)
         view.addSubview(progressView)
         self.tabBarController?.tabBar.isHidden = true
-        title = name
+        
         webView.frame = view.bounds
         progressView.frame = CGRect(x: 10, y: 93, width: view.frame.size.width - 20, height: 50)
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
     }
-
-    //MARK: - Outlets
-    var name: String
     
+    //MARK: - Outlets
     private let webView: WKWebView = {
         let webView = WKWebView()
         return webView
@@ -52,15 +50,7 @@ class WebViewController: UIViewController {
         return progressView
     }()
     
-   
     //MARK: - Functions
-    func loadUrl(link: String) {
-        if let url = URL(string: link) {
-            webView.load(URLRequest(url: url))
-            webView.allowsBackForwardNavigationGestures = true
-        }
-    }
-    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "estimatedProgress" {
             DispatchQueue.main.async {
@@ -69,19 +59,24 @@ class WebViewController: UIViewController {
         }
     }
     
+    private func loadUrl(link: String) -> Bool{
+        guard let url = URL(string: link) else { return false }
+        DispatchQueue.main.async {
+            self.webView.load(URLRequest(url: url))
+            self.webView.allowsBackForwardNavigationGestures = true
+        }
+        return true
+    }
+    
     private func showProgressView() {
         DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) {
-                self.progressView.alpha = 1
-            }
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) { self.progressView.alpha = 1 }
         }
     }
     
     private func hideProgressView() {
         DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) {
-                self.progressView.alpha = 0
-            }
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) { self.progressView.alpha = 0 }
         }
     }
 }

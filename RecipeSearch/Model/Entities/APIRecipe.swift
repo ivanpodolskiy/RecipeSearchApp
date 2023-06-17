@@ -27,9 +27,11 @@ struct Recipe: Codable {
     let calories: Double?
     let healthLabels: [String]
     let ingredientLines: [String]
+    let digest: [Digest]
+   // let totaldaily: [String: Total]?
     
     enum CodingKeys: String, CodingKey {
-    case label, image, url, ingredients, calories, healthLabels, ingredientLines
+    case label, image, url, ingredients, calories, healthLabels, ingredientLines, digest 
     }
 }
 // MARK: - Ingredient
@@ -38,4 +40,23 @@ struct Ingredient: Codable {
     enum CodingKeys: String, CodingKey {
         case text
     }
+}
+
+struct Digest: Codable {
+   // let label: Label
+    let tag: String
+    //let schemaOrgTag: SchemaOrgTag?
+    let total: Double
+    let hasRDI: Bool
+    let daily: Double
+   // let unit: Unit
+    //let sub: [Digest]?
+}
+
+
+// MARK: - Total
+struct Total: Codable {
+   // let label: Label
+    let quantity: Double
+    //let unit: Unit
 }

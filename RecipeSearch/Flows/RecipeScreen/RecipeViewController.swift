@@ -9,7 +9,26 @@ import UIKit
 import CoreData
 
 class RecipeViewController: UIViewController {
+    //MARK: - Properties
+    private var recipeProfile: RecipeProfile
+    private let favoriteRecipeService = FavoriteRecipeService()
+    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
+    
+    public var completion: ((Bool?) -> Void)?
+    
+    //MARK: - Initialization
+    init(recipe: RecipeProfile) {
+        self.recipeProfile = recipe
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     //MARK: - Ountlets
+    private let detailRecipeView = DetailRecipeHeaderView()
+    private let ingredientsView = IngredientsView()
+    private let catehoriesView = CatehoriesView()
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -23,37 +42,20 @@ class RecipeViewController: UIViewController {
         return alert
     }()
     
-    private let detailRecipeView = DetailRecipeHeaderView()
-    private let ingredientsView = IngredientsView()
-    private let catehoriesView = CatehoriesView()
-    //MARK: - Properties
-    private var recipeProfile: RecipeProfile?
-    private let favoriteRecipeService = FavoriteRecipeService()
-    public var completion: ((Bool?) -> Void)?
-    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
-    
-    //MARK: - Initialization
-    init(recipe: RecipeProfile) {
-        self.recipeProfile = recipe
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     //MARK: - View Founctions
     override func viewDidLoad() {
         super.viewDidLoad()
+        tabBarController?.tabBar.isHidden = true
         view.backgroundColor = .white
         setInfoToViews()
     }
     
     private func setInfoToViews() {
-        guard let recipe = recipeProfile else { return }
-        detailRecipeView.loadDataToViews(recipe)
-        let ingredients = recipe.recipeInfromation.getInfromation(type: .ingredients)
-        let healthList = recipe.recipeInfromation.getInfromation(type: .healthList)
-        ingredientsView.setInformation(ingredients, count: recipe.countIngredients)
+        detailRecipeView.loadDataToViews(recipeProfile)
+        let ingredients = recipeProfile.recipeInfromation.getInfromation(type: .ingredients)
+        let healthList = recipeProfile.recipeInfromation.getInfromation(type: .healthList)
+        ingredientsView.setInformation(ingredients, count: recipeProfile.countIngredients)
+        detailRecipeView.informationView.valuesView.setData(countServings: 0, countDailyValue: 0, countCalories: recipeProfile.calories)
         catehoriesView.setText(healthList)
     }
     
@@ -68,7 +70,7 @@ class RecipeViewController: UIViewController {
         scrollView.addSubview(ingredientsView)
         scrollView.addSubview(catehoriesView)
         
-        detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(presentViewControllerWithCustomPresentation(sender: )), for: .touchUpInside)
+        detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
         detailRecipeView.informationView.linkButton.addTarget(self, action: #selector(showWebScreen(sender: )), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
@@ -94,10 +96,9 @@ class RecipeViewController: UIViewController {
     
     //MARK: - Actions
     @objc func showWebScreen(sender: UIButton) {
-        if let recipe =  recipeProfile   {
-            let name = recipe.title
-            let url = recipe.url
-            let wbeController = WebViewController(name: name, url: url)
+        let name = recipeProfile.title
+        let url = recipeProfile.url
+        if let wbeController = WebViewController(name: name, url: url) {
             navigationController?.pushViewController(wbeController, animated: false)
         } else {
             self.present(alertController, animated: true)
@@ -105,45 +106,38 @@ class RecipeViewController: UIViewController {
     }
     
     @objc func switchFavoriteStatus(sender: UILabel) {
-        guard var selectedRecipe = recipeProfile else { return }
-        
-        switch selectedRecipe.isFavorite {
+        switch recipeProfile.isFavorite {
         case true:
-            selectedRecipe.isFavorite = false
-            favoriteRecipeService.removeRecipe(recipeName: selectedRecipe.title)
+            let recipeName = recipeProfile.title
+            favoriteRecipeService.removeRecipe(recipeName: recipeName)
             sender.tintColor = .white
-            recipeProfile = selectedRecipe
+            recipeProfile.isFavorite = false
+            completion?(false)
             
         case false:
             let titles = favoriteRecipeService.fetchAllTitleCategories()
             lazy var  selectionCategoryView = SelectionCategoryView(category: titles)
             selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
             selectionCategoryView.modalPresentationStyle = .custom
-            
             selectionCategoryView.completion = { [weak self] selected in
                 guard let self = self else { return  }
                 switch selected {
                 case .oldCategory(let name):
-                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: true)
+                    self.favoriteRecipeService.addFavoriteRecipe(recipeProfile, nameCategory: name, сategoryExists: true)
                     sender.tintColor = .yellow
-                    selectedRecipe.isFavorite = true
-                    recipeProfile = selectedRecipe
+                    recipeProfile.isFavorite = true
+                    recipeProfile = recipeProfile
+                    completion?(true)
                     
                 case .newCategory(let name):
-                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: false)
-                    selectedRecipe.isFavorite = true
+                    self.favoriteRecipeService.addFavoriteRecipe(recipeProfile, nameCategory: name, сategoryExists: false)
+                    recipeProfile.isFavorite = true
                     sender.tintColor = .yellow
-                    recipeProfile = selectedRecipe
+                    recipeProfile = recipeProfile
+                    completion?(true)
                 }
             }
             present(selectionCategoryView, animated: true)
         }
-    }
-    
-    @objc func presentViewControllerWithCustomPresentation(sender: UIButton) {
-        lazy var selectionCategoryView = SelectionCategoryView(category: favoriteRecipeService.fetchAllTitleCategories())
-        selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
-        selectionCategoryView.modalPresentationStyle = .custom
-        present(selectionCategoryView, animated: true)
     }
 }

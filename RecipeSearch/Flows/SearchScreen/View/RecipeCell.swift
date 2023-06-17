@@ -6,10 +6,12 @@
 //
 import UIKit
 
- class RecipeCell: UICollectionViewCell {
-     //MARK: - Outlets
+
+class RecipeCell: UICollectionViewCell  {
+    //MARK: - Outlets
     private(set) lazy var activityIndicator: UIActivityIndicatorView = {
         var ai = UIActivityIndicatorView(style: .large)
+        ai.startAnimating()
         ai.translatesAutoresizingMaskIntoConstraints = false
         return ai
     }()
@@ -31,8 +33,8 @@ import UIKit
         description.translatesAutoresizingMaskIntoConstraints = false
         return description
     }()
-     
-     lazy var buttonFavorite: UIButton = {
+    
+    lazy var buttonFavorite: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)
         button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -62,20 +64,8 @@ import UIKit
         image.clipsToBounds = true
         return image
     }()
-     
-     //MARK: - Properties
-     fileprivate var image: UIImage? {
-         get {
-             return self.imageRecipe.image
-         } set {
-             DispatchQueue.main.async {
-                 self.imageRecipe.image = newValue
-                 self.activityIndicator.isHidden = true
-                 self.activityIndicator.stopAnimating()
-             }
-         }
-     }
-     //MARK: - View Functions
+    
+    //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: .zero)
         setupSubviews()
@@ -112,7 +102,7 @@ import UIKit
             titleRecipe.bottomAnchor.constraint(equalTo: descriptionRecipe.topAnchor),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
-                        
+            
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.bottomAnchor.constraint(equalTo: titleRecipe.topAnchor, constant: -5),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
@@ -120,10 +110,10 @@ import UIKit
             
             buttonFavorite.topAnchor.constraint(equalTo: topAnchor),
             buttonFavorite.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-
+            
             buttonFavorite.widthAnchor.constraint(equalToConstant: 30),
             buttonFavorite.heightAnchor.constraint(equalToConstant: 30),
-
+            
             activityIndicator.centerXAnchor.constraint(equalTo: imageRecipe.centerXAnchor, constant: 0.0),
             activityIndicator.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor, constant: 0.0)
         ])
@@ -132,36 +122,23 @@ import UIKit
 //MARK: - Extension Functions
 extension RecipeCell {
     func setColorToFavoriteButton(_ status: Bool) {
-        DispatchQueue.main.async {
             switch status {
-            case false:
-                self.buttonFavorite.tintColor = .white
-
-            case true:
-                self.buttonFavorite.tintColor = .yellow
-            }
+            case false: buttonFavorite.tintColor = .white
+            case true: buttonFavorite.tintColor = .yellow
         }
-       
     }
     
     func setupCell(with recipeProfile: RecipeProfile, index: IndexPath) {
-        if recipeProfile.isFavorite {
-            setColorToFavoriteButton(recipeProfile.isFavorite)
-        }
+        if recipeProfile.isFavorite { setColorToFavoriteButton(recipeProfile.isFavorite)}
         buttonFavorite.tag = index.row
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
         titleRecipe.text = recipeProfile.title
         descriptionRecipe.text = recipeProfile.description
-        DispatchQueue.global().async {
-            guard let imageURL = URL(string: recipeProfile.image), let imageData = try? Data(contentsOf: imageURL)else  {
-                self.image = UIImage(named: "placeholder")
-                return
-            }
-            DispatchQueue.main.async {
-                self.image = UIImage(data: imageData)
-            }
-        }
+        
+        let link = recipeProfile.image
+        imageRecipe.downloaded(link: link)
+        
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
     }
 }
 

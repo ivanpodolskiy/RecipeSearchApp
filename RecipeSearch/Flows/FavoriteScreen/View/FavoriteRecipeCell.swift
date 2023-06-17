@@ -31,28 +31,17 @@ class FavoriteRecipeCell: UICollectionViewCell {
         return image
     }()
     
-    //MARK: - Properties
-    fileprivate var image: UIImage? {
-        get {
-            return self.imageRecipe.image
-        } set {
-            DispatchQueue.main.async {
-                self.imageRecipe.image = newValue
-            }
-        }
-    }
     //MARK: - View Functions
-    override init(frame: CGRect) {
-        super.init(frame: .zero)
-        setupSubviews()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.titleRecipe.text = nil
+        self.imageRecipe.image = nil
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        contentView.addSubview(imageRecipe)
+        contentView.addSubview(titleRecipe)
         NSLayoutConstraint.activate([
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
@@ -64,24 +53,13 @@ class FavoriteRecipeCell: UICollectionViewCell {
             titleRecipe.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        self.titleRecipe.text = nil
-        self.imageRecipe.image = nil
-    }
-    
-    private func setupSubviews() {
-        contentView.addSubview(imageRecipe)
-        contentView.addSubview(titleRecipe)
-    }
 }
 //MARK: - Extension Functions
 extension FavoriteRecipeCell {
-    func setupCell(with recipeProfile: FavoriteRecipe) {
+    func setupCell(with recipeProfile: RecipeProfile) {
         titleRecipe.text = recipeProfile.title
-        if let stringImage = recipeProfile.image,  let url = URL(string: stringImage) {
-            imageRecipe.load(url:  url)
-        }
+        let stringImage = recipeProfile.image
+        imageRecipe.downloaded(link: stringImage, contentMode: .scaleAspectFill)
     }
 }
 

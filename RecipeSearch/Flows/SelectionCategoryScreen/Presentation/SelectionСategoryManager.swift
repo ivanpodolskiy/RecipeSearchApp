@@ -7,13 +7,19 @@
 
 import UIKit
 
+
 class SelectionCategoryManager: NSObject {
+  
     
 }
 
 extension SelectionCategoryManager: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        let presentationController = SelectionCategoryController(presentedViewController: presented, presenting: presenting)
-        return presentationController
+
+        let presentationController = SelectionFavoriteSectionController(presentedViewController: presented, presenting: presenting)
+            return presentationController
+            
+    
+
     }
 }

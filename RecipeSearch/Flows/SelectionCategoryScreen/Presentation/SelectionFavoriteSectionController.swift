@@ -7,21 +7,14 @@
 
 import UIKit
 
-class SelectionCategoryController: UIPresentationController {
+class SelectionFavoriteSectionController: UIPresentationController {
     private var dimmingView: UIView!
-    
     
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         setupDimmingView()
     }
-    @objc func tapButton(sender: UIButton) {
-        presentedViewController.dismiss(animated: true)
-    }
     
-    @objc func handleTap(recognizer: UITapGestureRecognizer) {
-        presentedViewController.dismiss(animated: true)
-    }
     override func presentationTransitionWillBegin() {
         guard let dimmingView = dimmingView else { return }
         containerView?.insertSubview(dimmingView, at: 0)
@@ -39,6 +32,21 @@ class SelectionCategoryController: UIPresentationController {
         }
     }
     
+    override func containerViewWillLayoutSubviews() {
+        presentedView?.frame = frameOfPresentedViewInContainerView
+    }
+    
+    override var frameOfPresentedViewInContainerView: CGRect {
+        var frame: CGRect = .zero
+        frame.size = size(forChildContentContainer: presentedViewController, withParentContainerSize: containerView!.bounds.size)
+        frame.origin.y = containerView!.frame.height * (1.0 / 3.0)
+        return frame
+    }
+    
+    override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
+        return CGSize(width: parentSize.width, height: parentSize.height * (2.0 / 3.0) )
+    }
+      
     override func dismissalTransitionWillBegin() {
         guard let coordinator = presentedViewController.transitionCoordinator else {
             dimmingView.alpha = 0.0
@@ -49,24 +57,16 @@ class SelectionCategoryController: UIPresentationController {
             self.dimmingView.alpha = 0.0
         }
     }
-    
-    override func containerViewWillLayoutSubviews() {
-        presentedView?.frame = frameOfPresentedViewInContainerView
+    //MARK: - Actions
+    @objc func tapButton(sender: UIButton) {
+        presentedViewController.dismiss(animated: true)
     }
     
-    
-    override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
-        return CGSize(width: parentSize.width, height: parentSize.height * (2.0 / 3.0) )
-    }
-    
-    override var frameOfPresentedViewInContainerView: CGRect {
-        var frame: CGRect = .zero
-        frame.size = size(forChildContentContainer: presentedViewController, withParentContainerSize: containerView!.bounds.size)
-        frame.origin.y = containerView!.frame.height * (1.0 / 3.0)        
-        return frame
+    @objc func handleTap(recognizer: UITapGestureRecognizer) {
+        presentedViewController.dismiss(animated: true)
     }
 }
-private extension SelectionCategoryController {
+private extension SelectionFavoriteSectionController {
     func setupDimmingView() {
         dimmingView = UIView()
         dimmingView.translatesAutoresizingMaskIntoConstraints = false

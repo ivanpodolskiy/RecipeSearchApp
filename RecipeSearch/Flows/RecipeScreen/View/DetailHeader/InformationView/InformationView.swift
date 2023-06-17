@@ -8,7 +8,7 @@ import UIKit
 
 class InformationView: UIView {
     //MARK: - Outlets
-    private let valuesView = ValuesView()
+     let valuesView = ValuesView()
 
     lazy var buttonFavorite: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)

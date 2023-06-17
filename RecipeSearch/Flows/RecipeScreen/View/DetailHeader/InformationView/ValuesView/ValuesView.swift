@@ -49,6 +49,13 @@ class ValuesView: UIView {
         return label
     }()
     
+    //MARK: - Functions 
+    func setData(countServings: Int, countDailyValue: Double, countCalories: Int) {
+        countServingsLabel.text = String(countServings)
+        countDailyValueLabel.text = String(countDailyValue) + "%"
+        countCaloriesLabel.text = String(countCalories)
+    }
+    
     //MARK: - View Functions
     override func layoutSubviews() {
         addSubview(countCaloriesLabel)
