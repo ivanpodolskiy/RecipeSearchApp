@@ -7,9 +7,9 @@
 
 import UIKit
 
-class CatehoriesView: UIView {
-    //MARK: - Ountlets
-    private(set) lazy var catehoriesLabel: UILabel = {
+class CategoriesView: UIView {
+    //MARK: -
+    private(set) lazy var categoriesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -36,18 +36,18 @@ class CatehoriesView: UIView {
     }
     
     override func layoutSubviews() {
-        addSubview(catehoriesLabel)
+        addSubview(categoriesLabel)
         NSLayoutConstraint.activate([
-            catehoriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            catehoriesLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            catehoriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            catehoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
+            categoriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            categoriesLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            categoriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
+            categoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
         ])
     }
 }
 //MARK: - Functions
-extension CatehoriesView {
+extension CategoriesView {
     func setText(_ text: String) {
-        catehoriesLabel.text = text
+        categoriesLabel.text = text
     }
 }
