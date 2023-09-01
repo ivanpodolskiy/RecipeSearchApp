@@ -6,9 +6,15 @@
 //
 import Foundation
 final class RecipeSreachService {
+    private var currentTask: URLSessionTask?
+
+    func cancelPreviousRequests() {
+          currentTask?.cancel()
+      }
+    
     public func searchRecipe(search text: String, completion: @escaping ([RecipeProfile]?) -> ()) {
         var urlComponents = URLComponents(string: "https://api.edamam.com/api/recipes/v2")!
-        let params = ["type": "public", "app_id": "71021edf", "app_key": "389c0530b12807d2bd5033fb2694567c","q":"\(text)", "Accept-Language": "en"]
+        let params = ["type": "any", "app_id": "71021edf", "app_key": "389c0530b12807d2bd5033fb2694567c","q":"\(text)", "Accept-Language": "en"]
         urlComponents.queryItems = params.map({ name, value in URLQueryItem(name: name, value: value) })
         guard let url = urlComponents.url else { fatalError("Could not create URL from components") }
         var urlRequest = URLRequest(url: url)
@@ -16,7 +22,8 @@ final class RecipeSreachService {
         let configuration = URLSessionConfiguration.default
         let session = URLSession(configuration: configuration)
         
-        let task = session.dataTask(with: urlRequest) { data, response, error in
+        
+        let currentTask = session.dataTask(with: urlRequest) { data, response, error in
             guard let data = data else  { return }
             let decoder = JSONDecoder()
             do {
@@ -26,7 +33,7 @@ final class RecipeSreachService {
 
                 
              
-                var resutl: [RecipeProfile] = []
+                var result: [RecipeProfile] = []
                 for item in items.hits {
                     guard let recipe =  item.recipe else { return }
                     let countIngredient = recipe.ingredients?.count ?? 0
@@ -39,14 +46,17 @@ final class RecipeSreachService {
                                                            recipeInfromation: infromation,
                                                            url: recipe.url)
                     
-                    resutl.append(finalRecipeProfile)
+                    result.append(finalRecipeProfile)
+                    
                 }
-                completion(resutl)
+                print ("result count \(result.count)")
+                completion(result)
+                
             }
             catch {
                 print ("catch \(error)")
             }
         }
-        task.resume()
+        currentTask.resume()
     }
 }

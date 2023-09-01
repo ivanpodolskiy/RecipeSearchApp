@@ -7,9 +7,50 @@
 
 import UIKit
 
+class CategoriesManager {
+    
+    private let categories = Category(dietValue: [ValueCategory(name: "Balanced"), ValueCategory(name: "Alcohol-free"), ValueCategory(name: "High-Fiber")], allergiesValue: [ValueCategory(name: "Celery-free"), ValueCategory(name: "Crustacean-free"), ValueCategory(name: "Dairy-free")])
+    
+    
+    //Пока не нужно
+//    private var selectedCetegories: Category?
+    //    init(selectedCetegories: Category) {
+    //        self.selectedCetegories = selectedCetegories
+    //    }
+    
+    var count: Int {
+        get {
+            return categories.count
+        }
+    }
+    func returnValuesList(section: Int) -> [ValueCategory]{
+        return categories.getList(section)
+    }
+    
+    func returnNameCategory(section: Int) -> String {
+        categories.getName(section)
+    }
+
+    
+    func chooseCategoriy(section: Int, index: Int) {
+        if let categoryName = categories[section] {
+            var value = categoryName[index]
+            value.selectiong()
+            // работа с сетью
+            
+        }
+        }
+    
+    
+    }
+    
+
+
 class FilterViewController: UIViewController  {
     
-    let category = Category(diet: ["dsad", "sdad", "sad"], allergies: ["ds", "dsada"])
+
+    let categoriesManager = CategoriesManager()
+    
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -64,22 +105,23 @@ class FilterViewController: UIViewController  {
 
 extension FilterViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        
-        print ("Section         \(category.count)")
-        return         category.count
+        //Почему то вызвается несколько раз 
+        print ("Section         \(categoriesManager.count)")
+        return         categoriesManager.count
 
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        category.getList(section).count
+        
+        categoriesManager.returnValuesList(section: section).count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         print ("section \(indexPath.section). indexRow \(indexPath.row)")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FilterViewCell.identifier, for: indexPath) as! FilterViewCell
-        let listCategory = category.getList(indexPath.section)
+        let listCategory = categoriesManager.returnValuesList(section: indexPath.section)
         let item = listCategory[indexPath.row]
-        cell.setButtonText(item)
+        cell.setButtonText(item.name)
         return cell
     }
     
@@ -87,7 +129,8 @@ extension FilterViewController: UICollectionViewDataSource, UICollectionViewDele
             switch kind {
         case UICollectionView.elementKindSectionHeader:
             let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.identifier, for: indexPath) as! SectionHeader
-            let nameSection = category.getName(indexPath.section)
+                let nameSection = categoriesManager.returnNameCategory(section: indexPath.section)
+//            let nameSection = categories.getName(indexPath.section)
             sectionHeader.label.text = nameSection
                 return sectionHeader
         default:

@@ -8,14 +8,28 @@
 import UIKit
 import CoreData
 
-class SearchViewController: UIViewController {
-    //MARK: - Properties
-    private let RecipeService = RecipeSreachService()
-    private let favoriteRecipeService = FavoriteRecipeService()
 
+class SearchViewController: UIViewController {
+    
+    private enum StatusSearching  {
+        case searching
+        case stopSearching
+        case error
+    }
+    
+    //MARK: Dev. Filter
+    let filterViewController = FilterViewController()
+    
+    
+    //MARK: - Properties
+    private var statusSearching: StatusSearching = .stopSearching
+    private var searchTimer: Timer?
+ 
+    private let recipeService = RecipeSreachService()
+    private let favoriteRecipeService = FavoriteRecipeService()
+    
     private var result: [RecipeProfile]?
     private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
-    private var oldText: String = ""
     
     //MARK: - Outlets
     private let searchController: UISearchController = {
@@ -29,6 +43,7 @@ class SearchViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
+        collectionView.isHidden = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -38,12 +53,10 @@ class SearchViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.searchController = searchController
-        navigationItem.title = "Recipe Search"
+        navigationItem.title = "Search what you need"
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-        
-        searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.searchBar.showsBookmarkButton = true
         searchController.searchBar.setImage(UIImage(systemName: "line.3.horizontal.decrease.circle"), for: .bookmark, state: .normal)
@@ -69,7 +82,7 @@ class SearchViewController: UIViewController {
     private func upadteRecipesStatus() {
         var indexes: [IndexPath] = []
         DispatchQueue.global().async { [weak self] in
-            guard let self = self, let oldRecipes = result else {return }
+            guard let self = self, let oldRecipes = result else { return }
             favoriteRecipeService.updateFavoriteStatus(for: &result)
             guard let result = result else { return }
             
@@ -81,7 +94,7 @@ class SearchViewController: UIViewController {
             DispatchQueue.main.async { self.collectionView.reloadItems(at: indexes) }
         }
     }
-
+    
     //MARK: - Animation function
     private func startLaunchAnimtaion() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -116,7 +129,7 @@ class SearchViewController: UIViewController {
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag
         guard var selectedRecipe = result?[index] else { return }
-    
+        
         switch selectedRecipe.isFavorite {
         case true:
             let recipeName = selectedRecipe.title
@@ -152,15 +165,29 @@ class SearchViewController: UIViewController {
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let result = result else { return 0 }
-        return  result.count
+
+        switch statusSearching  {
+        case .searching:
+            return 6
+        case .stopSearching:
+            guard let result = result else { return 0 }
+            return result.count
+            
+        case .error:
+            return 0
+        }
+     
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
-        guard let recipe = result?[indexPath.row] else { return cell }
-        cell.setupCell(with: recipe, index: indexPath)
-        cell.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
+        if statusSearching == .stopSearching {
+            guard let recipe = result?[indexPath.row] else { return cell }
+            cell.setupCell(with: recipe, index: indexPath)
+            cell.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
+        } else {
+            cell.setupPlaceholder()
+        }
         return cell
     }
     
@@ -196,74 +223,82 @@ extension SearchViewController: UICollectionViewDelegateFlowLayout{
         return finalWidth - 2
     }
 }
-//MARK: - UISearchResultsUpdating
-extension SearchViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let query = searchController.searchBar.text, query.isEmpty == false else {return}
-        if query.count > 2 && query != oldText {
-            oldText = query
-            upadateData(query)
-        } else if  query.count < 3 && result != nil  {
-            oldText = ""
+//MARK: - UISearchBarDelegate
+extension SearchViewController: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        switch searchText.count {
+        case 0...2 :
+            hideCollectionView()
+            statusSearching = .stopSearching
             result = nil
+
+        case 2... :
+            statusSearching = .searching
+            recipeService.cancelPreviousRequests()
+            result = nil
+
             DispatchQueue.main.async {
+                self.collectionView.isHidden = false
                 self.collectionView.reloadData()
             }
+            
+            searchTimer?.invalidate()
+            searchTimer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false, block: { [weak self] (timer) in
+                DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+                    guard let self = self else {return }
+                    self.upadateData(searchText)
+                }
+            })
+        default:
+            print("")
         }
+        
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        hideCollectionView()
     }
     
     private func upadateData(_ query: String) {
-        DispatchQueue.global().async {
-            self.RecipeService.searchRecipe(search: query) { [weak self] recipe in
-                guard  let self = self else { return }
-                switch recipe {
-                case .some(let unwrappeRecipe):
-                    let oldCount = self.result?.count ?? 0
-                    self.result = unwrappeRecipe
-                    print ("unwrappeRecipe \(unwrappeRecipe.count), oldCount = \(oldCount)")
-                    self.favoriteRecipeService.updateFavoriteStatus(for: &self.result)
-                    
-                    if oldCount == unwrappeRecipe.count && oldCount > 0 {
-                        DispatchQueue.main.async {
-                            let indexPaths = self.collectionView.indexPathsForVisibleItems
-                            if indexPaths.count > 0 { self.collectionView.reloadItems(at: indexPaths) }
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            self.collectionView.reloadData()
-                        }
-                    }
-                case .none:
-                    self.result = nil
-                    DispatchQueue.main.async { self.collectionView.reloadData() }
+        self.recipeService.searchRecipe(search: query) { [weak self] recipe in
+            guard  let self = self else { return }
+            
+            switch recipe {
+            case .some(let unwrappeRecipe):
+                statusSearching = .stopSearching
+                self.result = unwrappeRecipe
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            case .none:
+                statusSearching = .error
+                result = nil
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
                 }
             }
         }
     }
-}
-
-extension SearchViewController: UISearchBarDelegate {
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        oldText = ""
-        self.result = nil
-        DispatchQueue.main.async { self.collectionView.reloadData() }
+    
+    private func hideCollectionView() {
+        collectionView.isHidden = true
+        collectionView.reloadData()
     }
     
-    //MARK: - Filter
-    /*
-     let filterViewController = FilterViewController()
-
+    
+    //MARK: - Filter dev.
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        
-        self.view.addSubview(FilterViewController())
+        self.addChild(filterViewController)
+        //        self.view.addSubview(filterViewController.view)
         self.searchController.searchBar.setImage(UIImage(systemName: "x.circle"), for: .bookmark, state: .disabled)
         self.setFilterView()
     }
     
-    
     func setFilterView() {
         filterViewController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(filterViewController.view)
+        self.collectionView.isHidden = true //скрыл для теста. проблема в том что фильтер вызываеться ниже соллкетина
         NSLayoutConstraint.activate([
             filterViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             filterViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
@@ -271,5 +306,4 @@ extension SearchViewController: UISearchBarDelegate {
             filterViewController.view.heightAnchor.constraint(equalToConstant: 130)
         ])
     }
-     */
 }

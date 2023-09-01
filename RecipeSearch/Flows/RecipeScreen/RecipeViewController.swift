@@ -27,7 +27,7 @@ class RecipeViewController: UIViewController {
     //MARK: - Ountlets
     private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
-    private let catehoriesView = CatehoriesView()
+    private let catehoriesView = CategoriesView()
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)

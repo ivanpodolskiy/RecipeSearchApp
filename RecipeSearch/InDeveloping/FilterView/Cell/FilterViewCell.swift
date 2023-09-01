@@ -8,6 +8,7 @@
 import UIKit
 
 class FilterViewCell: UICollectionViewCell {
+    
     private let button: UIButton = {
         let button = UIButton()
         button.setTitle("Text", for: .normal)

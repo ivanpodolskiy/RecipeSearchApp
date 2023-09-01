@@ -6,9 +6,66 @@
 //
 
 
+//Возможно здесь нужно использовать класс а не структуру
+// вместо массива нужно использовать перечисление
+
+
+/*
+Другой варинат это использовать еще одно структуру под занчение
+ Например
+ 
+ struct ValueCategory:
+ name: String
+ select: Bool
+
+*/
+
+struct ValueCategory {
+    //Нужна обертка над именем и над селктом
+ let name: String
+private var select: Bool
+    
+   mutating func selectiong() {
+        self.select = !select
+    }
+    
+    init(name: String) {
+        self.name = name
+        self.select = false
+    }
+    
+    
+}
+
+
 struct Category {
-    let diet: [String]
-    let allergies: [String]
+    typealias dietNmae = ValueCategory
+    typealias allergiesName =  ValueCategory
+    
+    private let diet: [dietNmae]
+    private let allergies: [allergiesName]
+    
+    init(dietValue: [ValueCategory], allergiesValue: [ValueCategory]) {
+        self.diet = dietValue
+        self.allergies = allergiesValue
+    }
+    
+    subscript(section: Int) -> [ValueCategory]? {
+        get {
+            switch section {
+            case 0:
+                return self.diet
+                
+            case 1:
+                return self.allergies
+            default:
+                return nil
+            }
+        }
+        
+    }
+ 
+
     
     var count: Int {
         get {
@@ -20,7 +77,7 @@ struct Category {
     func getName(_ section: Int) -> String {
         switch section {
         case 0:
-            return "diet"
+            return "dietNmae"
         case 1:
             return "allergies"
         default:
@@ -28,7 +85,8 @@ struct Category {
         }
     }
     
-    func getList(_ section: Int) -> [String] {
+    
+    func getList(_ section: Int) -> [ValueCategory] {
         print (section)
         switch section {
         case 0:
