@@ -9,14 +9,14 @@ import UIKit
 import CoreData
 
 
-class SearchViewController: UIViewController {
+class SearchViewController: UIViewController{
     
     private enum StatusSearching  {
         case searching
         case stopSearching
         case error
     }
-    
+    var lastCurrentOffset: CGFloat = 0
     //MARK: Dev. Filter
     let filterViewController = FilterViewController()
     
@@ -24,7 +24,7 @@ class SearchViewController: UIViewController {
     //MARK: - Properties
     private var statusSearching: StatusSearching = .stopSearching
     private var searchTimer: Timer?
- 
+    
     private let recipeService = RecipeSreachService()
     private let favoriteRecipeService = FavoriteRecipeService()
     
@@ -34,6 +34,7 @@ class SearchViewController: UIViewController {
     //MARK: - Outlets
     private let searchController: UISearchController = {
         let searchController = UISearchController()
+        //        searchController.hidesNavigationBarDuringPresentation = true
         searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchController.searchBar.tintColor = UIColor.basic
         return searchController
@@ -41,7 +42,10 @@ class SearchViewController: UIViewController {
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        let spaceBottom: CGFloat = 40.0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: spaceBottom, right: 0)
+        collectionView.keyboardDismissMode = .onDrag
         collectionView.backgroundColor = .white
         collectionView.isHidden = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -53,7 +57,10 @@ class SearchViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = true
+        
         navigationItem.title = "Search what you need"
+        
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
@@ -69,11 +76,12 @@ class SearchViewController: UIViewController {
         upadteRecipesStatus()
     }
     
+    
     override func viewWillLayoutSubviews() {
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: tabBarController!.tabBar.topAnchor),
             collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
@@ -165,7 +173,6 @@ class SearchViewController: UIViewController {
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-
         switch statusSearching  {
         case .searching:
             return 6
@@ -176,7 +183,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         case .error:
             return 0
         }
-     
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -232,12 +239,12 @@ extension SearchViewController: UISearchBarDelegate {
             hideCollectionView()
             statusSearching = .stopSearching
             result = nil
-
+            
         case 2... :
             statusSearching = .searching
             recipeService.cancelPreviousRequests()
             result = nil
-
+            
             DispatchQueue.main.async {
                 self.collectionView.isHidden = false
                 self.collectionView.reloadData()
@@ -305,5 +312,23 @@ extension SearchViewController: UISearchBarDelegate {
             filterViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
             filterViewController.view.heightAnchor.constraint(equalToConstant: 130)
         ])
+    }
+}
+
+extension SearchViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        var currentOffset = scrollView.contentOffset.y
+        
+        if lastCurrentOffset  < currentOffset && currentOffset > 50 {
+            UIView.animate(withDuration: 0.3) {
+                self.navigationController?.setNavigationBarHidden(true, animated: true)
+            }
+        } else if lastCurrentOffset > currentOffset {
+            currentOffset += 24
+            UIView.animate(withDuration: 0.3) {
+                self.navigationController?.setNavigationBarHidden(false, animated: true)
+            }
+        }
+        lastCurrentOffset = currentOffset
     }
 }
