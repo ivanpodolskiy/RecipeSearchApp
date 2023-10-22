@@ -8,13 +8,18 @@ import UIKit
 
 
 class RecipeCell: UICollectionViewCell  {
-    //MARK: - Outlets
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupSubviews()
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
+    //MARK: - Outlets
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
-        title.text = ""
         title.layer.cornerRadius = 4
-        title.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
         title.clipsToBounds = true
         title.translatesAutoresizingMaskIntoConstraints = false
         title.textAlignment = .center
@@ -25,12 +30,8 @@ class RecipeCell: UICollectionViewCell  {
     
     private(set) lazy var descriptionRecipe: UILabel = {
         let description = UILabel()
-        description.text = ""
         description.layer.cornerRadius = 4
-        description.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
         description.clipsToBounds = true
-        
-
         description.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
         description.textAlignment = .center
         description.font = UIFont.systemFont(ofSize: 20, weight: .regular)
@@ -38,12 +39,11 @@ class RecipeCell: UICollectionViewCell  {
         return description
     }()
     
-    lazy var buttonFavorite: UIButton = {
+     var favoriteButton: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.custom)
         button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
-        button.layer.opacity = 0.5
         return button
     }()
     
@@ -71,24 +71,12 @@ class RecipeCell: UICollectionViewCell  {
     }()
     
     //MARK: - View Functions
-    override init(frame: CGRect) {
-        super.init(frame: .zero)
-        setupSubviews()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.titleRecipe.text = nil
         self.descriptionRecipe.text = nil
         self.imageRecipe.image = nil
-        for uiItem in [descriptionRecipe,titleRecipe] {
-            uiItem.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
-        }
-//        self.buttonFavorite.tintColor = .white
+        self.setColorToFavoriteButton(isFavorite: false)
     }
     
     private func setupSubviews() {
@@ -96,7 +84,7 @@ class RecipeCell: UICollectionViewCell  {
         contentView.addSubview(titleRecipe)
         contentView.addSubview(viewForImage)
         contentView.addSubview(imageRecipe)
-        imageRecipe.addSubview(buttonFavorite)
+        imageRecipe.addSubview(favoriteButton)
     }
     
      override func layoutSubviews() {
@@ -106,65 +94,42 @@ class RecipeCell: UICollectionViewCell  {
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             imageRecipe.heightAnchor.constraint(equalToConstant: 198),
             imageRecipe.widthAnchor.constraint(equalToConstant: 198),
-            
             titleRecipe.topAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: 5),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             titleRecipe.heightAnchor.constraint(equalToConstant: 25),
-            
-            descriptionRecipe.topAnchor.constraint(equalTo: titleRecipe.bottomAnchor, constant: 5),
+            descriptionRecipe.topAnchor.constraint(equalTo: titleRecipe.bottomAnchor, constant: 2),
             descriptionRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             descriptionRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             descriptionRecipe.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            
-            buttonFavorite.topAnchor.constraint(equalTo: topAnchor),
-            buttonFavorite.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            
-            buttonFavorite.widthAnchor.constraint(equalToConstant: 30),
-            buttonFavorite.heightAnchor.constraint(equalToConstant: 30),
-            
+            favoriteButton.topAnchor.constraint(equalTo: topAnchor),
+            favoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            favoriteButton.widthAnchor.constraint(equalToConstant: 30),
+            favoriteButton.heightAnchor.constraint(equalToConstant: 30),
         ])
     }
 }
 //MARK: - Extension Functions
 extension RecipeCell {
-    func setupPlaceholder() {
-        self.imageRecipe.image = nil
-        for uiItem in [descriptionRecipe,titleRecipe] {
-            uiItem.backgroundColor = UIColor(red: 243 / 255.0, green: 245 / 255.0, blue: 251 / 255.0, alpha: 1.0)
+    func setupCell(with recipeProfile: RecipeProfileProtocol, tag: Int) {
+        DispatchQueue.main.async {
+            self.titleRecipe.text = recipeProfile.title
+            self.descriptionRecipe.text = recipeProfile.description
+            self.favoriteButton.tag = tag
+            if recipeProfile.isFavorite { self.setColorToFavoriteButton(isFavorite: true) }
         }
     }
-    func setupCell(with recipeProfile: RecipeProfile, index: IndexPath) {
-        if recipeProfile.isFavorite { setColorToFavoriteButton(recipeProfile.isFavorite)}
-        buttonFavorite.tag = index.row
-        
-        let url = URL(string: recipeProfile.image)!
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            
-            guard let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                  let data = data, error == nil,
-                  let image = UIImage(data: data) else { return }
-            
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                
-                titleRecipe.text = recipeProfile.title
-                descriptionRecipe.text = recipeProfile.description
-                imageRecipe.image = image
-                
-                for uiItem in [descriptionRecipe,titleRecipe] {
-                    uiItem.backgroundColor = .white
-                }
-            }
-            
-        }.resume()
-    }
     
-     func setColorToFavoriteButton(_ status: Bool) {
+    func setImage(_ image: UIImage) {
+        DispatchQueue.main.async {
+            self.imageRecipe.image = image
+        }
+    }
+
+     func setColorToFavoriteButton(isFavorite status: Bool) {
              switch status {
-             case false: buttonFavorite.tintColor = .white
-             case true: buttonFavorite.tintColor = .yellow
+             case false: favoriteButton.tintColor = .white
+             case true: favoriteButton.tintColor = .yellow
          }
      }
 }

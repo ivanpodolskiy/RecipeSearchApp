@@ -8,75 +8,65 @@
 import UIKit
 
 class ValuesView: UIView {
-    //MARK: - Outlets
-    private(set) lazy var namesDataLabel: UILabel = {
+    private(set) lazy var caloriesLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
         label.textColor = .white
-        label.font = .systemFont(ofSize: 15)
-        label.text = "Calories  Daily value  Serving"
+        label.font = .boldSystemFont(ofSize: 15)
+        label.text = "kcal"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    private(set) lazy var servingLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .left
+        label.textColor = .white
+        label.font = .boldSystemFont(ofSize: 15)
+        label.text = "serving"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     private(set) lazy var countCaloriesLabel: UILabel =  {
         let label = UILabel()
         label.textAlignment = .center
+        label.baselineAdjustment = .alignBaselines
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 30)
         label.text = "0"
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
-    private(set) lazy var countDailyValueLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
-        label.text = "0%"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
     private(set) lazy var countServingsLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
+        label.baselineAdjustment = .alignBaselines
         label.textColor = .white
-        label.font = .boldSystemFont(ofSize: 25)
+        label.font = .boldSystemFont(ofSize: 30)
         label.text = "0"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
-    //MARK: - Functions 
-    func setData(countServings: Int, countDailyValue: Double, countCalories: Int) {
+    func setData(countServings: Int, countCalories: Int) {
         countServingsLabel.text = String(countServings)
-        countDailyValueLabel.text = String(countDailyValue) + "%"
         countCaloriesLabel.text = String(countCalories)
     }
-    
-    //MARK: - View Functions
     override func layoutSubviews() {
+        translatesAutoresizingMaskIntoConstraints = false
         addSubview(countCaloriesLabel)
-        addSubview(countDailyValueLabel)
         addSubview(countServingsLabel)
-        addSubview(namesDataLabel)
-
+        addSubview(caloriesLabel)
+        addSubview(servingLabel)
         NSLayoutConstraint.activate([
-            countCaloriesLabel.topAnchor.constraint(equalTo: topAnchor),
-            countCaloriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 20),
-            
-            countDailyValueLabel.topAnchor.constraint(equalTo: topAnchor),
-            countDailyValueLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            
-            countServingsLabel.topAnchor.constraint(equalTo: topAnchor),
-            countServingsLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -20),
-            
-            namesDataLabel.topAnchor.constraint(equalTo: countCaloriesLabel.bottomAnchor),
-            namesDataLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            namesDataLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])        
+            countCaloriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            countCaloriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            caloriesLabel.leftAnchor.constraint(equalTo: countCaloriesLabel.rightAnchor, constant: 1),
+            caloriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            servingLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            servingLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            countServingsLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
+            countServingsLabel.rightAnchor.constraint(equalTo: servingLabel.leftAnchor, constant: -1)
+        ])
     }
 }
 

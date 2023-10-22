@@ -8,7 +8,6 @@
 import UIKit
 
 class CategoriesView: UIView {
-    //MARK: -
     private(set) lazy var categoriesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -19,10 +18,9 @@ class CategoriesView: UIView {
         label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         return label
     }()
-    
-    //MARK: - View Functions
     override init(frame: CGRect) {
         super.init(frame: frame)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = UIColor(red: 165/255.0, green: 166/255.0, blue: 246/255.0, alpha: 1)
         layer.cornerRadius = 20
         layer.shadowRadius = 4
@@ -30,11 +28,9 @@ class CategoriesView: UIView {
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowColor = UIColor.black.cgColor
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     override func layoutSubviews() {
         addSubview(categoriesLabel)
         NSLayoutConstraint.activate([
@@ -45,9 +41,10 @@ class CategoriesView: UIView {
         ])
     }
 }
-//MARK: - Functions
+//MARK: - Extension
 extension CategoriesView {
-    func setText(_ text: String) {
-        categoriesLabel.text = text
+    func setText(_ text: [String]) {
+        let string = text.toString(separator: " ")
+        categoriesLabel.text = string
     }
 }

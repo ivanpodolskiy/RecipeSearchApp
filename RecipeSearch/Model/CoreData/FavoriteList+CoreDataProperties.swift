@@ -21,7 +21,6 @@ extension FavoriteList {
 
 }
 
-// MARK: Generated accessors for recipes
 extension FavoriteList {
 
     @objc(addRecipesObject:)
@@ -35,7 +34,6 @@ extension FavoriteList {
 
     @objc(removeRecipes:)
     @NSManaged public func removeFromRecipes(_ values: NSSet)
-
 }
 
 extension FavoriteList : Identifiable {

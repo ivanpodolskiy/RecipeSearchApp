@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreData
 
 class FavoriteRecipeCell: UICollectionViewCell {
     //MARK: - Outlets
@@ -56,10 +55,11 @@ class FavoriteRecipeCell: UICollectionViewCell {
 }
 //MARK: - Extension Functions
 extension FavoriteRecipeCell {
-    func setupCell(with recipeProfile: RecipeProfile) {
+    func setImage(_ image: UIImage) {
+        self.imageRecipe.image = image
+    }
+    func setupCell(with recipeProfile: RecipeProfileProtocol) {
         titleRecipe.text = recipeProfile.title
-        let stringImage = recipeProfile.image
-        imageRecipe.downloaded(link: stringImage, contentMode: .scaleAspectFill)
     }
 }
 

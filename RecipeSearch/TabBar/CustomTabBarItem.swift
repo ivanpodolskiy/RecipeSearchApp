@@ -16,11 +16,14 @@ extension CustomTabBarItem {
     var viewController: UIViewController {
         switch self {
         case .search:
-            let nc = UINavigationController(rootViewController: SearchViewController())
+            let searchViewController = SerachScreenBuilder().setTitleController(title: "Search menu").createModule()
+            let nc = UINavigationController(rootViewController: searchViewController)
+            nc.navigationBar.tintColor = .basic
             return nc
-            
         case .favorite:
-            let nc = UINavigationController(rootViewController: FavoriteCollectionController())
+            let favoriteViewController = FavoriteScreenBuilder().setTitleController(title: "Favorite recipes").createModule()
+            let nc = UINavigationController(rootViewController: favoriteViewController)
+            nc.navigationBar.tintColor = .basic
             return nc
         }
     }

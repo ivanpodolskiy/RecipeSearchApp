@@ -6,329 +6,213 @@
 //
 
 import UIKit
-import CoreData
 
+enum TypeDescription {
+    case searching
+    case filterSetting
+    case dataError
+}
+enum ChildVC {
+    case filter
+    case recipesCollection
+}
 
 class SearchViewController: UIViewController{
-    
-    private enum StatusSearching  {
-        case searching
-        case stopSearching
-        case error
-    }
-    var lastCurrentOffset: CGFloat = 0
-    //MARK: Dev. Filter
-    let filterViewController = FilterViewController()
-    
-    
-    //MARK: - Properties
-    private var statusSearching: StatusSearching = .stopSearching
+    var presenter: SearchPresenterProtocol?
     private var searchTimer: Timer?
     
-    private let recipeService = RecipeSreachService()
-    private let favoriteRecipeService = FavoriteRecipeService()
-    
-    private var result: [RecipeProfile]?
-    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
-    
-    //MARK: - Outlets
-    private let searchController: UISearchController = {
-        let searchController = UISearchController()
-        //        searchController.hidesNavigationBarDuringPresentation = true
-        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchController.searchBar.tintColor = UIColor.basic
-        return searchController
-    }()
-    
-    private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        let spaceBottom: CGFloat = 40.0
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: spaceBottom, right: 0)
-        collectionView.keyboardDismissMode = .onDrag
-        collectionView.backgroundColor = .white
-        collectionView.isHidden = true
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
-    }()
-    
-    //MARK: - View functions
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = true
-        
-        navigationItem.title = "Search what you need"
-        
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        searchController.delegate = self
         searchController.searchBar.delegate = self
+        showDisplayedDescription(for: .searching)
+    }
+    //MARK: - Outlets
+    private var constraintDescriptionSearching: [NSLayoutConstraint]!
+    private var constraintDescriptionFiltering: [NSLayoutConstraint]!
+    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
+    
+    private var filterController: FilterViewController!
+    private var collectionView: RecipesControllerView!
+    
+    private let searchController: UISearchController = {
+        let searchController = UISearchController()
+        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchController.searchBar.tintColor = UIColor.basic
         searchController.searchBar.showsBookmarkButton = true
-        searchController.searchBar.setImage(UIImage(systemName: "line.3.horizontal.decrease.circle"), for: .bookmark, state: .normal)
-        startLaunchAnimtaion()
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.setImage(UIImage(systemName: "slider.horizontal.3"), for: .bookmark, state: .normal)
+        return searchController
+    }()
+    
+    private var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .gray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    //MARK: - View functions
+    private func showAlert(ttile: String, message: String) {
+        let alertController = UIAlertController(title: ttile, message: message, preferredStyle: .alert)
+        let actionAlert = UIAlertAction(title: "cancel", style: .cancel)
+        alertController.addAction(actionAlert)
+        present(alertController, animated: true)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.tabBarController?.tabBar.isHidden = false
-        upadteRecipesStatus()
+    private func setDescriptionLabel() {
+        view.addSubview(descriptionLabel)
     }
-    
-    
-    override func viewWillLayoutSubviews() {
-        view.addSubview(collectionView)
+    private func setChildViewController(_ selectedVC: ChildVC) {
+        func setVC(vc: UIViewController) {
+            view.addSubview(vc.view)
+            addChild(vc)
+            vc.didMove(toParent: self)
+        }
+        switch selectedVC {
+        case .filter:
+            guard let filterView = presenter?.createFilterView() as? FilterViewController else { return }
+            filterController = filterView
+            setVC(vc: filterController)
+            setFilterConstraint()
+        case .recipesCollection:
+            guard let recipesView = presenter?.createRecpesView() as? RecipesControllerView else { return}
+            collectionView = recipesView
+            setVC(vc: collectionView)
+            setCollectionConstraint()
+        }
+    }
+    private func dismissChildViewController(_ selectedChild: ChildVC) {
+        var childVC: UIViewController!
+        func dismis() {
+            childVC.willMove(toParent: nil)
+            childVC.view.removeFromSuperview()
+            childVC.removeFromParent() //ref.
+        }
+        switch selectedChild {
+        case .filter:
+            if filterController != nil {
+            childVC =  filterController } else { return }
+            dismis()
+            filterController = nil
+        case .recipesCollection:
+            if collectionView != nil {
+            childVC =  collectionView } else { return }
+            dismis()
+            collectionView = nil
+        }
+    }
+    private func showDisplayedDescription(for type:  TypeDescription, with description: String = "") {
+        descriptionLabel.isHidden = false
+        setDescriptionLabel()
+        switch type {
+        case .searching:
+            setupSearchDescriptionConstraint()
+            descriptionLabel.text = "Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works."
+        case .filterSetting:
+            setupFilterDescription()
+            descriptionLabel.text = "Here you can change your filtering settings"
+        case .dataError:
+            setupSearchDescriptionConstraint()
+            descriptionLabel.text = description
+        }
+    }
+    //MARK: - Layouts
+    private func setFilterConstraint() {
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: tabBarController!.tabBar.topAnchor),
-            collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
+            filterController.view.topAnchor.constraint(equalTo: searchController.searchBar.searchTextField.bottomAnchor),
+            filterController.view.leftAnchor.constraint(equalTo: searchController.searchBar.leftAnchor, constant: 32),
+            filterController.view.rightAnchor.constraint(equalTo: searchController.searchBar.rightAnchor, constant: -32),
+            filterController.view.heightAnchor.constraint(equalToConstant: 160),
         ])
     }
-    
-    private func upadteRecipesStatus() {
-        var indexes: [IndexPath] = []
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self, let oldRecipes = result else { return }
-            favoriteRecipeService.updateFavoriteStatus(for: &result)
-            guard let result = result else { return }
-            
-            for index in 0..<result.count {
-                if oldRecipes[index].isFavorite != result[index].isFavorite {
-                    indexes.append(IndexPath(row: index, section: 0))
-                }
-            }
-            DispatchQueue.main.async { self.collectionView.reloadItems(at: indexes) }
+    private func setCollectionConstraint() {
+        NSLayoutConstraint.activate([
+            collectionView.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.view.leftAnchor.constraint(equalTo: view.leftAnchor),
+            collectionView.view.rightAnchor.constraint(equalTo: view.rightAnchor),
+            collectionView.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    private func setupSearchDescriptionConstraint() {
+        if constraintDescriptionSearching == nil {
+            constraintDescriptionSearching = [descriptionLabel.topAnchor.constraint(equalTo:  view.safeAreaLayoutGuide.topAnchor, constant: 5),
+                                              descriptionLabel.leftAnchor.constraint(equalTo:view.leftAnchor, constant: 24),
+                                              descriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -24)]
         }
-    }
-    
-    //MARK: - Animation function
-    private func startLaunchAnimtaion() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let sceneDelegate = windowScene.delegate as? SceneDelegate else {return }
-        
-        let viewA = UIView()
-        viewA.backgroundColor = .basic
-        sceneDelegate.window?.addSubview(viewA)
-        viewA.frame = view.bounds
-        let positionOnX: CGFloat = 15
-        let positionOnY: CGFloat = 14
-        let width = (tabBarController?.tabBar.bounds.width)! - positionOnX * 2
-        let height: CGFloat = 77
-        let frame =  CGRect(x: positionOnX, y: ((tabBarController?.tabBar.frame.minY)! - positionOnY) , width: width, height: height)
-        
-        lazy var animator1 =  {
-            UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
-                viewA.frame =  frame
-                viewA.layer.cornerRadius = height / 2
-            }
-        }()
-        
-        lazy var animator2 = {
-            UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) { viewA.layer.opacity = 0 }
-        }()
-        animator1.addCompletion {_ in animator2.startAnimation() }
-        animator2.addCompletion {  _ in viewA.removeFromSuperview() }
-        animator1.startAnimation()
-    }
-    
-    //MARK: - Actions
-    @objc func switchFavoriteStatus(sender: UIButton) {
-        let index = sender.tag
-        guard var selectedRecipe = result?[index] else { return }
-        
-        switch selectedRecipe.isFavorite {
-        case true:
-            let recipeName = selectedRecipe.title
-            favoriteRecipeService.removeRecipe(recipeName: recipeName)
-            sender.tintColor = .white
-            result?[index].isFavorite = false
-        case false:
-            let titles = favoriteRecipeService.fetchAllTitleCategories()
-            lazy var  selectionCategoryView = SelectionCategoryView(category: titles)
-            selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
-            selectionCategoryView.modalPresentationStyle = .custom
-            
-            selectionCategoryView.completion = { [weak self] selected in
-                guard let self = self else { return  }
-                switch selected {
-                case .oldCategory(let name):
-                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: true)
-                    sender.tintColor = .yellow
-                    selectedRecipe.isFavorite = true
-                    result?[index] = selectedRecipe
-                    
-                case .newCategory(let name):
-                    self.favoriteRecipeService.addFavoriteRecipe(selectedRecipe, nameCategory: name, сategoryExists: false)
-                    selectedRecipe.isFavorite = true
-                    sender.tintColor = .yellow
-                    result?[index] = selectedRecipe
-                }
-            }
-            present(selectionCategoryView, animated: true)
+        if constraintDescriptionFiltering != nil{
+            NSLayoutConstraint.deactivate(constraintDescriptionFiltering)
+            constraintDescriptionFiltering = nil
         }
+        NSLayoutConstraint.activate(constraintDescriptionSearching)
     }
-}
-//MARK: - UICollectionViewDataSource, UICollectionViewDelegate
-extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch statusSearching  {
-        case .searching:
-            return 6
-        case .stopSearching:
-            guard let result = result else { return 0 }
-            return result.count
-            
-        case .error:
-            return 0
+    private func setupFilterDescription(){
+        if constraintDescriptionFiltering == nil {
+            constraintDescriptionFiltering = [descriptionLabel.topAnchor.constraint(equalTo: filterController.view.bottomAnchor, constant: 10),
+                                              descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)]
         }
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
-        if statusSearching == .stopSearching {
-            guard let recipe = result?[indexPath.row] else { return cell }
-            cell.setupCell(with: recipe, index: indexPath)
-            cell.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
-        } else {
-            cell.setupPlaceholder()
+        if constraintDescriptionFiltering != nil {
+            NSLayoutConstraint.deactivate(constraintDescriptionSearching)
+            constraintDescriptionSearching = nil
         }
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let item = result else { return }
-        let res = item[indexPath.row]
-        let recipeViewController = RecipeViewController(recipe: res)
-        let cell =  collectionView.cellForItem(at: indexPath) as? RecipeCell
-        recipeViewController.completion = { status in
-            guard let status = status else { return }
-            cell?.setColorToFavoriteButton( status) }
-        navigationController?.pushViewController(recipeViewController, animated: true)
-    }
-}
-//MARK: - UICollectionViewDelegateFlowLayout
-extension SearchViewController: UICollectionViewDelegateFlowLayout{
-    private enum LayoutConstant {
-        static let spacing: CGFloat = 10
-        static let itemHeight: CGFloat = 250
-    }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: LayoutConstant.spacing, left: LayoutConstant.spacing, bottom: LayoutConstant.spacing, right: LayoutConstant.spacing)
-    }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = itemWidth(for: view.frame.width, spacing: LayoutConstant.spacing)
-        return CGSize(width: width, height: LayoutConstant.itemHeight)
-    }
-    
-    private func itemWidth(for width: CGFloat, spacing: CGFloat) -> CGFloat {
-        let itmesInRow: CGFloat = 2
-        let totalSpacing: CGFloat = 2 * spacing + (itmesInRow - 1) * spacing
-        let finalWidth = (width - totalSpacing) / itmesInRow
-        return finalWidth - 2
+        NSLayoutConstraint.activate(constraintDescriptionFiltering)
     }
 }
 //MARK: - UISearchBarDelegate
+extension SearchViewController: UISearchControllerDelegate {
+    func willPresentSearchController(_ searchController: UISearchController) { //ref. -
+        dismissChildViewController(.filter)
+        showDisplayedDescription(for: .searching)
+        searchController.searchBar.showsBookmarkButton = false
+    }
+}
 extension SearchViewController: UISearchBarDelegate {
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        switch searchText.count {
-        case 0...2 :
-            hideCollectionView()
-            statusSearching = .stopSearching
-            result = nil
-            
-        case 2... :
-            statusSearching = .searching
-            recipeService.cancelPreviousRequests()
-            result = nil
-            
-            DispatchQueue.main.async {
-                self.collectionView.isHidden = false
-                self.collectionView.reloadData()
-            }
-            
-            searchTimer?.invalidate()
-            searchTimer = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: false, block: { [weak self] (timer) in
-                DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-                    guard let self = self else {return }
-                    self.upadateData(searchText)
-                }
-            })
-        default:
-            print("")
-        }
-        
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {//ref.        убрать потом
+        dismissChildViewController(.recipesCollection)
+        showDisplayedDescription(for: .searching)
+        searchController.searchBar.showsBookmarkButton = true
+        searchController.searchBar.setImage(UIImage(systemName: "slider.horizontal.3"), for: .bookmark, state: .normal)
     }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        hideCollectionView()
-    }
-    
-    private func upadateData(_ query: String) {
-        self.recipeService.searchRecipe(search: query) { [weak self] recipe in
-            guard  let self = self else { return }
-            
-            switch recipe {
-            case .some(let unwrappeRecipe):
-                statusSearching = .stopSearching
-                self.result = unwrappeRecipe
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                }
-            case .none:
-                statusSearching = .error
-                result = nil
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                }
-            }
-        }
-    }
-    
-    private func hideCollectionView() {
-        collectionView.isHidden = true
-        collectionView.reloadData()
-    }
-    
-    
-    //MARK: - Filter dev.
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        self.addChild(filterViewController)
-        //        self.view.addSubview(filterViewController.view)
-        self.searchController.searchBar.setImage(UIImage(systemName: "x.circle"), for: .bookmark, state: .disabled)
-        self.setFilterView()
+        if filterController != nil {
+            searchBar.setImage(UIImage(systemName: "slider.horizontal.3"), for: .bookmark, state: .normal)
+            dismissChildViewController(.filter)
+            showDisplayedDescription(for: .searching)
+        } else {
+            searchBar.setImage(UIImage(systemName: "xmark"), for: .bookmark, state: .normal)
+            setChildViewController(.filter)
+            showDisplayedDescription(for: .filterSetting)
+        }
     }
-    
-    func setFilterView() {
-        filterViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(filterViewController.view)
-        self.collectionView.isHidden = true //скрыл для теста. проблема в том что фильтер вызываеться ниже соллкетина
-        NSLayoutConstraint.activate([
-            filterViewController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            filterViewController.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
-            filterViewController.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
-            filterViewController.view.heightAnchor.constraint(equalToConstant: 130)
-        ])
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchTimer?.invalidate()
+        if descriptionLabel.isHidden == false  {
+            descriptionLabel.isHidden = true
+            descriptionLabel.removeFromSuperview()
+            setChildViewController(.recipesCollection)
+        }
+        let interval: TimeInterval  = 0.3
+        searchTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false, block: { [weak self] _ in
+            guard let self = self else { return }
+            self.presenter?.searchRecipes(from: searchText)
+        })
+    }
+}
+//MARK: - SearchControllerDelegate
+extension SearchViewController: SearchControllerDelegate {
+    func displayError(_ userFriendlyDescription: String, type: SearchTypeError) {
+        DispatchQueue.main.async {
+        switch type {
+        case .network:
+            self.showAlert(ttile: "NetworkError", message: userFriendlyDescription)
+        case.data:
+            self.showDisplayedDescription(for: .dataError, with: userFriendlyDescription)
+            self.dismissChildViewController(.recipesCollection)
+            }
+        }
     }
 }
 
-extension SearchViewController: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        var currentOffset = scrollView.contentOffset.y
-        
-        if lastCurrentOffset  < currentOffset && currentOffset > 50 {
-            UIView.animate(withDuration: 0.3) {
-                self.navigationController?.setNavigationBarHidden(true, animated: true)
-            }
-        } else if lastCurrentOffset > currentOffset {
-            currentOffset += 24
-            UIView.animate(withDuration: 0.3) {
-                self.navigationController?.setNavigationBarHidden(false, animated: true)
-            }
-        }
-        lastCurrentOffset = currentOffset
-    }
-}

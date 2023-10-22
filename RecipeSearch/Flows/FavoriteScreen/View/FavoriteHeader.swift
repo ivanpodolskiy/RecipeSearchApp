@@ -8,7 +8,6 @@
 import UIKit
 
 class FavoriteHeader: UICollectionReusableView {
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         addSubview(label)
@@ -24,10 +23,7 @@ class FavoriteHeader: UICollectionReusableView {
 }
 
 extension FavoriteHeader {
-    static var identifier: String {
-    return String(describing: self)
-    }
-    
+    static var identifier: String { return String(describing: self) }
     func setText(_ title: String) {
         label.text = title
     }

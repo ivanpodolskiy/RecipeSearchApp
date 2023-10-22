@@ -10,9 +10,9 @@ import WebKit
 
 class WebViewController: UIViewController {
     
-    init?(name: String, url: String) {
+    init?(title: String, url: String) {
         super.init(nibName: nil, bundle: nil)
-        self.title = name
+        self.title = title
         if !self.loadUrl(link: url){ return nil }
     }
     
@@ -85,11 +85,9 @@ extension WebViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         showProgressView()
     }
-    
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideProgressView()
     }
-    
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         hideProgressView()
     }

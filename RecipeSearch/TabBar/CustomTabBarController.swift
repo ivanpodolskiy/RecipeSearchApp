@@ -15,7 +15,6 @@ class CustomTabBarController: UITabBarController {
         viewControllers = [setupVC(.search), setupVC(.favorite)]
         setupTabBarLayout()
     }
-    
     private func setupVC(_ tbItem: CustomTabBarItem) -> UIViewController {
         let vc = tbItem.viewController
         vc.tabBarItem.title = tbItem.title
@@ -25,7 +24,6 @@ class CustomTabBarController: UITabBarController {
         vc.tabBarItem.selectedImage = tbItem.selectedIcon
         return vc
     }
-    
     private func setupTabBarLayout() {
         let positionOnX: CGFloat = 15
         let positionOnY: CGFloat = 14

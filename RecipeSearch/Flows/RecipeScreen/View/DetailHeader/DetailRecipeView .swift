@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class DetailRecipeHeaderView: UIView {
-    //MARK: - Ountlets
     private(set) lazy var informationView  = InformationView()
 
     private(set) lazy var titleLabel: UILabel = {
@@ -50,54 +49,56 @@ class DetailRecipeHeaderView: UIView {
         ai.isHidden = false
         return ai
     }()
-    //MARK: - View Functions
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
+        translatesAutoresizingMaskIntoConstraints = false
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override func layoutSubviews() {
-      addSubview(titleLabel)
-      addSubview(viewForImage)
-      addSubview(informationView)
-      viewForImage.addSubview(imageRecipe)
-      imageRecipe.addSubview(activityIndicator)
-      
-    informationView.translatesAutoresizingMaskIntoConstraints = false
-      NSLayoutConstraint.activate([
-          titleLabel.topAnchor.constraint(equalTo: topAnchor),
-          titleLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-
-          imageRecipe.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-          imageRecipe.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-          imageRecipe.widthAnchor.constraint(equalToConstant: 180),
-          imageRecipe.heightAnchor.constraint(equalToConstant: 185),
-          imageRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
-       
-          informationView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-          informationView.leftAnchor.constraint(equalTo: imageRecipe.rightAnchor, constant: 10),
-          informationView.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor),
-        
-          activityIndicator.centerXAnchor.constraint(equalTo: imageRecipe.centerXAnchor, constant: 0.0),
-          activityIndicator.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor, constant: 0.0)
-      ])
+        setupaLayout()
     }
-   
-    //MARK: - Functions
-    func loadDataToViews(_ recipe: RecipeProfile) {
-        self.titleLabel.text = recipe.title
-        if let url = URL(string: recipe.image) {
-            self.imageRecipe.load(url: url)
-        }
-        
-        if recipe.isFavorite {
-            informationView.buttonFavorite.tintColor = .yellow
-        }
+    
+    func loadImage(image: UIImage) {
+        self.imageRecipe.image = image
+    }
+    func updateButtonColor(isFavorite: Bool) {
+        self.informationView.buttonFavorite.tintColor = isFavorite ? .yellow : .white
+    }
+    func loadDataToViews(title: String, isFavorite: Bool) {
+        self.titleLabel.text = title
+        if isFavorite { informationView.buttonFavorite.tintColor = .yellow }
         activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
+    }
+    private func setupaLayout() {
+        addSubview(titleLabel)
+        addSubview(viewForImage)
+        addSubview(informationView)
+        viewForImage.addSubview(imageRecipe)
+        imageRecipe.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            imageRecipe.topAnchor.constraint(equalTo: topAnchor),
+            imageRecipe.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
+            imageRecipe.widthAnchor.constraint(equalToConstant: 180),
+            imageRecipe.heightAnchor.constraint(equalToConstant: 185),
+            imageRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            titleLabel.topAnchor.constraint(equalTo: topAnchor),
+            titleLabel.leftAnchor.constraint(equalTo: imageRecipe.rightAnchor, constant: 10),
+            titleLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+
+            informationView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            informationView.leftAnchor.constraint(equalTo: imageRecipe.rightAnchor, constant: 10),
+            informationView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            informationView.topAnchor.constraint(equalTo: centerYAnchor, constant: -20),
+          
+            activityIndicator.centerXAnchor.constraint(equalTo: imageRecipe.centerXAnchor, constant: 0.0),
+            activityIndicator.centerYAnchor.constraint(equalTo: imageRecipe.centerYAnchor, constant: 0.0)
+        ])
     }
 }

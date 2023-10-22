@@ -9,7 +9,6 @@ import UIKit
 
 class SelectionFavoriteSectionController: UIPresentationController {
     private var dimmingView: UIView!
-    
     override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         setupDimmingView()
@@ -18,15 +17,12 @@ class SelectionFavoriteSectionController: UIPresentationController {
     override func presentationTransitionWillBegin() {
         guard let dimmingView = dimmingView else { return }
         containerView?.insertSubview(dimmingView, at: 0)
-        
         NSLayoutConstraint.activate( NSLayoutConstraint.constraints(withVisualFormat: "V:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
         NSLayoutConstraint.activate( NSLayoutConstraint.constraints(withVisualFormat: "H:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
-        
         guard let coordinator = presentedViewController.transitionCoordinator else {
             dimmingView.alpha = 1
             return
         }
-        
         coordinator.animate { _ in
             self.dimmingView.alpha = 1.0
         }
@@ -39,11 +35,13 @@ class SelectionFavoriteSectionController: UIPresentationController {
     override var frameOfPresentedViewInContainerView: CGRect {
         var frame: CGRect = .zero
         frame.size = size(forChildContentContainer: presentedViewController, withParentContainerSize: containerView!.bounds.size)
+        print ("containerView!.frame.height \(containerView!.frame.height)")
         frame.origin.y = containerView!.frame.height * (1.0 / 3.0)
         return frame
     }
     
     override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
+        print ("parentSize.height \(parentSize.height)")
         return CGSize(width: parentSize.width, height: parentSize.height * (2.0 / 3.0) )
     }
       
@@ -61,7 +59,6 @@ class SelectionFavoriteSectionController: UIPresentationController {
     @objc func tapButton(sender: UIButton) {
         presentedViewController.dismiss(animated: true)
     }
-    
     @objc func handleTap(recognizer: UITapGestureRecognizer) {
         presentedViewController.dismiss(animated: true)
     }

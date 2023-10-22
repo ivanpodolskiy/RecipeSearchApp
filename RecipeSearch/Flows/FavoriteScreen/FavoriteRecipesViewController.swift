@@ -8,37 +8,25 @@
 import UIKit
 import CoreData
 
-class FavoriteCollectionController: UIViewController {
-    //MARK: - Outlets
-    private let collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
-    }()
-    //MARK: - Properties
-    private var favoriteCategories: [FavoriteList]?
-    private let favoriteRecipesService = FavoriteRecipeService()
-    //MARK: - View Functions
+class FavoriteRecipesViewController: UIViewController {
+    private var presenter: FavoriteRecipesPresenterProtocol?
+    private var favoriteCategories: [FavoriteCategoryProtocol]?
+ 
+    func setPresenter(_ presenter: FavoriteRecipesPresenterProtocol) {
+        self.presenter = presenter
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         self.navigationItem.title = "Favorite List"
         registerCollectionView()
     }
-    
     override func viewWillAppear(_ animated: Bool) {
-        updateCollectionView()
+        if let presenter = presenter {
+            presenter.fetchFavoriteRecipes()
+        }
     }
-    private func registerCollectionView() {
-        collectionView.register(FavoriteRecipeCell.self, forCellWithReuseIdentifier: FavoriteRecipeCell.identifier)
-        collectionView.register(FavoriteHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FavoriteHeader.identifier)
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.collectionViewLayout = createLayout()
-    }
-    
     override func viewDidLayoutSubviews() {
         navigationItem.rightBarButtonItem = getBarButtonItem()
         view.addSubview(collectionView)
@@ -48,6 +36,22 @@ class FavoriteCollectionController: UIViewController {
             collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
+    }
+    //MARK: - Outlets
+    private let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
+    private func registerCollectionView() {
+        collectionView.register(FavoriteRecipeCell.self, forCellWithReuseIdentifier: FavoriteRecipeCell.identifier)
+        collectionView.register(FavoriteHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FavoriteHeader.identifier)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.collectionViewLayout = createLayout()
     }
     
     private func createLayout() -> UICollectionViewCompositionalLayout {
@@ -68,53 +72,41 @@ class FavoriteCollectionController: UIViewController {
         return header
     }
     
-    //MARK: - Function
-    private func getRecipe(index: Int, section: Int) -> RecipeProfile? {
-        guard let favoriteCategories = favoriteCategories,
-                let favoriteRecipes = favoriteCategories[section].recipes?.allObjects as? [FavoriteRecipe] else { return nil }
-        let recipeProfile = RecipeProfile(favoriteRecipe: favoriteRecipes[index])
-        return recipeProfile
-    }
-    
-    //MARK: Actions
     @objc func removeAll(sender: UIBarButtonItem) {
-        favoriteRecipesService.deleteAll()
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+        presenter?.removeAllRecipes()
     }
 }
 //MARK: - Functions
-extension FavoriteCollectionController {
-    private func updateCollectionView() {        
-        self.favoriteCategories = favoriteRecipesService.fetchAllCategories()
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
-    }
-    
+extension FavoriteRecipesViewController {
     private func getBarButtonItem() ->  UIBarButtonItem {
         let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeAll(sender: )))
         return barButtonItem
     }
 }
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-extension FavoriteCollectionController: UICollectionViewDataSource {
+extension FavoriteRecipesViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         guard let  favoriteCategories = favoriteCategories else { return 0 }
         return favoriteCategories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let list = favoriteCategories else { return 0}
-        guard let recipes = list[section].recipes else { return 0}
+        guard let categories = favoriteCategories else {
+            return 0}
+        guard let recipes = categories[section].recipes else {
+            return 0 }
         return recipes.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoriteRecipeCell.identifier, for: indexPath) as! FavoriteRecipeCell
-        guard let item = getRecipe(index: indexPath.row, section: indexPath.section) else { return cell }
-        cell.setupCell(with: item)
+        
+        guard let favoriteCategories = favoriteCategories else {
+            return cell }
+        guard let recipes = favoriteCategories[indexPath.section].recipes else {
+            return cell}
+        let recipe = recipes[indexPath.row]
+        presenter?.configureCell(cell, with: recipe, tag: indexPath.row)
         return cell
     }
     
@@ -122,7 +114,8 @@ extension FavoriteCollectionController: UICollectionViewDataSource {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: FavoriteHeader.identifier, for: indexPath) as! FavoriteHeader
-            guard let favoriteCategories = favoriteCategories, let nameCategory = favoriteCategories[indexPath.section].nameCategory else { return header }
+            guard let favoriteCategories = favoriteCategories else { return header}
+            let nameCategory = favoriteCategories[indexPath.section].title
             header.setText(nameCategory)
             return header
         default:
@@ -131,14 +124,23 @@ extension FavoriteCollectionController: UICollectionViewDataSource {
     }
 }
 
-extension FavoriteCollectionController: UICollectionViewDelegate {
+extension FavoriteRecipesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let recipe  = getRecipe(index: indexPath.row, section: indexPath.section) else { return }
-        let recipeViewController = RecipeViewController(recipe: recipe)
-        recipeViewController.completion = { [weak self] status  in
-            guard let self = self, let status = status else { return }
-            if !status { self.updateCollectionView() }
+        guard let favoriteCategories = favoriteCategories,
+              let recipes = favoriteCategories[indexPath.section].recipes else { return }
+        let recipe = recipes[indexPath.row]
+        presenter?.pushResipeScreen(with: recipe) { _ in }
+    }
+}
+
+extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
+    func updateCollectionView(favoriteRecipesCategories: [FavoriteCategoryProtocol]) {
+        self.favoriteCategories = favoriteRecipesCategories
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
         }
-        present(recipeViewController, animated: true)
+    }
+    func pushViewController(_ viewController: UIViewController, animated: Bool) {
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }
