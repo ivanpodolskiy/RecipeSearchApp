@@ -9,23 +9,40 @@ import Foundation
 import CoreData
 import UIKit
 
-protocol FavoriteRecipesPresenterProtocol: PresenterProtocol, FavoriteStatusProtocol, RecipeNavigationProtocol, ConfigureCellProtocol {
+protocol FavoriteRecipesPresenterProtocol: PresenterProtocol, RecipeNavigationProtocol, ConfigureCellProtocol {
     func fetchFavoriteRecipes()
     func removeAllRecipes()
+    func remove(with index: Int, section: Int)
+    func addSection(title: String)
 }
 
 protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegate {
-    func updateCollectionView(favoriteRecipesCategories: [FavoriteCategoryProtocol])
+    func updateCollectionView(favoriteRecipesCategories: [FavoriteRecipesSectionProtocol])
+    func removeAllSections(currectFavoriteRecipesCategories:  [FavoriteRecipesSectionProtocol])
+    func removeFavoriteRecipe(section: Int, index: Int, currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol] )
 }
 
 class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
-    private let favoriteRecipesStorage: FavoriteRecipesSorageManagerProtocol
+    private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
     weak var favoriteRecipesController: FavoriteRecipesDelegate?
     
-    init(favoriteRecipesStorage: FavoriteRecipesSorageManagerProtocol) {
+    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol) {
         self.favoriteRecipesStorage  = favoriteRecipesStorage
     }
     
+    func remove(with index: Int, section: Int) {
+        let modifiedRecipe = try? favoriteRecipesStorage.fetchSectionArrayFR()
+        guard let recipe = modifiedRecipe?[section].recipes?[index] else { return }
+        try? favoriteRecipesStorage.removeFR(recipe)
+        guard  let currectFavoriteRecipesCategories =  try? favoriteRecipesStorage.fetchSectionArrayFR() else { return }
+        favoriteRecipesController?.removeFavoriteRecipe(section: section, index: index, currectFavoriteRecipesCategories: currectFavoriteRecipesCategories )
+    }
+
+    func addSection(title: String) {
+        favoriteRecipesStorage.saveNewSectionCD(with: title)
+        fetchFavoriteRecipes()
+    }
+
     func attachView(_ delegate: UIViewController) {
         favoriteRecipesController = delegate as? FavoriteRecipesDelegate
     }
@@ -33,14 +50,15 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
     func removeAllRecipes() {
         do {
             try favoriteRecipesStorage.deleteAll()
-            favoriteRecipesController?.updateCollectionView(favoriteRecipesCategories: [])
+            let favoriteRecipesCategories = try favoriteRecipesStorage.fetchSectionArrayFR()
+            favoriteRecipesController?.removeAllSections(currectFavoriteRecipesCategories: favoriteRecipesCategories)
         } catch {
              print (error.localizedDescription)
         }
     }
     
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int) {
-        guard let cell = cell as? FavoriteRecipeCell else { return }
+        guard let cell = cell as? RecipeCell else { return }
         let urlString = recipeProfile.stringImage
         ImageLoader.loadImage(from: urlString) { result in
             switch result {
@@ -50,19 +68,17 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
                 print ("Error insede RecipesPresenter: \(error.localizedDescription)")
             }
         }
-        cell.setupCell(with: recipeProfile)
+        cell.setupCell(with: recipeProfile, tag: tag)
     }
     
     func fetchFavoriteRecipes() {
-        guard let categories = try? favoriteRecipesStorage.getCategories() else { return }
+        guard let categories = try? favoriteRecipesStorage.fetchSectionArrayFR() else { return }
         favoriteRecipesController?.updateCollectionView(favoriteRecipesCategories: categories)
     }
-    func changeFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, with index: Int?) {
-        print ("")
-    }
-    
-    func pushResipeScreen(with recipe: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) {
-        let presenter = RecipeProfilePresenter(favoriteRecipeStorage: favoriteRecipesStorage, recipeProfile: recipe, onDataUpdate: onDataUpdate)
+ 
+    func pushResipeScreen(with recipeProfile: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) {
+        let favoriteStatusManager = FavoriteStatusManager(favoriteRecipesStorage: favoriteRecipesStorage)
+        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipeProfile, onDataUpdate: onDataUpdate)
         let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
         favoriteRecipesController?.pushViewController(recipeProfileController, animated: true)
     }

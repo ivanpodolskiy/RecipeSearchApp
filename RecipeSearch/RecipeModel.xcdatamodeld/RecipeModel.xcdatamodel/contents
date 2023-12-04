@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22E261" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="FavoriteList" representedClassName=".FavoriteList" syncable="YES">
-        <attribute name="nameCategory" optional="YES" attributeType="String"/>
-        <relationship name="recipes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FavoriteRecipe" inverseName="list" inverseEntity="FavoriteRecipe"/>
-    </entity>
-    <entity name="FavoriteRecipe" representedClassName=".FavoriteRecipe" syncable="YES">
+    <entity name="RecipeProfileEntity" representedClassName=".RecipeProfileEntity" syncable="YES">
         <attribute name="healthLabels" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
         <attribute name="image" optional="YES" attributeType="String"/>
         <attribute name="ingredients" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData"/>
@@ -12,6 +8,10 @@
         <attribute name="title" optional="YES" attributeType="String"/>
         <attribute name="totalCalories" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="url" optional="YES" attributeType="String"/>
-        <relationship name="list" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FavoriteList" inverseName="recipes" inverseEntity="FavoriteList"/>
+        <relationship name="recipesSectionEntity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RecipesSectionEntity" inverseName="recipeProfileEntity" inverseEntity="RecipesSectionEntity"/>
+    </entity>
+    <entity name="RecipesSectionEntity" representedClassName=".RecipesSectionEntity" syncable="YES">
+        <attribute name="nameSection" optional="YES" attributeType="String"/>
+        <relationship name="recipeProfileEntity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RecipeProfileEntity" inverseName="recipesSectionEntity" inverseEntity="RecipeProfileEntity"/>
     </entity>
 </model>

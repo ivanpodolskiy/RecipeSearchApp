@@ -52,7 +52,6 @@ extension CategoryManager: CategoryManagerProtocol {
         for value in sumValues {
             if value.getStatus() == true {filteredValues.append(value)}
         }
-//        for value in sumValues { if value.getStatus() == true { filteredValues.append(value)} }
         return filteredValues
     }
     //MARK: - убрать в CategoryStatusClearer

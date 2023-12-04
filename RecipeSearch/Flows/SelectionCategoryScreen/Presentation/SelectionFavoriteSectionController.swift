@@ -1,5 +1,5 @@
 //
-//  SelectionCategoryController.swift
+//  SelectionFavoriteSectionController.swift
 //  RecipeSearch
 //
 //  Created by user on 06.06.2023.
@@ -27,7 +27,6 @@ class SelectionFavoriteSectionController: UIPresentationController {
             self.dimmingView.alpha = 1.0
         }
     }
-    
     override func containerViewWillLayoutSubviews() {
         presentedView?.frame = frameOfPresentedViewInContainerView
     }

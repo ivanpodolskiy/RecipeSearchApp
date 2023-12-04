@@ -14,7 +14,7 @@ protocol PresenterProtocol {
 }
 
 protocol FavoriteStatusProtocol {
-    func changeFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol , with index: Int?)
+    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?)
 }
 
 protocol RecipeNavigationProtocol {
@@ -31,7 +31,6 @@ protocol NavigationDelegate {
     func pushViewController(_ viewController: UIViewController, animated: Bool)
 }
 
-protocol SelectioncategoryDelegate {
+protocol SectionsMenuDelegate {
     func presentCatalogView(_ viewController: UIViewController)
 }
-

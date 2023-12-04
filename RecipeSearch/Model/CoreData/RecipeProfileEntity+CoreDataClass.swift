@@ -1,8 +1,8 @@
 //
-//  FavoriteRecipe+CoreDataClass.swift
+//  RecipeProfileEntity+CoreDataClass.swift
 //  RecipeSearch
 //
-//  Created by user on 20.10.2023.
+//  Created by user on 29.11.2023.
 //
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-public class FavoriteRecipe: NSManagedObject {
+public class RecipeProfileEntity: NSManagedObject {
     convenience init(contex: NSManagedObjectContext, recipeProfile: RecipeProfileProtocol) {
         self.init(context: contex)
         self.image = recipeProfile.stringImage

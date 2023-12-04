@@ -13,20 +13,24 @@ protocol RecipesPresenterProtocol: PresenterProtocol, RecipeNavigationProtocol, 
     func updateItemsView(with recipes: [RecipeProfileProtocol])
 }
 //MARK: Delegate Protocols
-protocol RecipesControllerDelegate: AnyObject, UIViewController, SelectioncategoryDelegate, NavigationDelegate {
+protocol RecipesControllerDelegate: AnyObject, UIViewController, SectionsMenuDelegate, NavigationDelegate {
     func updateOneItem(recipe: RecipeProfileProtocol, index: Int)
     func updateItems(recipe: [RecipeProfileProtocol]?)
 }
 //MARK: - RecipesPresenter
 class RecipesPresenter: RecipesPresenterProtocol {
     weak var recipeControllerDelegate:  RecipesControllerDelegate?
-    private let favoriteRecipeStorage: FavoriteRecipesSorageManagerProtocol
-    init(favoriteRecipeStorage: FavoriteRecipesSorageManagerProtocol) {
-        self.favoriteRecipeStorage = favoriteRecipeStorage
+    private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
+    private var favoriteStatusManager: FavoriteStatusManagerProtocol
+
+    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, favoriteStatusManager: FavoriteStatusManagerProtocol) {
+        self.favoriteRecipesStorage = favoriteRecipesStorage
+        self.favoriteStatusManager = favoriteStatusManager
     }
     func attachView(_ delegate: UIViewController) { recipeControllerDelegate = delegate as? RecipesControllerDelegate }
+    
     func updateItemsView(with recipes:  [RecipeProfileProtocol]) {
-        if let updatetRecipes = try? favoriteRecipeStorage.getUpdatedRecipes(from: recipes) {
+        if let updatetRecipes = try? favoriteRecipesStorage.getUpdatedRecipeArray(from: recipes) {
             var i: Int = 1
             for recipe in updatetRecipes { print("\(i).\(recipe.title)\ncalories:\(recipe.calories)\nlink:\(recipe.url)\nisFavorite:\(recipe.isFavorite)")
                 i += 1
@@ -35,44 +39,15 @@ class RecipesPresenter: RecipesPresenterProtocol {
         }
     }
     
-    func changeFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, with index: Int?){
-        guard let index = index else { return }
-        var modifiedRecipe = selectedRecipe
-        
-        switch selectedRecipe.isFavorite {
-        case true:
-            modifiedRecipe.isFavorite = false
-            try? favoriteRecipeStorage.removeFavoriteRecipe(modifiedRecipe)
-            recipeControllerDelegate?.updateOneItem(recipe: modifiedRecipe, index: index)
-            
-        case false:
-            lazy var slideInTransitioningDelegate = SelectionCategoryManager()
-            lazy var  selectionCategoryView = SelectionCategoryView(category: favoriteRecipeStorage.fetchAllTitleCategories())
-            selectionCategoryView.transitioningDelegate = slideInTransitioningDelegate
-            selectionCategoryView.modalPresentationStyle = .custom
-            
-            selectionCategoryView.completion = { [weak self] selected in
-                guard let self = self else { return  }
-                switch selected {
-                case .oldCategory(let name):
-                    modifiedRecipe.isFavorite = true
-                   try? favoriteRecipeStorage.addFavoriteRecipe(modifiedRecipe, nameCategory: name, сategoryExists: true)
-                case .newCategory(let name):
-                    modifiedRecipe.isFavorite = true
-                    try? favoriteRecipeStorage.addFavoriteRecipe(modifiedRecipe, nameCategory: name, сategoryExists: false)
-                case .cancel:
-                    break
-                }
-                self.recipeControllerDelegate?.updateOneItem(recipe: modifiedRecipe, index: index)
-            }
-            recipeControllerDelegate?.presentCatalogView(selectionCategoryView)
+    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?) {
+        guard let selectedRecipe = selectedRecipe, let index = index else { return }
+        favoriteStatusManager.presentViewControllerClouser = {[ weak self] vc in
+            self?.recipeControllerDelegate?.presentCatalogView(vc)
         }
-    }
-    
-    func pushResipeScreen(with recipe: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) {
-        let presenter = RecipeProfilePresenter(favoriteRecipeStorage: favoriteRecipeStorage, recipeProfile: recipe, onDataUpdate: onDataUpdate)
-        let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
-        recipeControllerDelegate?.pushViewController(recipeProfileController, animated: true)
+        favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedRecipe in
+            guard let self = self,  let updatedRecipe = updatedRecipe else { return }
+            self.recipeControllerDelegate?.updateOneItem(recipe: updatedRecipe, index: index)
+        }
     }
     
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int) {
@@ -87,5 +62,11 @@ class RecipesPresenter: RecipesPresenterProtocol {
             }
         }
         cell.setupCell(with: recipeProfile, tag: tag)
+    }
+    
+    func pushResipeScreen(with recipe: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) {
+        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipe, onDataUpdate: onDataUpdate)
+        let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
+        recipeControllerDelegate?.pushViewController(recipeProfileController, animated: true)
     }
 }

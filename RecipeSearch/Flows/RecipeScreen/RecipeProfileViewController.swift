@@ -18,7 +18,8 @@ class RecipeProfileViewController: UIViewController  {
     private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
     private let catehoriesView = CategoriesView()
-    
+    private let alertUtility = AlertUtility()
+
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -31,10 +32,8 @@ class RecipeProfileViewController: UIViewController  {
         view.backgroundColor = .white
         presenter.loadRecipe()
     }
-    private func showAlert(title: String, message: String)  {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        alertController.addAction(cancelAction)
+    private func showError(title: String, message: String)  {
+       let alertController =  alertUtility.notificationAlert(title: title, message: message, target: self)
         present(alertController, animated: true)
     }
     
@@ -71,7 +70,8 @@ class RecipeProfileViewController: UIViewController  {
     }
     //MARK: - Actions
     @objc func showWebScreen(sender: UIButton) { presenter.pushWebViewController()}
-    @objc func switchFavoriteStatus(sender: UILabel) { presenter.changeFavoriteStatus() }
+    @objc func switchFavoriteStatus(sender: UILabel) {
+        presenter.switchFavoriteStatus(nil, with: nil) }
 }
 //MARK: - RecipeProfileDelegate
 extension RecipeProfileViewController: RecipeProfileDelegate {
@@ -88,7 +88,7 @@ extension RecipeProfileViewController: RecipeProfileDelegate {
         detailRecipeView.updateButtonColor(isFavorite: isFavorite)
     }
     func presentError(_ userFriendlyDescription: String) {
-        DispatchQueue.main.async { self.showAlert(title: "Error", message: userFriendlyDescription) }
+        DispatchQueue.main.async { self.showError(title: "Error", message: userFriendlyDescription) }
     }
     func presentCatalogView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }

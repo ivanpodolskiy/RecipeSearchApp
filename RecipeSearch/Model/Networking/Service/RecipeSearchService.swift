@@ -7,7 +7,7 @@
 import Foundation
 
 protocol RecipeSearchServiceProtocol {
-    func searchRecipes(selectedCategories categoryValues: [CategoryValueProtocol]?, with text: String, completion: @escaping (Result<[RecipeProfileProtocol],NetworkError> ) -> Void)
+    func searchRecipes(selectedCategories categoryValues: [CategoryValueProtocol]?, with text: String, completion: @escaping (Result<[RecipeProfileProtocol], NetworkError> ) -> Void)
     func cancelPreviousRequests()
 }
 //MARK: - RecipeSreachService

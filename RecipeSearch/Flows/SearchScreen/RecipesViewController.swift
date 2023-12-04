@@ -1,5 +1,5 @@
 //
-//  RecipeCollectionView.swift
+//  RecipesViewController.swift
 //  RecipeSearch
 //
 //  Created by user on 17.09.2023.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RecipesControllerView: UIViewController{
+class RecipesViewController: UIViewController{
     deinit{ print ("deinit RecipeCollectionView") }
     
     private var presenter: RecipesPresenterProtocol!
@@ -37,7 +37,7 @@ class RecipesControllerView: UIViewController{
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-        
+        collectionView.register(RecipesViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: RecipesViewHeader.indentifier)
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -62,16 +62,23 @@ class RecipesControllerView: UIViewController{
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag // i need to get indexPath.row's cell
         guard let selectedRecipe = recipes?[index] else { return }
-        presenter.changeFavoriteStatus(selectedRecipe, with: index)
+        presenter.switchFavoriteStatus(selectedRecipe, with: index)
     }
 }
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
-extension RecipesControllerView: UICollectionViewDelegate, UICollectionViewDataSource {
+extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let result = recipes else { return 0}
         return result.count
     }
     
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: RecipesViewHeader.indentifier, for: indexPath) as! RecipesViewHeader
+        guard let recipes = recipes else { return headerView}
+        print ( "recipes.count \(recipes.count)")
+        headerView.setRecipesCount(number: recipes.count)
+        return headerView
+    }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
         guard let recipe = recipes?[indexPath.row] else { return cell}
@@ -92,12 +99,15 @@ extension RecipesControllerView: UICollectionViewDelegate, UICollectionViewDataS
                 collectionView.reloadItems(at: [indexPath])
             }
         }
-        
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        CGSize(width: collectionView.bounds.width, height: 50)
     }
 }
 
 //MARK: - UICollectionViewDelegateFlowLayout
-extension RecipesControllerView: UICollectionViewDelegateFlowLayout{
+extension RecipesViewController: UICollectionViewDelegateFlowLayout{
     private enum LayoutConstant {
         static let spacing: CGFloat = 10
         static let itemHeight: CGFloat = 252
@@ -118,7 +128,7 @@ extension RecipesControllerView: UICollectionViewDelegateFlowLayout{
     }
 }
 
-extension RecipesControllerView: UIScrollViewDelegate {
+extension RecipesViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         var currentOffset = scrollView.contentOffset.y
         if lastCurrentOffset  < currentOffset && currentOffset > 50 {
@@ -131,7 +141,7 @@ extension RecipesControllerView: UIScrollViewDelegate {
     }
 }
 //MARK: - RecipesViewDelegate
-extension RecipesControllerView: RecipesControllerDelegate {
+extension RecipesViewController: RecipesControllerDelegate {
     func presentCatalogView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }
     }
@@ -146,12 +156,15 @@ extension RecipesControllerView: RecipesControllerDelegate {
     func updateItems(recipe result: [RecipeProfileProtocol]?) {
         recipes = result
         DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.isCollectionHidden = false
-            self.collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: true)
+            self.collectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+
+            self.collectionView.performBatchUpdates ({
+                 self.collectionView.reloadSections(IndexSet(integer: 0))
+                self.collectionView.isHidden = false
+            })
         }
     }
-    
+                                                                                       
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
         if let navigationController = navigationController {
             navigationController.pushViewController(viewController, animated: animated) }

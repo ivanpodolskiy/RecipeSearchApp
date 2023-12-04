@@ -32,10 +32,11 @@ class SearchViewController: UIViewController{
     //MARK: - Outlets
     private var constraintDescriptionSearching: [NSLayoutConstraint]!
     private var constraintDescriptionFiltering: [NSLayoutConstraint]!
-    private lazy var slideInTransitioningDelegate = SelectionCategoryManager()
+    private lazy var slideInTransitioningDelegate = SelectionSectionManagerView()
+    private let alertUtility = AlertUtility()
     
     private var filterController: FilterViewController!
-    private var collectionView: RecipesControllerView!
+    private var collectionView: RecipesViewController!
     
     private let searchController: UISearchController = {
         let searchController = UISearchController()
@@ -57,10 +58,8 @@ class SearchViewController: UIViewController{
     }()
     
     //MARK: - View functions
-    private func showAlert(ttile: String, message: String) {
-        let alertController = UIAlertController(title: ttile, message: message, preferredStyle: .alert)
-        let actionAlert = UIAlertAction(title: "cancel", style: .cancel)
-        alertController.addAction(actionAlert)
+    private func showError(ttile: String, message: String) {
+        let alertController = alertUtility.notificationAlert(title: ttile, message: message, target: self)
         present(alertController, animated: true)
     }
     private func setDescriptionLabel() {
@@ -79,7 +78,7 @@ class SearchViewController: UIViewController{
             setVC(vc: filterController)
             setFilterConstraint()
         case .recipesCollection:
-            guard let recipesView = presenter?.createRecpesView() as? RecipesControllerView else { return}
+            guard let recipesView = presenter?.createRecpesView() as? RecipesViewController else { return}
             collectionView = recipesView
             setVC(vc: collectionView)
             setCollectionConstraint()
@@ -170,7 +169,7 @@ extension SearchViewController: UISearchControllerDelegate {
     }
 }
 extension SearchViewController: UISearchBarDelegate {
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {//ref.        убрать потом
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {//ref.     delete
         dismissChildViewController(.recipesCollection)
         showDisplayedDescription(for: .searching)
         searchController.searchBar.showsBookmarkButton = true
@@ -207,7 +206,7 @@ extension SearchViewController: SearchControllerDelegate {
         DispatchQueue.main.async {
         switch type {
         case .network:
-            self.showAlert(ttile: "NetworkError", message: userFriendlyDescription)
+            self.showError(ttile: "NetworkError", message: userFriendlyDescription)
         case.data:
             self.showDisplayedDescription(for: .dataError, with: userFriendlyDescription)
             self.dismissChildViewController(.recipesCollection)

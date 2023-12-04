@@ -90,18 +90,21 @@ class RecipeCell: UICollectionViewCell  {
      override func layoutSubviews() {
         super.layoutSubviews()
         NSLayoutConstraint.activate([
-            imageRecipe.topAnchor.constraint(equalTo: self.topAnchor),
+            imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
-            imageRecipe.heightAnchor.constraint(equalToConstant: 198),
-            imageRecipe.widthAnchor.constraint(equalToConstant: 198),
+            imageRecipe.rightAnchor.constraint(equalTo: rightAnchor),
+            imageRecipe.heightAnchor.constraint(equalTo: widthAnchor),
+            
             titleRecipe.topAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: 5),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
-            titleRecipe.heightAnchor.constraint(equalToConstant: 25),
+            
             descriptionRecipe.topAnchor.constraint(equalTo: titleRecipe.bottomAnchor, constant: 2),
             descriptionRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             descriptionRecipe.rightAnchor.constraint(equalTo: rightAnchor),
-            descriptionRecipe.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            descriptionRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            
             favoriteButton.topAnchor.constraint(equalTo: topAnchor),
             favoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
             favoriteButton.widthAnchor.constraint(equalToConstant: 30),

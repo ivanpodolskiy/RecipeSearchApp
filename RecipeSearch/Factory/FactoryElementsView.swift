@@ -55,7 +55,7 @@ private class FactoryColletionRecipe: FactoryProtocol {
     }
 
     func createPreparedView() -> UIViewController {
-        let collectionRecipe = RecipesControllerView()
+        let collectionRecipe = RecipesViewController()
         collectionRecipe.setPresenter(presenter)
         presenter.attachView(collectionRecipe)
         return collectionRecipe

@@ -1,5 +1,5 @@
 //
-//  SelectionCategoryView.swift
+//  SelectionMenuVC.swift
 //  RecipeSearch
 //
 //  Created by user on 06.06.2023.
@@ -8,16 +8,16 @@
 import UIKit
 
 enum Selected {
-    case newCategory(String)
-    case oldCategory(String)
+    case newSection(String)
+    case oldSection(String)
     case cancel
 }
 extension Selected: Equatable {
     static func == (lhs: Selected, rhs: Selected) -> Bool {
         switch (lhs, rhs) {
-        case (.newCategory(_), .newCategory(_)):
+        case (.newSection(_), .newSection(_)):
             return true
-        case (.oldCategory(_), .oldCategory(_)):
+        case (.oldSection(_), .oldSection(_)):
             return true
         case (.cancel, .cancel):
             return true
@@ -26,12 +26,13 @@ extension Selected: Equatable {
         }
     }
 }
-class SelectionCategoryView: UIViewController {
-    private var category: [String]?
+class SelectionMenuVC: UIViewController {
+    private var titles: [String]?
     public var completion: ((Selected) -> Void)?
+    private let alertUtility = AlertUtility()
     
-    init(category: [String]?) {
-        self.category = category
+    init(titles: [String]?) {
+        self.titles = titles
         super.init(nibName: nil, bundle: nil)
     }
     required init?(coder: NSCoder) {
@@ -40,8 +41,8 @@ class SelectionCategoryView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        buttons = getButtons(category)
-        setActionsInButtons()
+        buttons = getButtons(with: titles)
+        setActions()
         setupLayout()
     }
     
@@ -67,7 +68,7 @@ class SelectionCategoryView: UIViewController {
         return scrollView
     }()
     
-    private let newCategoryButton: UIButton = {
+    private let newSelectButton: UIButton = {
         let button = UIButton()
         button.tag = 1
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -88,62 +89,54 @@ class SelectionCategoryView: UIViewController {
         button.titleLabel?.textColor = .white
         return button
     }
-    
+    @objc func handleTextFieldTextChanged(sender: UITextField) {
+        if let alertController = presentedViewController as? UIAlertController, let text = sender.text{
+            if let actionAlert = alertController.actions.first {
+                actionAlert.isEnabled = !text.isEmpty
+            }
+        }
+    }
     private func runAlert() -> UIAlertController {
-        let alertController = UIAlertController(title: "Create category", message: "Type name for new category", preferredStyle: .alert)
-        let createAction = UIAlertAction(title: "Create", style: .default) {  [weak self] action in
+        let alertController = alertUtility.textInputAlert(title: "Creating section", message: "Type name for new section", placeholder: "", target: self, handleTextFieldTextChanged: #selector(handleTextFieldTextChanged)) { [weak self] text in
+            guard let self = self, let text = text else { return }
+            self.completion?(Selected.newSection(text))
+            self.dismiss(animated: true)
+        } cancelCompletion: { [weak self] in
             guard let self = self else { return }
-            let textField = alertController.textFields![0]
-            self.completion?(Selected.newCategory(textField.text!))
-            textField.text = nil
-            self.dismiss(animated: true)
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
             self.completion?(Selected.cancel)
-            self.dismiss(animated: true)
-        })
-        alertController.addTextField { textField in
-            textField.keyboardAppearance = .dark
-            textField.keyboardType = .default
-            textField.autocorrectionType = .default
-            textField.placeholder = "Name of a new category"
-            textField.clearButtonMode = .whileEditing
+          self.dismiss(animated: true)
         }
-        alertController.addAction(createAction)
-        alertController.addAction(cancel)
         return alertController
     }
     
     //MARK: - Functions
-    private  func getButtons(_ category: [String]?) -> [UIButton]? {
-        guard let category = category else { return nil }
+    private  func getButtons(with titles: [String]?) -> [UIButton]? {
+        guard let titles = titles else { return nil }
         var buttons: [UIButton] = []
-        var tag = 0
-        for title in category {
-            let button = setButton(title: title, tag: tag)
+        var number = 0
+        for title in titles {
+            let button = setButton(title: title, tag: number)
             buttons.append(button)
-            tag += 1
+            number += 1
         }
         return buttons
     }
-    private func setActionsInButtons() {
-        newCategoryButton.addTarget(self, action: #selector(presentAlert(sender: )), for: .touchUpInside)
+    private func setActions() {
+        newSelectButton.addTarget(self, action: #selector(presentAlert(sender: )), for: .touchUpInside)
         guard let buttons = buttons else { return }
-        buttons.forEach { button in button.addTarget(self, action: #selector(self.tapButton(sender:)), for: .touchUpInside) }
+        buttons.forEach { button in button.addTarget(self, action: #selector(self.tapAction(sender:)), for: .touchUpInside) }
     }
-    
     private func setScrollHeight() {
            guard let buttons = buttons else { return }
-           let heightForScroll = view.bounds.size.height +  (newCategoryButton.frame.height * CGFloat( buttons.count / 2) + 30)
+           let heightForScroll = view.bounds.size.height +  (newSelectButton.frame.height * CGFloat( buttons.count / 2) + 30)
            scrollView.contentSize.height =  heightForScroll
        }
     //MARK: - Actions
-    @objc func tapButton(sender: UIButton) {
-        guard let categoryName = sender.titleLabel?.text else { return }
-        completion?(Selected.oldCategory(categoryName))
+    @objc func tapAction(sender: UIButton) {
+        guard let title = sender.titleLabel?.text else { return }
+        completion?(Selected.oldSection(title))
         dismiss(animated: true)
     }
-    
     @objc func presentAlert(sender: UIButton) {
         present(runAlert(), animated: true)
     }
@@ -152,7 +145,7 @@ class SelectionCategoryView: UIViewController {
         setScrollHeight()
         view.addSubview(backgroundView)
         backgroundView.addSubview(scrollView)
-        scrollView.addSubview(newCategoryButton)
+        scrollView.addSubview(newSelectButton)
         
         NSLayoutConstraint.activate([
                    backgroundView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -165,17 +158,17 @@ class SelectionCategoryView: UIViewController {
                    scrollView.rightAnchor.constraint(equalTo: view.rightAnchor),
                    scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
                    
-                   newCategoryButton.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 35),
-                   newCategoryButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-                   newCategoryButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
-                   newCategoryButton.heightAnchor.constraint(equalToConstant: 60)
+                   newSelectButton.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 35),
+                   newSelectButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
+                   newSelectButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+                   newSelectButton.heightAnchor.constraint(equalToConstant: 60)
                ])
         guard let buttons = buttons else { return }
                 buttons.forEach({ button in
                     scrollView.addSubview(button)
                     if button.tag == 0 {
                         NSLayoutConstraint.activate([
-                            button.topAnchor.constraint(equalTo: newCategoryButton.bottomAnchor, constant: 35),
+                            button.topAnchor.constraint(equalTo: newSelectButton.bottomAnchor, constant: 35),
                             button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
                             button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
                             button.heightAnchor.constraint(equalToConstant: 60) ])

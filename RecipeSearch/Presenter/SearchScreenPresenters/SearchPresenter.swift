@@ -30,19 +30,20 @@ protocol SearchControllerDelegate: AnyObject, SearchErrorProtocol  { }
 //MARK: - SearchPresenter
 class SearchPresenter: SearchPresenterProtocol {
     weak private var searchControllerDelegate: SearchControllerDelegate!
-    private let collectionPresenter: RecipesPresenterProtocol
+    private let recipesPresenter: RecipesPresenterProtocol
     private let categoryManager: CategoryManagerProtocol
     private let recipeService: RecipeSearchServiceProtocol
     
-    init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, collectionPresenter: RecipesPresenterProtocol) {
+    init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, recipesPresenter: RecipesPresenterProtocol) {
         self.categoryManager = categoryManager
         self.recipeService = recipeService
-        self.collectionPresenter = collectionPresenter
+        self.recipesPresenter = recipesPresenter
     }
     
     func attachView(_ delegate: UIViewController) { searchControllerDelegate = delegate as? SearchControllerDelegate }
     
     func searchRecipes(from searchText: String) {
+        
         recipeService.cancelPreviousRequests()
         if searchText.isEmpty {
             searchControllerDelegate.displayError("Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works.", type: .data)
@@ -53,7 +54,7 @@ class SearchPresenter: SearchPresenterProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let recipeArray):
-                self.collectionPresenter.updateItemsView(with: recipeArray)
+                self.recipesPresenter.updateItemsView(with: recipeArray)
             case .failure(let error):
                 switch error {
                 case .dataError(.notitems):
@@ -66,7 +67,7 @@ class SearchPresenter: SearchPresenterProtocol {
         }
     }
     func createRecpesView() -> UIViewController {
-        FactoryElementsView.defaultFactory.createVC(.recipesView, presenter: collectionPresenter)
+        FactoryElementsView.defaultFactory.createVC(.recipesView, presenter: recipesPresenter)
     }
     
     func createFilterView() -> UIViewController {

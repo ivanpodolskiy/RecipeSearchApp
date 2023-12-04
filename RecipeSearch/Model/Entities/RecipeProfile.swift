@@ -54,15 +54,15 @@ struct RecipeProfile: RecipeProfileProtocol {
         self.totalCalories = totalCalories
 
     }
-    init(favoriteRecipe: FavoriteRecipe) { //ref.
-        let totalCalories = Int(favoriteRecipe.totalCalories)
-        let servings = Int(favoriteRecipe.serving)
+    init(recipeProfileEntity: RecipeProfileEntity) { //ref.
+        let totalCalories = Int(recipeProfileEntity.totalCalories)
+        let servings = Int(recipeProfileEntity.serving)
 
-        if  let title = favoriteRecipe.title,
-            let image = favoriteRecipe.image,
-            let url = favoriteRecipe.url,
-            let healthLabels = favoriteRecipe.healthLabels,
-            let ingredientLines = favoriteRecipe.ingredients {
+        if  let title = recipeProfileEntity.title,
+            let image = recipeProfileEntity.image,
+            let url = recipeProfileEntity.url,
+            let healthLabels = recipeProfileEntity.healthLabels,
+            let ingredientLines = recipeProfileEntity.ingredients {
             
             self.init(title: title, image: image,
                       totalCalories: totalCalories, isFavorite: true,
