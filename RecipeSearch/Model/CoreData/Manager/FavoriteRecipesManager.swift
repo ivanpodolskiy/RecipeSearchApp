@@ -8,6 +8,9 @@
 import CoreData
 
 //MARK: Protocols
+protocol FavoriteRecipeСhangeProtocol {
+    func renameSection(newTitile: String, section: FavoriteRecipesSectionProtocol)
+}
 protocol FavoriteRecipeCreatingCDProtocol {
     func createRecipeProfileEntity(from recipProfile: RecipeProfileProtocol) throws -> RecipeProfileEntity
 }
@@ -18,14 +21,24 @@ protocol SectionsFavoriteRecipesFetchingProtocol {
 protocol FavoritRecipeRemoverProtocol {
     func removeFR(_ recipe: RecipeProfileProtocol) throws
     func deleteAll() throws
+    func removeRecipes(_  favoriteRecipeSection: FavoriteRecipesSectionProtocol) throws
 }
-protocol FavoriteRecipesStorageProtocol: SectionsFavoriteRecipesFetchingProtocol, FavoritRecipeRemoverProtocol, FavoriteRecipeCreatingCDProtocol {
+protocol FavoriteRecipesStorageProtocol: SectionsFavoriteRecipesFetchingProtocol, FavoritRecipeRemoverProtocol, FavoriteRecipeCreatingCDProtocol, FavoriteRecipeСhangeProtocol{
     func getUpdatedRecipeArray(from recipe: [RecipeProfileProtocol])throws  -> [RecipeProfileProtocol]
     func addFavoriteRecipe(_ recipeProfileEntity: RecipeProfileEntity, nameSection: String, sectionExists: Bool) throws
     func saveNewSectionCD(with title: String)
 }
 //MARK: - Storage Manager for Favorite Recipes
 class StorageManagerFR: FavoriteRecipesStorageProtocol {
+    private let context: NSManagedObjectContext
+    init(context: NSManagedObjectContext) { self.context = context }
+    
+    func renameSection(newTitile: String, section: FavoriteRecipesSectionProtocol) {
+        let sectionCD = try? fetchNeededSectionCD(section.title)
+        sectionCD?.nameSection = newTitile
+        try? saveContext()
+    }
+    
     func createRecipeProfileEntity(from recipeProfile: RecipeProfileProtocol) throws -> RecipeProfileEntity {
        let favoriteRecipe = RecipeProfileEntity(contex: context, recipeProfile: recipeProfile)
        return favoriteRecipe
@@ -44,10 +57,6 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
             }
         }
     }
-
-    
-    private let context: NSManagedObjectContext
-    init(context: NSManagedObjectContext) { self.context = context }
     
     func saveNewSectionCD(with title: String) {
         let _ = try? createSectionCD(title)
@@ -82,6 +91,16 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         return updatedRecipes
     }
 
+    func removeRecipes(_ favoriteRecipeSection: FavoriteRecipesSectionProtocol) throws {
+        guard let sectionArrayCD = try fetchSectionArrayCD() else { throw CoreDataError.fetchError}
+        sectionArrayCD.forEach { sectionCD in
+            if sectionCD.nameSection == favoriteRecipeSection.title {
+                context.delete(sectionCD)
+            }
+        }
+        try saveContext()
+
+    }
     func removeFR(_ recipe: RecipeProfileProtocol) throws {
         guard let sectionArrayCD = try fetchSectionArrayCD() else { throw CoreDataError.fetchError }
         sectionArrayCD.forEach { sectionCD in
@@ -115,7 +134,6 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
        try saveContext()
     }
     //MARK: Private Fucntions:
-    
      private func createSectionCD(_ name: String) throws -> RecipesSectionEntity { //ref.
         let sectionCD = RecipesSectionEntity(context: context)
          sectionCD.nameSection = name

@@ -7,9 +7,7 @@
 
 import UIKit
 
-class RecipesViewController: UIViewController{
-    deinit{ print ("deinit RecipeCollectionView") }
-    
+class RecipesViewController: UIViewController{    
     private var presenter: RecipesPresenterProtocol!
     private var recipes: [RecipeProfileProtocol]?
     private var lastCurrentOffset: CGFloat = 0
@@ -20,14 +18,12 @@ class RecipesViewController: UIViewController{
     func setPresenter(_ presenter: RecipesPresenterProtocol) {
         self.presenter = presenter
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .selected
         view.translatesAutoresizingMaskIntoConstraints = false
         setCollectionView()
     }
-    
     private var isCollectionHidden: Bool = true {
         willSet { self.collectionView.isHidden = newValue }
     }
@@ -46,7 +42,6 @@ class RecipesViewController: UIViewController{
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let spaceBottom: CGFloat = 40.0
@@ -57,7 +52,6 @@ class RecipesViewController: UIViewController{
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    
     //MARK: - Actions
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag // i need to get indexPath.row's cell
@@ -75,7 +69,6 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: RecipesViewHeader.indentifier, for: indexPath) as! RecipesViewHeader
         guard let recipes = recipes else { return headerView}
-        print ( "recipes.count \(recipes.count)")
         headerView.setRecipesCount(number: recipes.count)
         return headerView
     }
@@ -90,7 +83,7 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let recipes = recipes else { return }
         let recipe = recipes[indexPath.row]
-        
+    
         presenter.pushResipeScreen(with: recipe) { [weak self] isFavorite  in
             guard let self = self else { return }
             guard let isFavorite = isFavorite as? Bool else { return }
@@ -100,12 +93,10 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
             }
         }
     }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         CGSize(width: collectionView.bounds.width, height: 50)
     }
 }
-
 //MARK: - UICollectionViewDelegateFlowLayout
 extension RecipesViewController: UICollectionViewDelegateFlowLayout{
     private enum LayoutConstant {
@@ -127,7 +118,7 @@ extension RecipesViewController: UICollectionViewDelegateFlowLayout{
         return finalWidth - 2
     }
 }
-
+//MARK: - UIScrollViewDelegate
 extension RecipesViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         var currentOffset = scrollView.contentOffset.y
@@ -145,14 +136,12 @@ extension RecipesViewController: RecipesControllerDelegate {
     func presentCatalogView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }
     }
-    
     func updateOneItem(recipe: RecipeProfileProtocol, index: Int) {
         recipes?[index] = recipe
         DispatchQueue.main.async {
             self.collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
         }
     }
-    
     func updateItems(recipe result: [RecipeProfileProtocol]?) {
         recipes = result
         DispatchQueue.main.async {
@@ -164,7 +153,6 @@ extension RecipesViewController: RecipesControllerDelegate {
             })
         }
     }
-                                                                                       
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
         if let navigationController = navigationController {
             navigationController.pushViewController(viewController, animated: animated) }

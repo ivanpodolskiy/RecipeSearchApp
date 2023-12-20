@@ -9,15 +9,18 @@ import UIKit
 import CoreData
 
 class FavoriteRecipesViewController: UIViewController {
+    private let alertUtility = AlertUtility() //ref
     private var presenter: FavoriteRecipesPresenterProtocol?
-    let alertUtility = AlertUtility()
+
     private var favoriteSections: [FavoriteRecipesSectionProtocol]? {
         willSet {
             let status = newValue?.isEmpty == false
             isEnabledRightBarButton(status)
         }
     }
-    func setPresenter(_ presenter: FavoriteRecipesPresenterProtocol) { self.presenter = presenter }
+    func setPresenter(_ presenter: FavoriteRecipesPresenterProtocol) {
+        self.presenter = presenter
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +48,7 @@ class FavoriteRecipesViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
     }
+    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -52,7 +56,6 @@ class FavoriteRecipesViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    
     private func getLeftBarButtonItem() ->  UIBarButtonItem {
         let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeAllSections(sender: )))
         barButtonItem.isEnabled = false
@@ -67,10 +70,10 @@ class FavoriteRecipesViewController: UIViewController {
     }
     //MARK: - UICollectionViewCompositionalLayout
     private func updateCollectionViewLayout(){
-        let collectionViewlLayout =  createLayout()
+        let collectionViewlLayout =  getCollectionViewLayout()
         collectionView.setCollectionViewLayout(collectionViewlLayout, animated: false)
     }
-    private func createLayout() -> UICollectionViewCompositionalLayout {
+    private func getCollectionViewLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
             let hasItems = self.hasItemsInSection(section: sectionIndex)// Replace with your data source
             let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension:
@@ -80,10 +83,10 @@ class FavoriteRecipesViewController: UIViewController {
             let sectionLayout = NSCollectionLayoutSection(group: group)
             if hasItems {
                 sectionLayout.orthogonalScrollingBehavior = .groupPaging
-                sectionLayout.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 20, trailing: 16)
+                sectionLayout.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 16, bottom: 20, trailing: 16)
             } else {
                 sectionLayout.orthogonalScrollingBehavior =  .none
-                sectionLayout.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16)
+                sectionLayout.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 16, bottom: 0, trailing: 16)
             }
             sectionLayout.interGroupSpacing = 15
             sectionLayout.supplementaryContentInsetsReference = .automatic
@@ -92,66 +95,74 @@ class FavoriteRecipesViewController: UIViewController {
         }
         return layout
     }
+    private func hasItemsInSection(section: Int) -> Bool {
+        guard let favoriteSections = favoriteSections else { return false }
+        guard let recipes = favoriteSections[section].recipes, recipes.count != 0  else { return false }
+        return true
+    }
     private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
         let supplementaryItem =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(25)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         supplementaryItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 23)
         return supplementaryItem
-    }
-    func hasItemsInSection(section: Int) -> Bool {
-        guard let favoriteSections = favoriteSections else { return false }
-        guard let recipes = favoriteSections[section].recipes, recipes.count != 0  else { return false }
-        return true
     }
 }
 //MARK: - Action | Alerts
 extension FavoriteRecipesViewController {
     enum TypeAlert {
         case creating
-        case clrearing
+        case clrearing( Int?)
     }
-    @objc func removeAllSections(sender: UIBarButtonItem) { showAlert(use: .clrearing) }
-    @objc func addSection(sender: UIBarButtonItem) { showAlert(use: .creating) }
-    func showAlert(use type: TypeAlert)  {
+    @objc private func removeAllSections(sender: UIBarButtonItem) { showAlert(use: .clrearing(nil)) }
+    @objc private func addSection(sender: UIBarButtonItem) { showAlert(use: .creating) }
+    
+    @objc  private func switchFavoriteStatus(sender: UIButton) {
+        let buttonPosition = sender.convert(CGPoint.zero, to: collectionView)
+        if let indexPath = collectionView.indexPathForItem(at: buttonPosition) {
+            let section = indexPath.section
+            let row = indexPath.row//  need to get indexPath.row's cell
+            presenter?.removeItem(with: row, indexSection: section)
+        }
+    }
+    @objc func handleTextFieldTextChanged(sender: UITextField) {
+        if let alertController = presentedViewController as? UIAlertController, let text = sender.text{
+            alertController.actions[0].isEnabled = !text.isEmpty
+        }
+    }
+    private func removeNeededSection(indexSection: Int) {
+        showAlert(use: .clrearing(indexSection) )
+    }
+    
+    private  func showAlert(use type: TypeAlert)  {
         let alertController = {
             switch type {
-            case .clrearing: return self.runClearingAlert()
+            case .clrearing(let indexSetion): return self.runClearingAlert(indexSection: indexSetion)
             case .creating: return self.runCreatingAlert()
             }
         }
         present(alertController(), animated: true)
     }
-    @objc func switchFavoriteStatus(sender: UIButton) {
-        let buttonPosition = sender.convert(CGPoint.zero, to: collectionView)
-        if let indexPath = collectionView.indexPathForItem(at: buttonPosition) {
-            let section = indexPath.section
-            let row = indexPath.row// i need to get indexPath.row's cell
-            presenter?.remove(with: row, section: section)
-        }
-    }
-    private func runClearingAlert() -> UIAlertController{
-        let alertController = UIAlertController(title: "Removing", message: "Do you want to remove all your favorite recipes", preferredStyle: .alert)
+    private func runClearingAlert(indexSection: Int?) -> UIAlertController{
+        let massage  = indexSection != nil ? "Do you want to remove \(indexSection! + 1)th section of recipes" : "Do you want to remove all your favorite recipes"
+        let alertController = UIAlertController(title: "Removing", message: massage, preferredStyle: .alert)
         let removeAction = UIAlertAction(title: "OK", style: .default) { [weak self] _ in
             guard let self = self else { return }
-            self.presenter?.removeAllRecipes()
+            if indexSection == nil {
+                self.presenter?.removeAllRecipes()
+            } else {
+                self.presenter?.removeSection(section: indexSection!)
+            }
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alertController.addAction(removeAction)
         alertController.addAction(cancelAction)
         return alertController
     }
-    
     private func runCreatingAlert() -> UIAlertController{
         let alertController = alertUtility.textInputAlert(title: "Creating section", message: "Type name for new section", placeholder: "", target: self, handleTextFieldTextChanged: #selector(handleTextFieldTextChanged)) { [weak self] text in
             guard let self = self, let text = text else { return }
             self.presenter?.addSection(title: text)
         }
         return alertController
-    }
-    
-    @objc func handleTextFieldTextChanged(sender: UITextField) {
-        if let alertController = presentedViewController as? UIAlertController, let text = sender.text{
-            alertController.actions[0].isEnabled = !text.isEmpty
-        }
     }
 }
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
@@ -182,6 +193,15 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
             let titleSection = favoriteSections[indexPath.section].title
             let count = favoriteSections[indexPath.section].recipes?.count
             header.setSectionDesctiption(title: titleSection, countItems: count ?? 0)
+
+            header.updatingTitleHandler = { [ weak self] title in
+                guard let self = self else { return }
+                presenter?.renameSection(title: title, indexSection: indexPath.section)
+            }
+            header.deleteActionHandler = { [weak self] in
+                guard let self = self else { return}
+                self.removeNeededSection(indexSection: indexPath.section)
+            }
             return header
         default:
             return UICollectionReusableView()
@@ -196,18 +216,30 @@ extension FavoriteRecipesViewController: UICollectionViewDelegate {
         let recipe = recipes[indexPath.row]
         presenter?.pushResipeScreen(with: recipe) { _ in }
     }
+    
 }
 //MARK: - FavoriteRecipesDelegate
 extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
+    func removeFavoriteSection(section: Int, currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol]) {
+        self.favoriteSections = currectFavoriteRecipesCategories
+            DispatchQueue.main.async {
+                self.collectionView.performBatchUpdates({
+                    self.collectionView.deleteSections(IndexSet(integer: section) )
+                }) { _ in
+                    self.collectionView.reloadData()
+                }
+            }
+    }
     func removeFavoriteRecipe(section: Int, index: Int, currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol] ) {
         self.favoriteSections = currectFavoriteRecipesCategories
         DispatchQueue.main.async {
             self.collectionView.performBatchUpdates({
                 let indexPath = IndexPath(row: index, section: section)
-                let indexSet = IndexSet(integer: section)
                 self.collectionView.deleteItems(at: [indexPath])
+            }) { _ in
+                let indexSet = IndexSet(integer: section)
                 self.collectionView.reloadSections(indexSet)
-            })
+            }
         }
     }
     func removeAllSections(currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol]) {

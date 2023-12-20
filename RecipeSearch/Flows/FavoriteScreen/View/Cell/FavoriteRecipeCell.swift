@@ -41,6 +41,7 @@ class FavoriteRecipeCell: UICollectionViewCell {
         super.layoutSubviews()
         contentView.addSubview(imageRecipe)
         contentView.addSubview(titleRecipe)
+
         NSLayoutConstraint.activate([
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),

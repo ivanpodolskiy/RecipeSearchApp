@@ -15,8 +15,14 @@ class RecipeCell: UICollectionViewCell  {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
     //MARK: - Outlets
+    var favoriteButton: UIButton = {
+       let button = UIButton(type: UIButton.ButtonType.custom)
+       button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
+       button.translatesAutoresizingMaskIntoConstraints = false
+       button.tintColor = .white
+       return button
+   }()
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
         title.layer.cornerRadius = 4
@@ -27,7 +33,6 @@ class RecipeCell: UICollectionViewCell  {
         title.textColor = UIColor.basic
         return title
     }()
-    
     private(set) lazy var descriptionRecipe: UILabel = {
         let description = UILabel()
         description.layer.cornerRadius = 4
@@ -38,15 +43,6 @@ class RecipeCell: UICollectionViewCell  {
         description.translatesAutoresizingMaskIntoConstraints = false
         return description
     }()
-    
-     var favoriteButton: UIButton = {
-        let button = UIButton(type: UIButton.ButtonType.custom)
-        button.setBackgroundImage(UIImage(systemName: "star.fill"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .white
-        return button
-    }()
-    
     private(set) lazy var viewForImage: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -58,7 +54,6 @@ class RecipeCell: UICollectionViewCell  {
         view.layer.shadowColor = UIColor.black.cgColor
         return view
     }()
-    
     private(set) lazy var imageRecipe: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
@@ -69,7 +64,6 @@ class RecipeCell: UICollectionViewCell  {
         image.clipsToBounds = true
         return image
     }()
-    
     //MARK: - View Functions
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -128,7 +122,6 @@ extension RecipeCell {
             self.imageRecipe.image = image
         }
     }
-
      func setColorToFavoriteButton(isFavorite status: Bool) {
              switch status {
              case false: favoriteButton.tintColor = .white
@@ -136,7 +129,6 @@ extension RecipeCell {
          }
      }
 }
-
 extension RecipeCell: ReusableView {
     static var identifier: String {
         return String(describing: self)
