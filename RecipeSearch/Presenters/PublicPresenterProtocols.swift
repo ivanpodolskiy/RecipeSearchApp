@@ -12,15 +12,12 @@ import UIKit
 protocol PresenterProtocol {
     func attachView(_ view: UIViewController)
 }
-
 protocol FavoriteStatusProtocol {
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?)
 }
-
 protocol RecipeNavigationProtocol {
-    func pushResipeScreen(with recipe: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) //ref
+    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onDataUpdate: ((Any) -> Void)?)
 }
-
 protocol ConfigureCellProtocol {
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int)
 }
@@ -32,5 +29,9 @@ protocol NavigationDelegate {
 }
 
 protocol SectionsMenuDelegate {
-    func presentCatalogView(_ viewController: UIViewController)
+    func presentFavoriteSectionsView(_ viewController: UIViewController)
+}
+
+protocol PresentAlertDelegate {
+    func presentAlert(_ alert: UIAlertController)
 }

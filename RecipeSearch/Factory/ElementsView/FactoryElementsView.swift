@@ -7,9 +7,7 @@
 
 import UIKit
 
-protocol FactoryProtocol {
-    func createPreparedView() -> UIViewController
-}
+protocol FactoryViewControllerProtocol { func createPreparedView() -> UIViewController }
 
 enum ElementView {
     case filterView
@@ -25,16 +23,14 @@ class FactoryElementsView {
         case .profileView: return createFactory(FactoryRecipeProfileController(presenter: presenter as! RecipeProfilePresenterProtocol))
         }
     }
-    private func createFactory<T:FactoryProtocol>(_ factory: T) -> UIViewController {
+    private func createFactory<T:FactoryViewControllerProtocol>(_ factory: T) -> UIViewController {
         let vc = factory.createPreparedView()
         return vc
     }
 }
 
-private class FactoryFilterView: FactoryProtocol {
+private class FactoryFilterView: FactoryViewControllerProtocol {
     private let presenter:  FilterPresenterProtocol
-
-    
     init(presenter: FilterPresenterProtocol) {
         self.presenter = presenter
     }
@@ -47,9 +43,8 @@ private class FactoryFilterView: FactoryProtocol {
     }
 }
 
-private class FactoryColletionRecipe: FactoryProtocol {
+private class FactoryColletionRecipe: FactoryViewControllerProtocol {
     private let presenter: RecipesPresenterProtocol
-    
     init(presenter: RecipesPresenterProtocol) {
         self.presenter = presenter
     }
@@ -62,7 +57,7 @@ private class FactoryColletionRecipe: FactoryProtocol {
     }
 }
 
-private class FactoryRecipeProfileController: FactoryProtocol {
+private class FactoryRecipeProfileController: FactoryViewControllerProtocol {
     private let presenter: RecipeProfilePresenterProtocol
     
     init(presenter: RecipeProfilePresenterProtocol) {

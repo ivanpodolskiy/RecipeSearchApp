@@ -25,12 +25,12 @@ protocol RecipeProfileDelegate: AnyObject, UIViewController, SectionsMenuDelegat
 //MARK: - RecipeProfilePresenter
 class RecipeProfilePresenter: RecipeProfilePresenterProtocol {
     private var recipeProfile: RecipeProfileProtocol
-    private var onDataUpdate: ((Any) -> Void)
+    private var onDataUpdate: ((Any) -> Void)?
     private var favoriteStatusManager: FavoriteStatusManagerProtocol
 
     weak var recipeProfileDelegateView: RecipeProfileDelegate?
     
-    init(favoriteStatusManager: FavoriteStatusManagerProtocol, recipeProfile: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void) ) {
+    init(favoriteStatusManager: FavoriteStatusManagerProtocol, recipeProfile: RecipeProfileProtocol, onDataUpdate:  ((Any) -> Void)? ) {
         self.favoriteStatusManager = favoriteStatusManager
         self.recipeProfile = recipeProfile
         self.onDataUpdate = onDataUpdate
@@ -61,15 +61,13 @@ class RecipeProfilePresenter: RecipeProfilePresenterProtocol {
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol? = nil, with index: Int? = nil) {
         favoriteStatusManager.presentViewControllerClouser =  { [weak self] sectionMenu in
             guard let self = self else { return }
-            self.recipeProfileDelegateView?.presentCatalogView(sectionMenu)
+            self.recipeProfileDelegateView?.presentFavoriteSectionsView(sectionMenu)
         }
         favoriteStatusManager.toggleFavoriteStatus(recipeProfile) { [weak self] updatedRecipe in
             guard let self = self, let updatedRecipe = updatedRecipe else {return}
             self.recipeProfile = updatedRecipe
             self.recipeProfileDelegateView?.updateFavoriteStatus(isFavorite: updatedRecipe.isFavorite)
-            self.onDataUpdate(updatedRecipe.isFavorite)
+            self.onDataUpdate!(updatedRecipe.isFavorite)
         }
     }
 }
-
-

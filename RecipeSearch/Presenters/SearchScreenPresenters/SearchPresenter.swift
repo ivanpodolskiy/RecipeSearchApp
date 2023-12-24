@@ -17,15 +17,10 @@ protocol SearchPresenterProtocol: PresenterProtocol, CreaterProtocol  {
     func searchRecipes(from searchText: String)
 }
 //MARK: - DelegateProtcols
-enum SearchTypeError {
-    case network
-    case data
+protocol UpdatingTextProtocol {
+    func updateText(_ userFriendlyDescription: String)
 }
-
-protocol SearchErrorProtocol {
-    func displayError(_ userFriendlyDescription: String, type: SearchTypeError)
-}
-protocol SearchControllerDelegate: AnyObject, SearchErrorProtocol  { }
+protocol SearchControllerDelegate: AnyObject, UpdatingTextProtocol, PresentAlertDelegate  { }
 
 //MARK: - SearchPresenter
 class SearchPresenter: SearchPresenterProtocol {
@@ -41,12 +36,10 @@ class SearchPresenter: SearchPresenterProtocol {
     }
     
     func attachView(_ delegate: UIViewController) { searchControllerDelegate = delegate as? SearchControllerDelegate }
-    
     func searchRecipes(from searchText: String) {
-        
         recipeService.cancelPreviousRequests()
         if searchText.isEmpty {
-            searchControllerDelegate.displayError("Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works.", type: .data)
+            searchControllerDelegate.updateText("Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works.")
             return
         }
         let values  = categoryManager.getActiveValues()
@@ -58,9 +51,10 @@ class SearchPresenter: SearchPresenterProtocol {
             case .failure(let error):
                 switch error {
                 case .dataError(.notitems):
-                    self.searchControllerDelegate.displayError("Nothing in our recipes database matches what you are searching for! Please try again.", type: .data)
+                    self.searchControllerDelegate.updateText("Nothing in our recipes database matches what you are searching for! Please try again.")
                 case .notConnectedToInternet:
-                    self.searchControllerDelegate.displayError("The request could not be sent. Checking the network connection.", type: .network)
+                    let alertController = AlertFactory.defaultFactory.getAlertController(type: .notification(title: "Network Error", message: "The request could not be sent. Checking the network connection.", cancelHandler: nil))
+                    searchControllerDelegate.presentAlert(alertController)
                 default: print("Error: \(error)")
                 }
             }

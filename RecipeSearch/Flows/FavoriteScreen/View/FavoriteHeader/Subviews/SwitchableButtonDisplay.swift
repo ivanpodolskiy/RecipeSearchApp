@@ -39,14 +39,15 @@ class SwitchableButtonDisplay: UIView {
     private let receiveSwitchButton: UIButton = {
         let  button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "pencil"), for: .normal)
+        button.tintColor = .systemGray
         return button
     }()
     private lazy var deleteButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .systemRed
         button.setImage(UIImage(systemName: "trash.circle"), for: .normal)
-        
+        button.tintColor = .systemRed
         return button
     }()
     //MARK: Constraints

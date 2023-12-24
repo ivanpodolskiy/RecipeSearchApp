@@ -37,7 +37,7 @@ class FavoriteStatusManager: FavoriteStatusManagerProtocol {
     private func handleRemoveFavorite(_ recipe: RecipeProfileProtocol) -> RecipeProfileProtocol{
         var modifiedRecipe = recipe
         modifiedRecipe.isFavorite = false
-        try? favoriteRecipesStorage.removeFR(modifiedRecipe)
+        try? favoriteRecipesStorage.removeFavoriteRecipe(modifiedRecipe)
         return modifiedRecipe
     }
     

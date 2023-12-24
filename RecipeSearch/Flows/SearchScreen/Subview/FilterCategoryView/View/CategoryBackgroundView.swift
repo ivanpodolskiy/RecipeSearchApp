@@ -1,5 +1,5 @@
 //
-//  BackgroundView.swift
+//  CategoryBackgroundView.swift
 //  RecipeSearch
 //
 //  Created by user on 15.09.2023.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BackgroundView: UIView {
+class CategoryBackgroundView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         let path = UIBezierPath()

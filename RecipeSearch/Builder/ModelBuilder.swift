@@ -11,12 +11,10 @@ protocol Builder { func createModule() -> UIViewController }
 
 class FavoriteScreenBuilder: Builder {
     private var title: String?
-
     func setTitleController(title: String) -> FavoriteScreenBuilder {
         self.title = title
         return self
     }
-    
     func createModule() -> UIViewController {
         let view = FavoriteRecipesViewController()
         view.title = title
@@ -34,7 +32,6 @@ class SerachScreenBuilder: Builder {
         self.title = title
         return self
     }
-    
     func createModule() -> UIViewController {
         let view = SearchViewController()
         view.title = title

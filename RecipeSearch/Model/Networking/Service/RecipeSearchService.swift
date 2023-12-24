@@ -25,8 +25,7 @@ final class RecipeSreachService: RecipeSearchServiceProtocol {
         let urlConfiguration = URLSessionConfiguration.default
         let session = URLSession(configuration: urlConfiguration)
         currentTask = session.dataTask(with: urlRequest){ data, response, error in
-            print ("textInService \(searchText)")
-
+            
             if let error = error {
                 if (error as NSError).code == NSURLErrorNotConnectedToInternet {
                     completion(.failure(.notConnectedToInternet))
@@ -61,7 +60,7 @@ final class RecipeSreachService: RecipeSearchServiceProtocol {
                 completion(.success(result))
             }
             catch {
-                completion(.failure(.decodingError))
+                completion(.failure(.decodingError)) //ref.
             }
         }
         currentTask?.resume()

@@ -24,8 +24,8 @@ class FilterViewController: UIViewController {
         for button in [dietsButton, allergiesButton] { button.addTarget(self, action: #selector(tapOnCategoryType), for: .touchUpInside) }
     }
     //MARK: - Outlets
-    private let backgroundViewForCollection = BackgroundView()
-    private let lineView =  LineView()
+    private var backgroundCollectionView = CategoryBackgroundView()
+    private var lineView = LineView()
     
     private let collectionVFilterValues: UICollectionView = {
         let layoutCollectionView = UICollectionViewFlowLayout()
@@ -62,42 +62,42 @@ class FilterViewController: UIViewController {
         }
     }
     @objc func clearAllSelectedValues(_ sender: UIButton) { //ref. добавить функционал
-        fatalError("d")
+        fatalError("clearAllSelectedValues")
     }
     //MARK: - Layouts
     private func setupCategoryTypeBoard() {
-        view.addSubview(backgroundViewForCollection)
-        for subview in [dietsButton, allergiesButton, lineView] { backgroundViewForCollection.addSubview(subview) }
+        view.addSubview(backgroundCollectionView)
+        for subview in [dietsButton, allergiesButton, lineView] { backgroundCollectionView.addSubview(subview) }
         NSLayoutConstraint.activate([
-            backgroundViewForCollection.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundViewForCollection.leftAnchor.constraint(equalTo: view.leftAnchor),
-            backgroundViewForCollection.rightAnchor.constraint(equalTo: view.rightAnchor),
-            backgroundViewForCollection.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundCollectionView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            backgroundCollectionView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            backgroundCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            dietsButton.topAnchor.constraint(equalTo: backgroundViewForCollection.topAnchor, constant: 5),
-            dietsButton.leftAnchor.constraint(equalTo: backgroundViewForCollection.leftAnchor, constant: 50),
+            dietsButton.topAnchor.constraint(equalTo: backgroundCollectionView.topAnchor, constant: 5),
+            dietsButton.leftAnchor.constraint(equalTo: backgroundCollectionView.leftAnchor, constant: 50),
             dietsButton.heightAnchor.constraint(equalToConstant: 35),
             
-            allergiesButton.topAnchor.constraint(equalTo: backgroundViewForCollection.topAnchor, constant: 5),
-            allergiesButton.rightAnchor.constraint(equalTo: backgroundViewForCollection.rightAnchor, constant: -50),
+            allergiesButton.topAnchor.constraint(equalTo: backgroundCollectionView.topAnchor, constant: 5),
+            allergiesButton.rightAnchor.constraint(equalTo: backgroundCollectionView.rightAnchor, constant: -50),
             allergiesButton.heightAnchor.constraint(equalToConstant: 35),
             
             lineView.topAnchor.constraint(equalTo: dietsButton.bottomAnchor, constant: 2),
-            lineView.leftAnchor.constraint(equalTo: backgroundViewForCollection.leftAnchor),
-            lineView.rightAnchor.constraint(equalTo: backgroundViewForCollection.rightAnchor),
+            lineView.leftAnchor.constraint(equalTo: backgroundCollectionView.leftAnchor),
+            lineView.rightAnchor.constraint(equalTo: backgroundCollectionView.rightAnchor),
             lineView.heightAnchor.constraint(equalToConstant: 5)
         ])
     }
     private func setupCategoryValueCollection(){
-        collectionVFilterValues.register(CategoryCollectionCell.self, forCellWithReuseIdentifier: CategoryCollectionCell.identifier)
+        collectionVFilterValues.register(CategoryCell.self, forCellWithReuseIdentifier: CategoryCell.identifier)
         collectionVFilterValues.dataSource = self
         collectionVFilterValues.delegate = self
-        backgroundViewForCollection.addSubview(collectionVFilterValues)
+        backgroundCollectionView.addSubview(collectionVFilterValues)
         NSLayoutConstraint.activate([
             collectionVFilterValues.topAnchor.constraint(equalTo: lineView.bottomAnchor, constant: 3),
-            collectionVFilterValues.leftAnchor.constraint(equalTo: backgroundViewForCollection.leftAnchor, constant: 5),
-            collectionVFilterValues.rightAnchor.constraint(equalTo: backgroundViewForCollection.rightAnchor, constant: -5),
-            collectionVFilterValues.bottomAnchor.constraint(equalTo: backgroundViewForCollection.bottomAnchor)
+            collectionVFilterValues.leftAnchor.constraint(equalTo: backgroundCollectionView.leftAnchor, constant: 5),
+            collectionVFilterValues.rightAnchor.constraint(equalTo: backgroundCollectionView.rightAnchor, constant: -5),
+            collectionVFilterValues.bottomAnchor.constraint(equalTo: backgroundCollectionView.bottomAnchor)
         ])
     }
 }
@@ -108,11 +108,10 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
         return count
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCollectionCell.identifier, for: indexPath) as! CategoryCollectionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCell.identifier, for: indexPath) as! CategoryCell
         cell.configure(value: categoryValues![indexPath.row], index: indexPath.row)
         return cell
     }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
        print(indexPath.row)
         presenter.selectCategoryValue(index: indexPath.row)

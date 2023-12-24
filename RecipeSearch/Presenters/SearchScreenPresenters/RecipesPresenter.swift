@@ -28,13 +28,9 @@ class RecipesPresenter: RecipesPresenterProtocol {
         self.favoriteStatusManager = favoriteStatusManager
     }
     func attachView(_ delegate: UIViewController) { recipeControllerDelegate = delegate as? RecipesControllerDelegate }
-    
+
     func updateItemsView(with recipes:  [RecipeProfileProtocol]) {
         if let updatetRecipes = try? favoriteRecipesStorage.getUpdatedRecipeArray(from: recipes) {
-            var i: Int = 1
-            for recipe in updatetRecipes { print("\(i).\(recipe.title)\ncalories:\(recipe.calories)\nlink:\(recipe.url)\nisFavorite:\(recipe.isFavorite)")
-                i += 1
-            }
             recipeControllerDelegate?.updateItems(recipe: updatetRecipes)
         }
     }
@@ -42,7 +38,7 @@ class RecipesPresenter: RecipesPresenterProtocol {
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?) {
         guard let selectedRecipe = selectedRecipe, let index = index else { return }
         favoriteStatusManager.presentViewControllerClouser = {[ weak self] vc in
-            self?.recipeControllerDelegate?.presentCatalogView(vc)
+            self?.recipeControllerDelegate?.presentFavoriteSectionsView(vc)
         }
         favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedRecipe in
             guard let self = self,  let updatedRecipe = updatedRecipe else { return }
@@ -64,7 +60,7 @@ class RecipesPresenter: RecipesPresenterProtocol {
         cell.setupCell(with: recipeProfile, tag: tag)
     }
     
-    func pushResipeScreen(with recipe: RecipeProfileProtocol, onDataUpdate: @escaping ((Any) -> Void)) {
+    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onDataUpdate:  ((Any) -> Void)?) {
         let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipe, onDataUpdate: onDataUpdate)
         let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
         recipeControllerDelegate?.pushViewController(recipeProfileController, animated: true)

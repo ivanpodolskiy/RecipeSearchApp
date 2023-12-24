@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CategoryCollectionCell: UICollectionViewCell  {
+class CategoryCell: UICollectionViewCell  {
     private let label: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
@@ -29,13 +29,13 @@ class CategoryCollectionCell: UICollectionViewCell  {
         ])
     }
 }
-extension CategoryCollectionCell {
+extension CategoryCell {
     func configure(value: CategoryValueProtocol, index: Int) {
         label.text = value.title
         label.textColor = value.getStatus() ? .selected  : .white 
     }
 }
-extension CategoryCollectionCell: ReusableView  {
+extension CategoryCell: ReusableView  {
     static var identifier: String {
         return String(describing: self)
     }

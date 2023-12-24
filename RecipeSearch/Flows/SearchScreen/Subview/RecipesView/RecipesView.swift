@@ -1,5 +1,5 @@
 //
-//  RecipesViewController.swift
+//  RecipesView.swift
 //  RecipeSearch
 //
 //  Created by user on 17.09.2023.
@@ -12,9 +12,6 @@ class RecipesViewController: UIViewController{
     private var recipes: [RecipeProfileProtocol]?
     private var lastCurrentOffset: CGFloat = 0
     
-    override func viewWillAppear(_ animated: Bool) {
-        print("viewWillAppear")
-    }
     func setPresenter(_ presenter: RecipesPresenterProtocol) {
         self.presenter = presenter
     }
@@ -26,8 +23,7 @@ class RecipesViewController: UIViewController{
     }
     private var isCollectionHidden: Bool = true {
         willSet { self.collectionView.isHidden = newValue }
-    }
-    
+    } 
     private func setCollectionView() {
         collectionView.frame = view.bounds
         collectionView.dataSource = self
@@ -83,10 +79,9 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let recipes = recipes else { return }
         let recipe = recipes[indexPath.row]
-    
-        presenter.pushResipeScreen(with: recipe) { [weak self] isFavorite  in
-            guard let self = self else { return }
-            guard let isFavorite = isFavorite as? Bool else { return }
+        
+        presenter.pushRecipeProfileScreen(with: recipe) { [weak self] isFavorite  in
+            guard let self = self, let isFavorite = isFavorite as? Bool else { return }
             DispatchQueue.main.async {
                 self.recipes![indexPath.row].isFavorite = isFavorite
                 collectionView.reloadItems(at: [indexPath])
@@ -110,7 +105,6 @@ extension RecipesViewController: UICollectionViewDelegateFlowLayout{
         let width = itemWidth(for: view.frame.width, spacing: LayoutConstant.spacing)
         return CGSize(width: width, height: LayoutConstant.itemHeight)
     }
-    
     private func itemWidth(for width: CGFloat, spacing: CGFloat) -> CGFloat {
         let itmesInRow: CGFloat = 2
         let totalSpacing: CGFloat = 2 * spacing + (itmesInRow - 1) * spacing
@@ -133,7 +127,7 @@ extension RecipesViewController: UIScrollViewDelegate {
 }
 //MARK: - RecipesViewDelegate
 extension RecipesViewController: RecipesControllerDelegate {
-    func presentCatalogView(_ viewController: UIViewController) {
+    func presentFavoriteSectionsView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }
     }
     func updateOneItem(recipe: RecipeProfileProtocol, index: Int) {
@@ -146,9 +140,8 @@ extension RecipesViewController: RecipesControllerDelegate {
         recipes = result
         DispatchQueue.main.async {
             self.collectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-
             self.collectionView.performBatchUpdates ({
-                 self.collectionView.reloadSections(IndexSet(integer: 0))
+                self.collectionView.reloadSections(IndexSet(integer: 0))
                 self.collectionView.isHidden = false
             })
         }
@@ -158,4 +151,3 @@ extension RecipesViewController: RecipesControllerDelegate {
             navigationController.pushViewController(viewController, animated: animated) }
     }
 }
-

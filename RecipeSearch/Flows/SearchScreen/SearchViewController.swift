@@ -33,7 +33,6 @@ class SearchViewController: UIViewController{
     private var constraintDescriptionSearching: [NSLayoutConstraint]!
     private var constraintDescriptionFiltering: [NSLayoutConstraint]!
     private lazy var slideInTransitioningDelegate = SelectionSectionManagerView()
-    private let alertUtility = AlertUtility()
     
     private var filterController: FilterViewController!
     private var collectionView: RecipesViewController!
@@ -58,10 +57,6 @@ class SearchViewController: UIViewController{
     }()
     
     //MARK: - View functions
-    private func showError(ttile: String, message: String) {
-        let alertController = alertUtility.notificationAlert(title: ttile, message: message, target: self)
-        present(alertController, animated: true)
-    }
     private func setDescriptionLabel() {
         view.addSubview(descriptionLabel)
     }
@@ -202,15 +197,17 @@ extension SearchViewController: UISearchBarDelegate {
 }
 //MARK: - SearchControllerDelegate
 extension SearchViewController: SearchControllerDelegate {
-    func displayError(_ userFriendlyDescription: String, type: SearchTypeError) {
+    func updateText(_ userFriendlyDescription: String) {
         DispatchQueue.main.async {
-        switch type {
-        case .network:
-            self.showError(ttile: "NetworkError", message: userFriendlyDescription)
-        case.data:
             self.showDisplayedDescription(for: .dataError, with: userFriendlyDescription)
             self.dismissChildViewController(.recipesCollection)
-            }
+            
+        }
+    }
+    
+    func presentAlert(_ alert: UIAlertController) {
+        DispatchQueue.main.async {
+            self.present(alert, animated: true)
         }
     }
 }

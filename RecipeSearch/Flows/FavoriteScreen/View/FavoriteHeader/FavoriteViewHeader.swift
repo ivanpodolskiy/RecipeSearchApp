@@ -86,8 +86,11 @@ class FavoriteViewHeader: UICollectionReusableView {
 //MARK: - Extensions
 extension FavoriteViewHeader {
     static var identifier: String { return String(describing: self) }
+    func setCountItems(_ count: Int) {
+        countRecipes = count
+    }
     func setSectionDesctiption(title: String, countItems: Int) {
         titleLabel.setText(title)
-        countRecipes = countItems
+        setCountItems(countItems)
     }
 }

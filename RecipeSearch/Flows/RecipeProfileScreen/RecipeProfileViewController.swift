@@ -18,7 +18,6 @@ class RecipeProfileViewController: UIViewController  {
     private let detailRecipeView = DetailRecipeHeaderView()
     private let ingredientsView = IngredientsView()
     private let catehoriesView = CategoriesView()
-    private let alertUtility = AlertUtility()
 
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)
@@ -32,11 +31,11 @@ class RecipeProfileViewController: UIViewController  {
         view.backgroundColor = .white
         presenter.loadRecipe()
     }
-    private func showError(title: String, message: String)  {
-       let alertController =  alertUtility.notificationAlert(title: title, message: message, target: self)
-        present(alertController, animated: true)
-    }
-    
+//    private func showError(title: String, message: String)  {
+//       let alertController =  alertUtility.notificationAlert(title: title, message: message, target: self)
+//        present(alertController, animated: true)
+//    }
+//
     override func viewDidLayoutSubviews() {
         view.addSubview(scrollView)
         view.addSubview(ingredientsView)
@@ -88,9 +87,9 @@ extension RecipeProfileViewController: RecipeProfileDelegate {
         detailRecipeView.updateButtonColor(isFavorite: isFavorite)
     }
     func presentError(_ userFriendlyDescription: String) {
-        DispatchQueue.main.async { self.showError(title: "Error", message: userFriendlyDescription) }
+//        DispatchQueue.main.async { self.showError(title: "Error", message: userFriendlyDescription) }
     }
-    func presentCatalogView(_ viewController: UIViewController) {
+    func presentFavoriteSectionsView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }
     }
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
