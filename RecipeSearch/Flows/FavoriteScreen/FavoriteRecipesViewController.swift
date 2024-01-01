@@ -20,7 +20,10 @@ class FavoriteRecipesViewController: UIViewController {
         self.presenter = presenter
     }
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        view.addSubview(collectionView)
+
         view.backgroundColor = .white
         registerCollectionView()
         navigationItem.leftBarButtonItem = getLeftBarButtonItem()
@@ -31,7 +34,6 @@ class FavoriteRecipesViewController: UIViewController {
         if let presenter = presenter { presenter.fetchFavoriteRecipes() }
     }
     override func viewDidLayoutSubviews() {
-        view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -103,6 +105,9 @@ class FavoriteRecipesViewController: UIViewController {
         return supplementaryItem
     }
     
+    private func showAlert(_ alert: UIView) {
+        view.addSubview(alert)
+    }
 }
 //MARK: - Action | Alerts
 extension FavoriteRecipesViewController {
@@ -173,7 +178,7 @@ extension FavoriteRecipesViewController: UICollectionViewDelegate {
         guard let favoriteCategories = favoriteSections,
               let recipes = favoriteCategories[indexPath.section].recipes else { return }
         let recipe = recipes[indexPath.row]
-        presenter?.pushRecipeProfileScreen(with: recipe, onDataUpdate: nil)
+        presenter?.pushRecipeProfileScreen(with: recipe, onStatusUpdate: nil)
     }
 }
 //MARK: - Header Methods
@@ -188,7 +193,7 @@ extension FavoriteRecipesViewController {
     }
 }
 //MARK: - FavoriteRecipesDelegate
-extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
+extension FavoriteRecipesViewController: FavoriteRecipesDelegate {    
     func updateCollectionView(_ updatedData: [FavoriteRecipesSectionProtocol]) {
         self.favoriteSections = updatedData
         DispatchQueue.main.async {

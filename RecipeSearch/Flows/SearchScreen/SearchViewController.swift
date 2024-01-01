@@ -25,10 +25,12 @@ class SearchViewController: UIViewController{
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationItem.searchController = searchController
+        
         searchController.delegate = self
         searchController.searchBar.delegate = self
         showDisplayedDescription(for: .searching)
     }
+    
     //MARK: - Outlets
     private var constraintDescriptionSearching: [NSLayoutConstraint]!
     private var constraintDescriptionFiltering: [NSLayoutConstraint]!

@@ -113,7 +113,6 @@ extension FilterViewController: UICollectionViewDelegate, UICollectionViewDataSo
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       print(indexPath.row)
         presenter.selectCategoryValue(index: indexPath.row)
     }
 }

@@ -14,7 +14,7 @@ protocol RecipesPresenterProtocol: PresenterProtocol, RecipeNavigationProtocol, 
 }
 //MARK: Delegate Protocols
 protocol RecipesControllerDelegate: AnyObject, UIViewController, SectionsMenuDelegate, NavigationDelegate {
-    func updateOneItem(recipe: RecipeProfileProtocol, index: Int)
+    func updateFavoriteStatus(isFavorite: Bool, index: Int)
     func updateItems(recipe: [RecipeProfileProtocol]?)
 }
 //MARK: - RecipesPresenter
@@ -37,12 +37,14 @@ class RecipesPresenter: RecipesPresenterProtocol {
     
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?) {
         guard let selectedRecipe = selectedRecipe, let index = index else { return }
-        favoriteStatusManager.presentViewControllerClouser = {[ weak self] vc in
-            self?.recipeControllerDelegate?.presentFavoriteSectionsView(vc)
+        
+        favoriteStatusManager.presentViewControllerClouser = {[ weak self] selectionMenu in
+            guard let self = self else { return }
+            recipeControllerDelegate?.presentFavoriteSectionsView(selectionMenu)
         }
-        favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedRecipe in
-            guard let self = self,  let updatedRecipe = updatedRecipe else { return }
-            self.recipeControllerDelegate?.updateOneItem(recipe: updatedRecipe, index: index)
+        favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedStatus in
+            guard let self = self,  let updatedStatus = updatedStatus else { return }
+            self.recipeControllerDelegate?.updateFavoriteStatus(isFavorite: updatedStatus, index: index)
         }
     }
     
@@ -60,9 +62,9 @@ class RecipesPresenter: RecipesPresenterProtocol {
         cell.setupCell(with: recipeProfile, tag: tag)
     }
     
-    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onDataUpdate:  ((Any) -> Void)?) {
-        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipe, onDataUpdate: onDataUpdate)
-        let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
+    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?) {
+        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipe, onStatusUpdate: onStatusUpdate)
+        let recipeProfileController = ElementsViewFactory.defaultFactory.createVC(.profileView, presenter: presenter)
         recipeControllerDelegate?.pushViewController(recipeProfileController, animated: true)
     }
 }

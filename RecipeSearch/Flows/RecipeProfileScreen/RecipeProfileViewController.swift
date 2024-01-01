@@ -83,7 +83,7 @@ extension RecipeProfileViewController: RecipeProfileDelegate {
     func setImage(image: UIImage?) {
         self.detailRecipeView.loadImage(image: image ??   UIImage(named: "placeholder")!)
     }
-    func updateFavoriteStatus(isFavorite: Bool) {
+    func updateFavoriteStatus(_ isFavorite: Bool) {
         detailRecipeView.updateButtonColor(isFavorite: isFavorite)
     }
     func presentError(_ userFriendlyDescription: String) {

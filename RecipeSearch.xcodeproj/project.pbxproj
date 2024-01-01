@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		CE0617102AE5651E004F973F /* CoreDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE06170F2AE5651E004F973F /* CoreDataError.swift */; };
 		CE0617122AE56829004F973F /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0617112AE56829004F973F /* NetworkError.swift */; };
-		CE0617182AEA83B2004F973F /*  AlertUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0617172AEA83B2004F973F /*  AlertUtility.swift */; };
 		CE07BDB62A1AB25C00A66347 /* CustomTabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE07BDB52A1AB25C00A66347 /* CustomTabBarItem.swift */; };
 		CE07BDB82A1AB4F800A66347 /* CustomTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE07BDB72A1AB4F800A66347 /* CustomTabBarController.swift */; };
 		CE0849292B1CDB7500CC15B4 /* RecipesViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0849282B1CDB7500CC15B4 /* RecipesViewHeader.swift */; };
@@ -46,7 +45,7 @@
 		CE6230822B18C912002A5AFD /* FavoriteStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6230812B18C912002A5AFD /* FavoriteStatusManager.swift */; };
 		CE6EB6C02A2CA54100D958FF /* RecipeModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CE6EB6BE2A2CA54100D958FF /* RecipeModel.xcdatamodeld */; };
 		CE78B00D2ABE0EE90075C603 /* ModelBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78B00C2ABE0EE90075C603 /* ModelBuilder.swift */; };
-		CE78B0102ABE248F0075C603 /* FactoryElementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78B00F2ABE248F0075C603 /* FactoryElementsView.swift */; };
+		CE78B0102ABE248F0075C603 /* ElementsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78B00F2ABE248F0075C603 /* ElementsViewFactory.swift */; };
 		CE78B0172ACDE2FC0075C603 /* NetworkErrorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78B0162ACDE2FC0075C603 /* NetworkErrorHelper.swift */; };
 		CE879C4A2A2BBE4500E366F4 /* FavoriteRecipeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE879C492A2BBE4500E366F4 /* FavoriteRecipeCell.swift */; };
 		CE879C4C2A2BD60400E366F4 /* FavoriteViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE879C4B2A2BD60400E366F4 /* FavoriteViewHeader.swift */; };
@@ -60,8 +59,14 @@
 		CEB6F7312A156FB800E219ED /* InformationDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB6F7302A156FB800E219ED /* InformationDisplayView.swift */; };
 		CEBC2C342A2F714500BCD9B8 /* SelectionСategoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBC2C332A2F714500BCD9B8 /* SelectionСategoryManager.swift */; };
 		CEBC2C362A2F71EC00BCD9B8 /* SelectionFavoriteSectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBC2C352A2F71EC00BCD9B8 /* SelectionFavoriteSectionController.swift */; };
-		CEBC2C382A2F78BF00BCD9B8 /* SelectionMenuVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuVC.swift */; };
-		CECF51AB2B344E3300D032B9 /* AlertControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51AA2B344E3300D032B9 /* AlertControllerFactory.swift */; };
+		CEBC2C382A2F78BF00BCD9B8 /* SelectionMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuViewController.swift */; };
+		CECF51AB2B344E3300D032B9 /* AlertFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51AA2B344E3300D032B9 /* AlertFactory.swift */; };
+		CECF51B12B38503F00D032B9 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51B02B38503F00D032B9 /* Alert.swift */; };
+		CECF51B32B3859D800D032B9 /* Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51B22B3859D800D032B9 /* Window.swift */; };
+		CECF51B62B3C6AEB00D032B9 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51B52B3C6AEB00D032B9 /* AlertManager.swift */; };
+		CECF51B92B41D17C00D032B9 /* ButtonsContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51B82B41D17C00D032B9 /* ButtonsContainerView.swift */; };
+		CECF51BC2B432C7E00D032B9 /* WindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51BB2B432C7E00D032B9 /* WindowService.swift */; };
+		CECF51C12B433DEF00D032B9 /* SelectionMenuPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF51C02B433DEF00D032B9 /* SelectionMenuPresenter.swift */; };
 		CEDABC9F2A2A30D600EC72B8 /* FavoriteRecipesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDABC9E2A2A30D600EC72B8 /* FavoriteRecipesViewController.swift */; };
 		CEEAB8432A27B7BA0041ED26 /* ValuesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEEAB8422A27B7BA0041ED26 /* ValuesView.swift */; };
 /* End PBXBuildFile section */
@@ -69,7 +74,6 @@
 /* Begin PBXFileReference section */
 		CE06170F2AE5651E004F973F /* CoreDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataError.swift; sourceTree = "<group>"; };
 		CE0617112AE56829004F973F /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		CE0617172AEA83B2004F973F /*  AlertUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " AlertUtility.swift"; sourceTree = "<group>"; };
 		CE07BDB52A1AB25C00A66347 /* CustomTabBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarItem.swift; sourceTree = "<group>"; };
 		CE07BDB72A1AB4F800A66347 /* CustomTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarController.swift; sourceTree = "<group>"; };
 		CE0849282B1CDB7500CC15B4 /* RecipesViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesViewHeader.swift; sourceTree = "<group>"; };
@@ -109,7 +113,7 @@
 		CE6230812B18C912002A5AFD /* FavoriteStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteStatusManager.swift; sourceTree = "<group>"; };
 		CE6EB6BF2A2CA54100D958FF /* RecipeModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RecipeModel.xcdatamodel; sourceTree = "<group>"; };
 		CE78B00C2ABE0EE90075C603 /* ModelBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelBuilder.swift; sourceTree = "<group>"; };
-		CE78B00F2ABE248F0075C603 /* FactoryElementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryElementsView.swift; sourceTree = "<group>"; };
+		CE78B00F2ABE248F0075C603 /* ElementsViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementsViewFactory.swift; sourceTree = "<group>"; };
 		CE78B0162ACDE2FC0075C603 /* NetworkErrorHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrorHelper.swift; sourceTree = "<group>"; };
 		CE879C492A2BBE4500E366F4 /* FavoriteRecipeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteRecipeCell.swift; sourceTree = "<group>"; };
 		CE879C4B2A2BD60400E366F4 /* FavoriteViewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewHeader.swift; sourceTree = "<group>"; };
@@ -123,8 +127,14 @@
 		CEB6F7302A156FB800E219ED /* InformationDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationDisplayView.swift; sourceTree = "<group>"; };
 		CEBC2C332A2F714500BCD9B8 /* SelectionСategoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectionСategoryManager.swift"; sourceTree = "<group>"; };
 		CEBC2C352A2F71EC00BCD9B8 /* SelectionFavoriteSectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionFavoriteSectionController.swift; sourceTree = "<group>"; };
-		CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionMenuVC.swift; sourceTree = "<group>"; };
-		CECF51AA2B344E3300D032B9 /* AlertControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertControllerFactory.swift; sourceTree = "<group>"; };
+		CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionMenuViewController.swift; sourceTree = "<group>"; };
+		CECF51AA2B344E3300D032B9 /* AlertFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertFactory.swift; sourceTree = "<group>"; };
+		CECF51B02B38503F00D032B9 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
+		CECF51B22B3859D800D032B9 /* Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Window.swift; sourceTree = "<group>"; };
+		CECF51B52B3C6AEB00D032B9 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
+		CECF51B82B41D17C00D032B9 /* ButtonsContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonsContainerView.swift; sourceTree = "<group>"; };
+		CECF51BB2B432C7E00D032B9 /* WindowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowService.swift; sourceTree = "<group>"; };
+		CECF51C02B433DEF00D032B9 /* SelectionMenuPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionMenuPresenter.swift; sourceTree = "<group>"; };
 		CEDABC9E2A2A30D600EC72B8 /* FavoriteRecipesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteRecipesViewController.swift; sourceTree = "<group>"; };
 		CEEAB8422A27B7BA0041ED26 /* ValuesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -203,6 +213,7 @@
 		CE1026C529FC4976000B9CCA /* RecipeSearch */ = {
 			isa = PBXGroup;
 			children = (
+				CECF51BA2B432C6300D032B9 /* WindowService */,
 				CE78B0152ACDE2D20075C603 /* Helpers */,
 				CE78B00E2ABE247D0075C603 /* Factory */,
 				CE78B00B2ABE0EB50075C603 /* Builder */,
@@ -265,6 +276,7 @@
 				CE0C039C2AE2C51E00B22112 /* FavoriteRecipesScreenPresenter */,
 				CE0D30822AD41ABE00221D79 /* SearchScreenPresenters */,
 				CE0D30892AD41F7C00221D79 /* RecipeProfilePresenter */,
+				CECF51C02B433DEF00D032B9 /* SelectionMenuPresenter.swift */,
 			);
 			path = Presenters;
 			sourceTree = "<group>";
@@ -285,6 +297,7 @@
 				CE6C40492A226FCE00271806 /* FavoriteScreen */,
 				CEBC2C392A2FB89800BCD9B8 /* SelectionCategoryScreen */,
 				CE5D3D762A24D05100E7764E /* WebScreen */,
+				CECF51AD2B37A78500D032B9 /* Alert */,
 			);
 			path = Flows;
 			sourceTree = "<group>";
@@ -386,8 +399,8 @@
 		CE78B00E2ABE247D0075C603 /* Factory */ = {
 			isa = PBXGroup;
 			children = (
-				CECF51AD2B37A78500D032B9 /* Alerts */,
-				CECF51AC2B37A76C00D032B9 /* ElementsView */,
+				CE78B00F2ABE248F0075C603 /* ElementsViewFactory.swift */,
+				CECF51AA2B344E3300D032B9 /* AlertFactory.swift */,
 			);
 			path = Factory;
 			sourceTree = "<group>";
@@ -397,6 +410,7 @@
 			children = (
 				CE78B0162ACDE2FC0075C603 /* NetworkErrorHelper.swift */,
 				CE0D30922AD9994700221D79 /* ImageLoader.swift */,
+				CECF51B22B3859D800D032B9 /* Window.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -477,26 +491,19 @@
 			isa = PBXGroup;
 			children = (
 				CEBC2C322A2F708500BCD9B8 /* Presentation */,
-				CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuVC.swift */,
+				CEBC2C372A2F78BF00BCD9B8 /* SelectionMenuViewController.swift */,
 			);
 			path = SelectionCategoryScreen;
 			sourceTree = "<group>";
 		};
-		CECF51AC2B37A76C00D032B9 /* ElementsView */ = {
+		CECF51AD2B37A78500D032B9 /* Alert */ = {
 			isa = PBXGroup;
 			children = (
-				CE78B00F2ABE248F0075C603 /* FactoryElementsView.swift */,
+				CECF51B72B41D15200D032B9 /* Subview */,
+				CECF51B02B38503F00D032B9 /* Alert.swift */,
+				CECF51B52B3C6AEB00D032B9 /* AlertManager.swift */,
 			);
-			path = ElementsView;
-			sourceTree = "<group>";
-		};
-		CECF51AD2B37A78500D032B9 /* Alerts */ = {
-			isa = PBXGroup;
-			children = (
-				CECF51AA2B344E3300D032B9 /* AlertControllerFactory.swift */,
-				CE0617172AEA83B2004F973F /*  AlertUtility.swift */,
-			);
-			path = Alerts;
+			path = Alert;
 			sourceTree = "<group>";
 		};
 		CECF51AE2B37A96200D032B9 /* Cell | Header */ = {
@@ -515,6 +522,22 @@
 				CE2753C12AB70FD600138164 /* RecipesView.swift */,
 			);
 			path = RecipesView;
+			sourceTree = "<group>";
+		};
+		CECF51B72B41D15200D032B9 /* Subview */ = {
+			isa = PBXGroup;
+			children = (
+				CECF51B82B41D17C00D032B9 /* ButtonsContainerView.swift */,
+			);
+			path = Subview;
+			sourceTree = "<group>";
+		};
+		CECF51BA2B432C6300D032B9 /* WindowService */ = {
+			isa = PBXGroup;
+			children = (
+				CECF51BB2B432C7E00D032B9 /* WindowService.swift */,
+			);
+			path = WindowService;
 			sourceTree = "<group>";
 		};
 		CEEAB8402A27B7920041ED26 /* InformationView */ = {
@@ -610,19 +633,23 @@
 				CE5D3D782A24D06800E7764E /* WebViewController.swift in Sources */,
 				CEB6F7282A140D8600E219ED /* RecipeProfileViewController.swift in Sources */,
 				CE5D3D752A24BEAA00E7764E /* FavoriteRecipesManager.swift in Sources */,
+				CECF51B12B38503F00D032B9 /* Alert.swift in Sources */,
 				CE2753C02AB4AD4200138164 /* LineView.swift in Sources */,
+				CECF51B62B3C6AEB00D032B9 /* AlertManager.swift in Sources */,
 				CEB6F72D2A152C9700E219ED /* IngredientsView.swift in Sources */,
 				CE1026C729FC4976000B9CCA /* AppDelegate.swift in Sources */,
 				CE0617102AE5651E004F973F /* CoreDataError.swift in Sources */,
 				CE2753C62AB756D100138164 /* RecipeProfilePresenter.swift in Sources */,
 				CE518EB32A0CF29000AAEFF3 /* RecipeSearchService.swift in Sources */,
+				CECF51B92B41D17C00D032B9 /* ButtonsContainerView.swift in Sources */,
 				CEB6F72B2A14379900E219ED /* DetailRecipeView .swift in Sources */,
+				CECF51C12B433DEF00D032B9 /* SelectionMenuPresenter.swift in Sources */,
 				CE0849292B1CDB7500CC15B4 /* RecipesViewHeader.swift in Sources */,
 				CEDABC9F2A2A30D600EC72B8 /* FavoriteRecipesViewController.swift in Sources */,
 				CE07BDB62A1AB25C00A66347 /* CustomTabBarItem.swift in Sources */,
+				CECF51B32B3859D800D032B9 /* Window.swift in Sources */,
 				CE518EA22A0AE86300AAEFF3 /* SearchViewController.swift in Sources */,
 				CE78B0172ACDE2FC0075C603 /* NetworkErrorHelper.swift in Sources */,
-				CE0617182AEA83B2004F973F /*  AlertUtility.swift in Sources */,
 				CE518EB62A0D0E5E00AAEFF3 /* APIRecipe.swift in Sources */,
 				CE518EAB2A0B97CE00AAEFF3 /* Extension.swift in Sources */,
 				CE2753BE2AB4AD2100138164 /* CategoryBackgroundView.swift in Sources */,
@@ -630,6 +657,7 @@
 				CE0D30842AD41B0A00221D79 /* SearchPresenter.swift in Sources */,
 				CE8FEE842B2F2A93009688A1 /* SwitchableButtonDisplay.swift in Sources */,
 				CEA4C0E72AD1985C00F144CA /* PublicPresenterProtocols.swift in Sources */,
+				CECF51BC2B432C7E00D032B9 /* WindowService.swift in Sources */,
 				CE62307F2B17B203002A5AFD /* RecipeProfileEntity+CoreDataClass.swift in Sources */,
 				CEB6F72F2A15312000E219ED /* CategoriesView.swift in Sources */,
 				CE62307D2B17B203002A5AFD /* RecipesSectionEntity+CoreDataClass.swift in Sources */,
@@ -645,9 +673,9 @@
 				CE78B00D2ABE0EE90075C603 /* ModelBuilder.swift in Sources */,
 				CE0D30862AD41C6200221D79 /* FilterPresenter.swift in Sources */,
 				CE0D30882AD41CB900221D79 /* RecipesPresenter.swift in Sources */,
-				CECF51AB2B344E3300D032B9 /* AlertControllerFactory.swift in Sources */,
-				CE78B0102ABE248F0075C603 /* FactoryElementsView.swift in Sources */,
-				CEBC2C382A2F78BF00BCD9B8 /* SelectionMenuVC.swift in Sources */,
+				CECF51AB2B344E3300D032B9 /* AlertFactory.swift in Sources */,
+				CE78B0102ABE248F0075C603 /* ElementsViewFactory.swift in Sources */,
+				CEBC2C382A2F78BF00BCD9B8 /* SelectionMenuViewController.swift in Sources */,
 				CE2753C22AB70FD600138164 /* RecipesView.swift in Sources */,
 				CE0D30932AD9994700221D79 /* ImageLoader.swift in Sources */,
 				CEB6F7312A156FB800E219ED /* InformationDisplayView.swift in Sources */,

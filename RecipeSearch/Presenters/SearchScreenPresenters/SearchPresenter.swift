@@ -20,7 +20,7 @@ protocol SearchPresenterProtocol: PresenterProtocol, CreaterProtocol  {
 protocol UpdatingTextProtocol {
     func updateText(_ userFriendlyDescription: String)
 }
-protocol SearchControllerDelegate: AnyObject, UpdatingTextProtocol, PresentAlertDelegate  { }
+protocol SearchControllerDelegate: AnyObject, UpdatingTextProtocol  { }
 
 //MARK: - SearchPresenter
 class SearchPresenter: SearchPresenterProtocol {
@@ -28,11 +28,13 @@ class SearchPresenter: SearchPresenterProtocol {
     private let recipesPresenter: RecipesPresenterProtocol
     private let categoryManager: CategoryManagerProtocol
     private let recipeService: RecipeSearchServiceProtocol
+    private let alertManager: AlertManagerProtocol
     
-    init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, recipesPresenter: RecipesPresenterProtocol) {
+    init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, recipesPresenter: RecipesPresenterProtocol, alertManager: AlertManagerProtocol) {
         self.categoryManager = categoryManager
         self.recipeService = recipeService
         self.recipesPresenter = recipesPresenter
+        self.alertManager = alertManager
     }
     
     func attachView(_ delegate: UIViewController) { searchControllerDelegate = delegate as? SearchControllerDelegate }
@@ -53,20 +55,23 @@ class SearchPresenter: SearchPresenterProtocol {
                 case .dataError(.notitems):
                     self.searchControllerDelegate.updateText("Nothing in our recipes database matches what you are searching for! Please try again.")
                 case .notConnectedToInternet:
-                    let alertController = AlertFactory.defaultFactory.getAlertController(type: .notification(title: "Network Error", message: "The request could not be sent. Checking the network connection.", cancelHandler: nil))
-                    searchControllerDelegate.presentAlert(alertController)
+                    
+                    DispatchQueue.main.async {
+                        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .notification(title: "Network Error", message: "The request could not be sent. Checking the network connection."))
+                        self.alertManager.setAlert(alert)
+                        self.alertManager.showAlert()
+                    }
                 default: print("Error: \(error)")
                 }
             }
         }
     }
     func createRecpesView() -> UIViewController {
-        FactoryElementsView.defaultFactory.createVC(.recipesView, presenter: recipesPresenter)
+        ElementsViewFactory.defaultFactory.createVC(.recipesView, presenter: recipesPresenter)
     }
-    
     func createFilterView() -> UIViewController {
         let filterPresnter = FilterPresenter(categoryManager: categoryManager)
-        return FactoryElementsView.defaultFactory.createVC(.filterView, presenter: filterPresnter)
+        return ElementsViewFactory.defaultFactory.createVC(.filterView, presenter: filterPresnter)
     }
 }
 

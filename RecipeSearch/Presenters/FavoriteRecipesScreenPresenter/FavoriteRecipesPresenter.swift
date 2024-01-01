@@ -22,7 +22,7 @@ protocol FavoriteRecipesPresenterProtocol: PresenterProtocol, RecipeNavigationPr
     func renameSection(title: String, indexSection: Int)
 }
 
-protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegate, PresentAlertDelegate {
+protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegate {
     func updateCollectionView(_ updatedData: [FavoriteRecipesSectionProtocol])
     func removeAllSections()
     func removeFavoriteRecipe(section: Int, index: Int, currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol] )
@@ -31,7 +31,12 @@ protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegat
 
 class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
     private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
-    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol) { self.favoriteRecipesStorage  = favoriteRecipesStorage }
+    private let alertManager: AlertManagerProtocol
+    
+    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, alertManager: AlertManagerProtocol) {
+        self.favoriteRecipesStorage  = favoriteRecipesStorage
+        self.alertManager = alertManager
+    }
     
     weak var favoriteRecipesController: FavoriteRecipesDelegate?
     func attachView(_ delegate: UIViewController) {
@@ -54,7 +59,6 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
         guard let sections = try? favoriteRecipesStorage.fetchSectionArrayFR() else { return }
         favoriteRecipesController?.updateCollectionView(sections)
     }
-    
     func renameSection(title: String, indexSection: Int) {
         let sectionArrayCD = try? favoriteRecipesStorage.fetchSectionArrayFR()
         guard let favoriteSection = sectionArrayCD?[indexSection] else { return }
@@ -64,13 +68,21 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
 
 extension FavoriteRecipesPresenter: FavoriteSectionCreaterProtocol {
     func addSection() {
-        let alertController = AlertFactory.defaultFactory.getAlertController(type: .textField(title: "Creating new section", message: "Type name for new section", actionHandler: { [weak self] title in
+        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .textField(title: "Creating", message: "Type name for new section", actionHandler: { [weak self] title in
             guard let self = self, let title = title as? String else { return}
             if favoriteRecipesStorage.addNewSectionCD(with: title) {
                 fetchFavoriteRecipes()
             }
-        }, cancelHandler: nil))
-        favoriteRecipesController?.presentAlert(alertController)
+        }, cancelHandler: nil, textСheckingHandler: { [weak self] title in
+            guard let self = self else  { return false }
+            if favoriteRecipesStorage.addNewSectionCD(with: title) {
+                fetchFavoriteRecipes()
+                return true
+            }
+            return false
+        }, errorText: "A section with the same name already exists"))
+        alertManager.setAlert(alert)
+        alertManager.showAlert()
     }
 }
 
@@ -81,14 +93,19 @@ extension FavoriteRecipesPresenter: FavoriteRecipesRemoverProtocol {
     }
     
     func removeSection(_ indexSection: Int) {
-        let alertController = AlertFactory.defaultFactory.getAlertController(type: .solution(title: "Removing", message: MessageRemoving.one, actionHandler: { [weak self] header in
+        
+        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .solution(title: "Removing", message: MessageRemoving.one, actionHandler: {  [weak self] header in
             guard let self = self else { return }
             if self.removeSectionFormStorage(indexSection) {
                 guard  let currectFavoriteRecipesCategories =  try? favoriteRecipesStorage.fetchSectionArrayFR() else { return }
                 favoriteRecipesController?.removeFavoriteSection(indexSection: indexSection, currentFavoriteSections: currectFavoriteRecipesCategories)
-            } 
-        }, cancelHandler: nil))
-        favoriteRecipesController?.presentAlert(alertController)
+            }
+        }, cancelHandler: {
+            print ("CANCEL")
+        }))
+        alertManager.setAlert(alert)
+        alertManager.showAlert()
+
     }
     func removeRecipe(indexRow: Int, indexSection: Int) {
         let modifiedRecipe = try? favoriteRecipesStorage.fetchSectionArrayFR()
@@ -98,15 +115,16 @@ extension FavoriteRecipesPresenter: FavoriteRecipesRemoverProtocol {
         favoriteRecipesController?.removeFavoriteRecipe(section: indexSection, index: indexRow, currectFavoriteRecipesCategories: currectFavoriteRecipesCategories )
     }
     func removeAllSections() {
-        let alertController = AlertFactory.defaultFactory.getAlertController(type: .solution(title: "Removing", message: MessageRemoving.all, actionHandler: { [weak self] header in
+        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .solution(title: "Removing", message: MessageRemoving.all, actionHandler: { [weak self] _ in
             guard let self = self else { return }
             try? favoriteRecipesStorage.deleteAll()
             favoriteRecipesController?.removeAllSections()
         }, cancelHandler: nil))
-        favoriteRecipesController?.presentAlert(alertController)
+        alertManager.setAlert(alert)
+        alertManager.showAlert()
     }
     private func removeSectionFormStorage(_ indexSection: Int)  -> Bool { //ref.
-       guard let sectionArrayCD = try? favoriteRecipesStorage.fetchSectionArrayFR() else { return false }
+        guard let sectionArrayCD = try? favoriteRecipesStorage.fetchSectionArrayFR() else { return false }
         if  indexSection >= 0 && indexSection < sectionArrayCD.count {
             let favoriteSection = sectionArrayCD[indexSection]
             try? favoriteRecipesStorage.removeSectionWithRecipes(favoriteSection)
@@ -118,10 +136,10 @@ extension FavoriteRecipesPresenter: FavoriteRecipesRemoverProtocol {
 }
 
 extension FavoriteRecipesPresenter: RecipeNavigationProtocol {
-    func pushRecipeProfileScreen(with recipeProfile: RecipeProfileProtocol, onDataUpdate:  ((Any) -> Void)?) {
+    func pushRecipeProfileScreen(with recipeProfile: RecipeProfileProtocol, onStatusUpdate:  UpdatedStatusCallback?) {
         let favoriteStatusManager = FavoriteStatusManager(favoriteRecipesStorage: favoriteRecipesStorage)
-        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipeProfile, onDataUpdate: onDataUpdate)
-        let recipeProfileController = FactoryElementsView.defaultFactory.createVC(.profileView, presenter: presenter)
+        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipeProfile, onStatusUpdate: onStatusUpdate)
+        let recipeProfileController = ElementsViewFactory.defaultFactory.createVC(.profileView, presenter: presenter)
         favoriteRecipesController?.pushViewController(recipeProfileController, animated: true)
     }
 }

@@ -13,7 +13,9 @@ protocol RecipeSearchServiceProtocol {
 //MARK: - RecipeSreachService
 final class RecipeSreachService: RecipeSearchServiceProtocol {
     private var currentTask: URLSessionTask?
-    func cancelPreviousRequests() { currentTask?.cancel() }
+    func cancelPreviousRequests() {
+        currentTask?.cancel()
+    }
     func searchRecipes(selectedCategories categoryValues: [CategoryValueProtocol]?, with searchText: String,
                        completion: @escaping (Result<[RecipeProfileProtocol],NetworkError>) -> Void)  {
         guard let url =  getURL(categoryValues, searchText) else {

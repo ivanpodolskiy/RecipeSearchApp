@@ -81,7 +81,7 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
         let recipe = recipes[indexPath.row]
         
         presenter.pushRecipeProfileScreen(with: recipe) { [weak self] isFavorite  in
-            guard let self = self, let isFavorite = isFavorite as? Bool else { return }
+            guard let self = self, let isFavorite = isFavorite else { return }
             DispatchQueue.main.async {
                 self.recipes![indexPath.row].isFavorite = isFavorite
                 collectionView.reloadItems(at: [indexPath])
@@ -127,11 +127,12 @@ extension RecipesViewController: UIScrollViewDelegate {
 }
 //MARK: - RecipesViewDelegate
 extension RecipesViewController: RecipesControllerDelegate {
+  
     func presentFavoriteSectionsView(_ viewController: UIViewController) {
         DispatchQueue.main.async { self.present(viewController, animated: true) }
     }
-    func updateOneItem(recipe: RecipeProfileProtocol, index: Int) {
-        recipes?[index] = recipe
+    func updateFavoriteStatus(isFavorite: Bool, index: Int) {
+        recipes?[index].isFavorite = isFavorite
         DispatchQueue.main.async {
             self.collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
         }

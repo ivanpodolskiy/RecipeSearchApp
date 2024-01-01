@@ -16,10 +16,14 @@ protocol FavoriteStatusProtocol {
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?)
 }
 protocol RecipeNavigationProtocol {
-    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onDataUpdate: ((Any) -> Void)?)
+    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?)
 }
 protocol ConfigureCellProtocol {
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int)
+}
+typealias UpdatedStatusCallback = (Bool?) -> Void
+protocol UpdateStatusProtocol {
+    var onStatusUpdate: UpdatedStatusCallback? {get}
 }
 //MARK: - DelegateProtocols
 protocol DelegateViewProtocol {}
@@ -31,7 +35,7 @@ protocol NavigationDelegate {
 protocol SectionsMenuDelegate {
     func presentFavoriteSectionsView(_ viewController: UIViewController)
 }
-
 protocol PresentAlertDelegate {
     func presentAlert(_ alert: UIAlertController)
 }
+

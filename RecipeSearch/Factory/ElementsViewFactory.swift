@@ -9,14 +9,14 @@ import UIKit
 
 protocol FactoryViewControllerProtocol { func createPreparedView() -> UIViewController }
 
-enum ElementView {
+enum ElementType {
     case filterView
     case recipesView
     case profileView
 }
-class FactoryElementsView {
-    static let defaultFactory = FactoryElementsView()
-    func createVC(_ element: ElementView, presenter: PresenterProtocol) -> UIViewController {
+class ElementsViewFactory {
+    static let defaultFactory = ElementsViewFactory()
+    func createVC(_ element: ElementType, presenter: PresenterProtocol) -> UIViewController {
         switch element {
         case .filterView: return createFactory(FactoryFilterView(presenter: presenter as! FilterPresenterProtocol))
         case .recipesView: return createFactory(FactoryColletionRecipe(presenter: presenter as! RecipesPresenterProtocol))

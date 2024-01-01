@@ -20,7 +20,8 @@ class FavoriteScreenBuilder: Builder {
         view.title = title
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         let favoriteStorage = StorageManagerFR(context: context)
-        let presenter = FavoriteRecipesPresenter(favoriteRecipesStorage: favoriteStorage)
+        let alertManager = AlertManager()
+        let presenter = FavoriteRecipesPresenter(favoriteRecipesStorage: favoriteStorage, alertManager: alertManager)
         presenter.attachView(view)
         view.setPresenter(presenter)
         return view
@@ -42,7 +43,8 @@ class SerachScreenBuilder: Builder {
         let favoriteStorage = StorageManagerFR(context: context)
         let favoriteStatusManager = FavoriteStatusManager(favoriteRecipesStorage: favoriteStorage)
         let recipesPresenter = RecipesPresenter(favoriteRecipesStorage: favoriteStorage, favoriteStatusManager: favoriteStatusManager)
-        let searchPresenter = SearchPresenter(categoryManager: categoryManager, recipeService: searchService, recipesPresenter: recipesPresenter)
+        let alertManager = AlertManager()
+        let searchPresenter = SearchPresenter(categoryManager: categoryManager, recipeService: searchService, recipesPresenter: recipesPresenter, alertManager: alertManager)
         searchPresenter.attachView(view)
         view.presenter = searchPresenter
         

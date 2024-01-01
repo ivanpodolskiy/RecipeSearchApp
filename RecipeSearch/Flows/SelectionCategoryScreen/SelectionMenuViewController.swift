@@ -1,5 +1,5 @@
 //
-//  SelectionMenuVC.swift
+//  SelectionMenuViewController.swift
 //  RecipeSearch
 //
 //  Created by user on 06.06.2023.
@@ -7,104 +7,26 @@
 
 import UIKit
 
-enum Selected {
-    case newSection(String)
-    case oldSection(String)
-    case cancel
-}
-
-extension Selected: Equatable {
-    static func == (lhs: Selected, rhs: Selected) -> Bool {
-        switch (lhs, rhs) {
-        case (.newSection(_), .newSection(_)):
-            return true
-        case (.oldSection(_), .oldSection(_)):
-            return true
-        case (.cancel, .cancel):
-            return true
-        default:
-            return false
-        }
+class SelectionMenuViewController: UIViewController {
+    private var presenter: SelectionMenuPresenterProtocol?
+    func setPreseter(presenter: SelectionMenuPresenterProtocol) {
+        self.presenter = presenter
     }
-}
-class SelectionMenuVC: UIViewController {
-    private var titles: [String]?
-    
-    public var completion: ((Selected) -> Void)?
-    
-    init(titles: [String]?) {
-        super.init(nibName: nil, bundle: nil)
-        self.titles = titles
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        let titles = presenter?.getSectionTitiles()
         buttons = getButtons(with: titles)
         setActions()
         setupLayout()
     }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         scrollView.reloadInputViews()
         scrollView.refreshControl?.beginRefreshing()
     }
-    
     //MARK: - Outlets
     private var buttons:  [UIButton]?
-    private let backgroundView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .basic
-        view.layer.cornerRadius = 20
-        return view
-    }()
     
-    private let scrollView: UIScrollView  = {
-        let scrollView = UIScrollView(frame: .zero)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
-    }()
-    
-    private let newSelectButton: UIButton = {
-        let button = UIButton()
-        button.tag = 1
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .green
-        button.setTitle("Create New", for: .normal)
-        button.layer.cornerRadius = 19
-        button.titleLabel?.textColor = .white
-        return button
-    }()
-    
-    private  func setButton(title: String, tag: Int) -> UIButton{
-        let button = UIButton()
-        button.tag = tag
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .orange
-        button.setTitle(title, for: .normal)
-        button.layer.cornerRadius = 19
-        button.titleLabel?.textColor = .white
-        return button
-    }
-    
-    private func runAlert() -> UIAlertController? {
-        let alertController = AlertFactory.defaultFactory.getAlertController(type: .textField(title: "Creating", message: "Type name for new section", actionHandler: { [weak self] text  in
-            guard let self = self, let text = text as? String else { return }
-            self.completion?(.newSection(text))
-            self.dismiss(animated: true)
-        }, cancelHandler: { [weak self] in
-            guard let self = self else { return }
-            self.completion?(.cancel)
-            self.dismiss(animated: true)
-        }))
-        return alertController
-    }
-    
-    //MARK: - Functions
     private  func getButtons(with titles: [String]?) -> [UIButton]? {
         guard let titles = titles else { return nil }
         var buttons: [UIButton] = []
@@ -116,26 +38,38 @@ class SelectionMenuVC: UIViewController {
         }
         return buttons
     }
-    private func setActions() {
-        newSelectButton.addTarget(self, action: #selector(presentAlert(sender: )), for: .touchUpInside)
-        guard let buttons = buttons else { return }
-        buttons.forEach { button in button.addTarget(self, action: #selector(self.tapAction(sender:)), for: .touchUpInside) }
+    private let backgroundView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .basic
+        view.layer.cornerRadius = 20
+        return view
+    }()
+    private let scrollView: UIScrollView  = {
+        let scrollView = UIScrollView(frame: .zero)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    private  func setButton(title: String, tag: Int) -> UIButton{
+        let button = UIButton()
+        button.tag = tag
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .orange
+        button.setTitle(title, for: .normal)
+        button.layer.cornerRadius = 19
+        button.titleLabel?.textColor = .white
+        return button
     }
-    private func setScrollHeight() {
-        guard let buttons = buttons else { return }
-        let heightForScroll = view.bounds.size.height +  (newSelectButton.frame.height * CGFloat( buttons.count / 2) + 30)
-        scrollView.contentSize.height =  heightForScroll
-    }
-    //MARK: - Actions
-    @objc func tapAction(sender: UIButton) {
-        guard let title = sender.titleLabel?.text else { return }
-        completion?(Selected.oldSection(title))
-        dismiss(animated: true)
-    }
-    @objc func presentAlert(sender: UIButton) {
-        guard let alertController = runAlert() else { return }
-        present(alertController, animated: true)
-    }
+    private let newSelectButton: UIButton = {
+        let button = UIButton()
+        button.tag = 1
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .green
+        button.setTitle("Create New", for: .normal)
+        button.layer.cornerRadius = 19
+        button.titleLabel?.textColor = .white
+        return button
+    }()
     //MARK: - Setup Layouts
     private func setupLayout() {
         setScrollHeight()
@@ -187,5 +121,28 @@ class SelectionMenuVC: UIViewController {
                     button.heightAnchor.constraint(equalToConstant: 60) ])
             }
         })
+    }
+    //MARK: - Actions
+    private func setActions() {
+        guard let buttons = buttons else { return }
+        newSelectButton.addTarget(self, action: #selector(presentAlert(sender: )), for: .touchUpInside)
+        buttons.forEach { button in button.addTarget(self, action: #selector(self.tapAction(sender:)), for: .touchUpInside) }
+    }
+    private func setScrollHeight() {
+        guard let buttons = buttons else { return }
+        let heightForScroll = view.bounds.size.height +  (newSelectButton.frame.height * CGFloat( buttons.count / 2) + 30)
+        scrollView.contentSize.height =  heightForScroll
+    }
+    @objc func tapAction(sender: UIButton) {
+        guard let title = sender.titleLabel?.text else { return }
+        presenter?.selectExistingSection(title)
+    }
+    @objc func presentAlert(sender: UIButton) {
+        presenter?.addNewSection()
+    }
+}
+extension SelectionMenuViewController: SelectionMenuDelegate {
+    func dismiss() {
+        dismiss(animated: true)
     }
 }

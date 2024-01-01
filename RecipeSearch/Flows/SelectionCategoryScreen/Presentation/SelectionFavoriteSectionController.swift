@@ -34,13 +34,11 @@ class SelectionFavoriteSectionController: UIPresentationController {
     override var frameOfPresentedViewInContainerView: CGRect {
         var frame: CGRect = .zero
         frame.size = size(forChildContentContainer: presentedViewController, withParentContainerSize: containerView!.bounds.size)
-        print ("containerView!.frame.height \(containerView!.frame.height)")
         frame.origin.y = containerView!.frame.height * (1.0 / 3.0)
         return frame
     }
     
     override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
-        print ("parentSize.height \(parentSize.height)")
         return CGSize(width: parentSize.width, height: parentSize.height * (2.0 / 3.0) )
     }
       
