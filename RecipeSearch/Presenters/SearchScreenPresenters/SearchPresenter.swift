@@ -24,12 +24,12 @@ protocol SearchControllerDelegate: AnyObject, UpdatingTextProtocol  { }
 
 //MARK: - SearchPresenter
 class SearchPresenter: SearchPresenterProtocol {
-    weak private var searchControllerDelegate: SearchControllerDelegate!
     private let recipesPresenter: RecipesPresenterProtocol
     private let categoryManager: CategoryManagerProtocol
     private let recipeService: RecipeSearchServiceProtocol
     private let alertManager: AlertManagerProtocol
-    
+    weak private var searchControllerDelegate: SearchControllerDelegate!
+
     init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, recipesPresenter: RecipesPresenterProtocol, alertManager: AlertManagerProtocol) {
         self.categoryManager = categoryManager
         self.recipeService = recipeService
@@ -38,6 +38,7 @@ class SearchPresenter: SearchPresenterProtocol {
     }
     
     func attachView(_ delegate: UIViewController) { searchControllerDelegate = delegate as? SearchControllerDelegate }
+    
     func searchRecipes(from searchText: String) {
         recipeService.cancelPreviousRequests()
         if searchText.isEmpty {
@@ -66,6 +67,7 @@ class SearchPresenter: SearchPresenterProtocol {
             }
         }
     }
+    
     func createRecpesView() -> UIViewController {
         ElementsViewFactory.defaultFactory.createVC(.recipesView, presenter: recipesPresenter)
     }

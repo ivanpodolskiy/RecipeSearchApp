@@ -13,21 +13,24 @@ protocol RecipesPresenterProtocol: PresenterProtocol, RecipeNavigationProtocol, 
     func updateItemsView(with recipes: [RecipeProfileProtocol])
 }
 //MARK: Delegate Protocols
-protocol RecipesControllerDelegate: AnyObject, UIViewController, SectionsMenuDelegate, NavigationDelegate {
+protocol RecipesControllerDelegate: AnyObject, SheetDelegate, NavigationDelegate {
     func updateFavoriteStatus(isFavorite: Bool, index: Int)
     func updateItems(recipe: [RecipeProfileProtocol]?)
 }
 //MARK: - RecipesPresenter
 class RecipesPresenter: RecipesPresenterProtocol {
-    weak var recipeControllerDelegate:  RecipesControllerDelegate?
     private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
     private var favoriteStatusManager: FavoriteStatusManagerProtocol
+    weak var recipeControllerDelegate:  RecipesControllerDelegate?
 
     init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, favoriteStatusManager: FavoriteStatusManagerProtocol) {
         self.favoriteRecipesStorage = favoriteRecipesStorage
         self.favoriteStatusManager = favoriteStatusManager
     }
-    func attachView(_ delegate: UIViewController) { recipeControllerDelegate = delegate as? RecipesControllerDelegate }
+    
+    func attachView(_ delegate: UIViewController) { 
+        recipeControllerDelegate = delegate as? RecipesControllerDelegate
+    }
 
     func updateItemsView(with recipes:  [RecipeProfileProtocol]) {
         if let updatetRecipes = try? favoriteRecipesStorage.getUpdatedRecipeArray(from: recipes) {
@@ -37,10 +40,9 @@ class RecipesPresenter: RecipesPresenterProtocol {
     
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?) {
         guard let selectedRecipe = selectedRecipe, let index = index else { return }
-        
-        favoriteStatusManager.presentViewControllerClouser = {[ weak self] selectionMenu in
+        favoriteStatusManager.presentViewControllerClouser = {[ weak self] viewController  in
             guard let self = self else { return }
-            recipeControllerDelegate?.presentFavoriteSectionsView(selectionMenu)
+            self.recipeControllerDelegate?.presentCustomSheet(viewController)
         }
         favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedStatus in
             guard let self = self,  let updatedStatus = updatedStatus else { return }

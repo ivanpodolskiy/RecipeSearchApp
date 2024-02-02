@@ -34,7 +34,7 @@ class SearchViewController: UIViewController{
     //MARK: - Outlets
     private var constraintDescriptionSearching: [NSLayoutConstraint]!
     private var constraintDescriptionFiltering: [NSLayoutConstraint]!
-    private lazy var slideInTransitioningDelegate = SelectionSectionManagerView()
+    private lazy var slideInTransitioningDelegate = PanelTransition()
     
     private var filterController: FilterViewController!
     private var collectionView: RecipesViewController!

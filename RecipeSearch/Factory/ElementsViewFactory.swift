@@ -14,8 +14,10 @@ enum ElementType {
     case recipesView
     case profileView
 }
+
 class ElementsViewFactory {
     static let defaultFactory = ElementsViewFactory()
+    
     func createVC(_ element: ElementType, presenter: PresenterProtocol) -> UIViewController {
         switch element {
         case .filterView: return createFactory(FactoryFilterView(presenter: presenter as! FilterPresenterProtocol))
@@ -59,7 +61,6 @@ private class FactoryColletionRecipe: FactoryViewControllerProtocol {
 
 private class FactoryRecipeProfileController: FactoryViewControllerProtocol {
     private let presenter: RecipeProfilePresenterProtocol
-    
     init(presenter: RecipeProfilePresenterProtocol) {
         self.presenter = presenter
     }

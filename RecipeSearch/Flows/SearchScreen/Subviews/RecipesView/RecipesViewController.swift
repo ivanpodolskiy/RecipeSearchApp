@@ -1,5 +1,5 @@
 //
-//  RecipesView.swift
+//  RecipesViewController.swift
 //  RecipeSearch
 //
 //  Created by user on 17.09.2023.
@@ -11,33 +11,8 @@ class RecipesViewController: UIViewController{
     private var presenter: RecipesPresenterProtocol!
     private var recipes: [RecipeProfileProtocol]?
     private var lastCurrentOffset: CGFloat = 0
+    private let transition = PanelTransition()
     
-    func setPresenter(_ presenter: RecipesPresenterProtocol) {
-        self.presenter = presenter
-    }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .selected
-        view.translatesAutoresizingMaskIntoConstraints = false
-        setCollectionView()
-    }
-    private var isCollectionHidden: Bool = true {
-        willSet { self.collectionView.isHidden = newValue }
-    } 
-    private func setCollectionView() {
-        collectionView.frame = view.bounds
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
-        collectionView.register(RecipesViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: RecipesViewHeader.indentifier)
-        view.addSubview(collectionView)
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leftAnchor.constraint(equalTo:view.leftAnchor),
-            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let spaceBottom: CGFloat = 40.0
@@ -48,7 +23,38 @@ class RecipesViewController: UIViewController{
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    //MARK: - Actions
+    
+    func setPresenter(_ presenter: RecipesPresenterProtocol) {
+        self.presenter = presenter
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .selected
+        view.translatesAutoresizingMaskIntoConstraints = false
+        setupCollectionView()
+    }
+    private var isCollectionHidden: Bool = true {
+        willSet { self.collectionView.isHidden = newValue }
+    } 
+    private func setupCollectionView() {
+        collectionView.frame = view.bounds
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        collectionView.register(RecipesViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: RecipesViewHeader.indentifier)
+        activeLayoutForCollectioView()
+    }
+    
+    private func activeLayoutForCollectioView() {
+        view.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leftAnchor.constraint(equalTo:view.leftAnchor),
+            collectionView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+  
     @objc func switchFavoriteStatus(sender: UIButton) {
         let index = sender.tag // i need to get indexPath.row's cell
         guard let selectedRecipe = recipes?[index] else { return }
@@ -127,10 +133,14 @@ extension RecipesViewController: UIScrollViewDelegate {
 }
 //MARK: - RecipesViewDelegate
 extension RecipesViewController: RecipesControllerDelegate {
-  
-    func presentFavoriteSectionsView(_ viewController: UIViewController) {
-        DispatchQueue.main.async { self.present(viewController, animated: true) }
+    func presentCustomSheet(_ viewController: UIViewController) {
+        viewController.transitioningDelegate = transition
+        viewController.modalPresentationStyle  = .custom
+        DispatchQueue.main.async {
+            self.present(viewController, animated: true)
+        }
     }
+    
     func updateFavoriteStatus(isFavorite: Bool, index: Int) {
         recipes?[index].isFavorite = isFavorite
         DispatchQueue.main.async {

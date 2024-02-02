@@ -20,13 +20,15 @@ protocol FilterViewDelegate: AnyObject, UIViewController {
 }
 //MARK: - FilterPresenter
 class  FilterPresenter: FilterPresenterProtocol  {
-    weak var  filterControllerDelegate: FilterViewDelegate?
     var categoryManager:CategoryManagerProtocol!
-    
+    weak var  filterControllerDelegate: FilterViewDelegate?
+
     init(categoryManager: CategoryManagerProtocol) {
         self.categoryManager = categoryManager
     }
-    func attachView(_ view: UIViewController) { filterControllerDelegate = view as? FilterViewDelegate }
+    func attachView(_ view: UIViewController) { filterControllerDelegate = view as? FilterViewDelegate
+    }
+    
     func selectCategoryValue(index: Int) {
         let updatedhData =  categoryManager.changeStatus(index)
         filterControllerDelegate?.updateCollectionView(categoryValues: updatedhData)

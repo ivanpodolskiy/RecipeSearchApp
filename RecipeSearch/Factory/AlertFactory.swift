@@ -16,6 +16,7 @@ enum AlertType {
 
 class AlertFactory {
     static let defaultFactory = AlertFactory()
+    
     func getCustomAlert(type: AlertType ) -> CustomAlert  {
         switch type {
         case .notification(let title,let message):

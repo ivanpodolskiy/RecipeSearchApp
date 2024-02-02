@@ -32,10 +32,7 @@ struct RecipeProfile: RecipeProfileProtocol {
             return ingredientLines.count
         }
     }
-    var description: String {get{
-        return "\(calories) kcal. Ingre: \(countIngredients) "
-    }}
-    
+    var description: String {get{ return "\(calories) kcal. Ingre: \(countIngredients)"}}
     var calories: Int {
         get {
             if serving == 0 { return 0 }
@@ -52,8 +49,8 @@ struct RecipeProfile: RecipeProfileProtocol {
         self.url = url
         self.serving = serving
         self.totalCalories = totalCalories
-
     }
+    
     init(recipeProfileEntity: RecipeProfileEntity) { //ref.
         let totalCalories = Int(recipeProfileEntity.totalCalories)
         let servings = Int(recipeProfileEntity.serving)
@@ -72,6 +69,7 @@ struct RecipeProfile: RecipeProfileProtocol {
             self.init()
         }
     }
+    
     init() {
         self.init(title: "Recipe", image: "", totalCalories: 0, isFavorite: true, url: "", serving: 0,  healthLabels: [""], ingredientLines: [""]) //ref.
     }

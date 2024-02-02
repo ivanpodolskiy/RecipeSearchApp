@@ -10,9 +10,10 @@ protocol FavoriteStatusManagerProtocol {
     func toggleFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback)
     var presentViewControllerClouser: ((UIViewController) -> Void)? {get set}
 }
+
 class FavoriteStatusManager: FavoriteStatusManagerProtocol {
-    private var favoriteRecipesStorage: FavoriteRecipesStorageProtocol
     var presentViewControllerClouser: ((UIViewController) -> Void)?
+    private var favoriteRecipesStorage: FavoriteRecipesStorageProtocol
 
     init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol) {
         self.favoriteRecipesStorage = favoriteRecipesStorage
@@ -33,18 +34,15 @@ class FavoriteStatusManager: FavoriteStatusManagerProtocol {
         try? favoriteRecipesStorage.removeFavoriteRecipe(modifiedRecipe)
         return modifiedRecipe
     }
+    
     private func presentSelectionMenu(for recipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback)   {
         guard let presentViewControllerClouser = presentViewControllerClouser else { return  }
-        lazy var slideInTransitioningDelegate = SelectionSectionManagerView()
         
-        let  selectionView = SelectionMenuViewController()
+        let  selectionView = SelectionPanelViewController()
         let alertManager = AlertManager()
         let presenter = SelectionMenuPresenter(recipeProfile: recipe, favoriteRecipesStorage: favoriteRecipesStorage, alertManager: alertManager)
         presenter.attachView(selectionView)
-        selectionView.setPreseter(presenter: presenter)
-        
-        selectionView.transitioningDelegate = slideInTransitioningDelegate
-        selectionView.modalPresentationStyle = .custom
+        selectionView.setPresenter(presenter: presenter)
        
         presenter.onStatusUpdate =  { isFavorite in
             onStatusUpdate(isFavorite)

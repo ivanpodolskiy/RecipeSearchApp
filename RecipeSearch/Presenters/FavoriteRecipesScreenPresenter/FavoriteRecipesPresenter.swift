@@ -21,7 +21,6 @@ protocol FavoriteRecipesPresenterProtocol: PresenterProtocol, RecipeNavigationPr
     func fetchFavoriteRecipes()
     func renameSection(title: String, indexSection: Int)
 }
-
 protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegate {
     func updateCollectionView(_ updatedData: [FavoriteRecipesSectionProtocol])
     func removeAllSections()
@@ -32,13 +31,12 @@ protocol FavoriteRecipesDelegate: AnyObject, UIViewController, NavigationDelegat
 class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
     private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
     private let alertManager: AlertManagerProtocol
-    
+    weak var favoriteRecipesController: FavoriteRecipesDelegate?
+
     init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, alertManager: AlertManagerProtocol) {
         self.favoriteRecipesStorage  = favoriteRecipesStorage
         self.alertManager = alertManager
     }
-    
-    weak var favoriteRecipesController: FavoriteRecipesDelegate?
     func attachView(_ delegate: UIViewController) {
         favoriteRecipesController = delegate as? FavoriteRecipesDelegate
     }
@@ -59,6 +57,7 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
         guard let sections = try? favoriteRecipesStorage.fetchSectionArrayFR() else { return }
         favoriteRecipesController?.updateCollectionView(sections)
     }
+    
     func renameSection(title: String, indexSection: Int) {
         let sectionArrayCD = try? favoriteRecipesStorage.fetchSectionArrayFR()
         guard let favoriteSection = sectionArrayCD?[indexSection] else { return }

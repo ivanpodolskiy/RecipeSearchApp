@@ -12,20 +12,19 @@ protocol SelectingProtocol {
     func addNewSection()
 }
 protocol SelectionMenuPresenterProtocol: PresenterProtocol, SelectingProtocol, UpdateStatusProtocol {
-    func getSectionTitiles() -> [String]?
+    func fetchSectionTitles() -> [String]?
 }
-protocol SelectionMenuDelegate: DelegateViewProtocol {
+protocol SelectionMenuDelegate: AnyObject, DelegateViewProtocol {
     func dismiss()
 }
 class SelectionMenuPresenter: SelectionMenuPresenterProtocol {
     var onStatusUpdate: UpdatedStatusCallback?
-        
     private var recipeProfile: RecipeProfileProtocol
-    private var selectionMenu: SelectionMenuDelegate?
-    
     private let alertManager: AlertManagerProtocol
     private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
     
+    weak var selectionMenu: SelectionMenuDelegate?
+
     init(recipeProfile: RecipeProfileProtocol, favoriteRecipesStorage: FavoriteRecipesStorageProtocol,  alertManager: AlertManagerProtocol) {
         self.favoriteRecipesStorage = favoriteRecipesStorage
         self.recipeProfile = recipeProfile
@@ -34,15 +33,18 @@ class SelectionMenuPresenter: SelectionMenuPresenterProtocol {
     func attachView(_ view: UIViewController) {
         selectionMenu = view as? SelectionMenuDelegate
     }
-    func getSectionTitiles() -> [String]? {
+    
+    func fetchSectionTitles() -> [String]? {
         return favoriteRecipesStorage.fetchAllTitleSections()
     }
+    
     func selectExistingSection(_ title: String) {
         guard let recipeeEntity = try? favoriteRecipesStorage.createRecipeProfileEntity(from: recipeProfile) else { return }
         try? favoriteRecipesStorage.addFavoriteRecipe(recipeeEntity, nameSection: title, sectionExists: true)
         onStatusUpdate?(true)
         selectionMenu?.dismiss()
     }
+    
     func addNewSection() {
         let alert = AlertFactory.defaultFactory.getCustomAlert(type: .textField(title: "Creating", message: "Type name for new section", actionHandler: { [weak self] title  in
             guard let self = self , let title = title as? String else { return}

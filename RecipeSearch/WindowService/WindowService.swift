@@ -14,9 +14,7 @@ protocol WindowServiceProtocol {
 
 protocol WindowServiceSubviewsKeeper {
     func getSubviews() -> [UIView]?
-    
 }
-
 protocol WindowServiceRemover {
     func removeLastSubview()
 }
@@ -45,7 +43,6 @@ extension WindowService: WindowServiceSubviewsKeeper {
         return currentWindow?.subviews
     }
 }
-
 extension WindowService: WindowServiceRemover {
     func removeLastSubview() {
         guard let subiews = getSubviews(), let lastSubiview = subiews.last else { return }

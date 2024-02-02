@@ -9,33 +9,31 @@ import Foundation
 import UIKit
 
 //MARK: - PresenterProtocls
+typealias UpdatedStatusCallback = (Bool?) -> Void
+
 protocol PresenterProtocol {
     func attachView(_ view: UIViewController)
 }
 protocol FavoriteStatusProtocol {
     func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?)
 }
-protocol RecipeNavigationProtocol {
-    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?)
-}
 protocol ConfigureCellProtocol {
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int)
 }
-typealias UpdatedStatusCallback = (Bool?) -> Void
+protocol RecipeNavigationProtocol {
+    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?)
+}
 protocol UpdateStatusProtocol {
     var onStatusUpdate: UpdatedStatusCallback? {get}
 }
 //MARK: - DelegateProtocols
 protocol DelegateViewProtocol {}
-
 protocol NavigationDelegate {
     func pushViewController(_ viewController: UIViewController, animated: Bool)
 }
-
-protocol SectionsMenuDelegate {
-    func presentFavoriteSectionsView(_ viewController: UIViewController)
+protocol SheetDelegate {
+    func presentCustomSheet(_ viewController: UIViewController)
 }
 protocol PresentAlertDelegate {
     func presentAlert(_ alert: UIAlertController)
 }
-

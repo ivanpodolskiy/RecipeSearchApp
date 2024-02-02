@@ -32,11 +32,13 @@ protocol FavoriteRecipesStorageProtocol: SectionsFavoriteRecipesFetchingProtocol
 class StorageManagerFR: FavoriteRecipesStorageProtocol {
     private let context: NSManagedObjectContext
     init(context: NSManagedObjectContext) { self.context = context }
+    
     func renameSection(new: String, section: FavoriteRecipesSectionProtocol) {
         let sectionCD = try? fetchNeededSectionCD(section.title)
         sectionCD?.nameSection = new
         try? saveContext()
     }
+    
     func createRecipeProfileEntity(from recipeProfile: RecipeProfileProtocol) throws -> RecipeProfileEntity {
        let favoriteRecipe = RecipeProfileEntity(contex: context, recipeProfile: recipeProfile)
        return favoriteRecipe
@@ -66,6 +68,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
             return false
         }
     }
+    
     func fetchSectionArrayFR() throws -> [FavoriteRecipesSectionProtocol] {
         guard let favoriteListArray = try fetchSectionArrayCD() else { throw CoreDataError.fetchError}
         var sectionsArray: [FavoriteRecipesSectionProtocol] = []
@@ -75,6 +78,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         }
         return sectionsArray
     }
+    
     func getUpdatedRecipeArray(from recipes: [RecipeProfileProtocol]) throws ->  [RecipeProfileProtocol]  {
         guard let sectionArrayCD = try fetchSectionArrayCD() else { throw CoreDataError.fetchError }
         var updatedRecipes = recipes
@@ -93,6 +97,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         }
         return updatedRecipes
     }
+    
     func removeSectionWithRecipes(_ favoriteRecipeSection: FavoriteRecipesSectionProtocol) throws {
         guard let sectionArrayCD = try fetchSectionArrayCD() else { throw CoreDataError.fetchError}
         sectionArrayCD.forEach { sectionCD in
@@ -103,6 +108,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         try saveContext()
 
     }
+    
     func removeFavoriteRecipe(_ recipe: RecipeProfileProtocol) throws {
         guard let sectionArrayCD = try fetchSectionArrayCD() else { throw CoreDataError.fetchError }
         sectionArrayCD.forEach { sectionCD in
@@ -118,6 +124,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         }
        try saveContext()
     }
+    
     func fetchAllTitleSections() -> [String]? {
             guard let  sectionArrayCD = try? fetchSectionArrayCD() else { return nil}
             var titles: [String] = []
@@ -128,6 +135,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
             }
             return titles
     }
+    
     //ref. Remove I want to confirm such operations before executing them.
     func deleteAll() throws {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = RecipesSectionEntity.fetchRequest()
@@ -135,15 +143,18 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         do { try context.execute(batchDeleteRequest) } catch { throw CoreDataError.deletionError }
        try saveContext()
     }
+    
     //MARK: Private Fucntions:
     private func creatingnCheck(_ title: String) throws {
         if (try? fetchNeededSectionCD(title)) != nil { throw CoreDataError.addSectionError  }
     }
+    
      private func createSectionCD(_ name: String) throws -> RecipesSectionEntity { //ref.
         let sectionCD = RecipesSectionEntity(context: context)
          sectionCD.nameSection = name
         return sectionCD
     }
+    
     private func fetchSectionArrayCD() throws -> [RecipesSectionEntity]? {
         guard let sectionArrayCD = try? context.fetch(RecipesSectionEntity.fetchRequest()) else { throw CoreDataError.fetchError}
         return sectionArrayCD

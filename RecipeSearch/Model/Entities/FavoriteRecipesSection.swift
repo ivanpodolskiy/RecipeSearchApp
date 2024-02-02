@@ -13,6 +13,7 @@ protocol FavoriteRecipesSectionProtocol {
 struct FavoriteRecipesSection: FavoriteRecipesSectionProtocol {
     var title: String
     var recipes: [RecipeProfileProtocol]?
+    
     init(from recipeSectionCD: RecipesSectionEntity) {
         let name = recipeSectionCD.nameSection ?? ""
        self.title = name
