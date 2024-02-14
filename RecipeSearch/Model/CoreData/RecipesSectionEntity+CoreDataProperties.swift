@@ -11,17 +11,14 @@ import CoreData
 
 
 extension RecipesSectionEntity {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RecipesSectionEntity> {
         return NSFetchRequest<RecipesSectionEntity>(entityName: "RecipesSectionEntity")
     }
 
     @NSManaged public var nameSection: String?
     @NSManaged public var recipeProfileEntity: NSSet?
-
 }
 
-// MARK: Generated accessors for recipeProfileEntity
 extension RecipesSectionEntity {
 
     @objc(addRecipeProfileEntityObject:)
@@ -35,7 +32,6 @@ extension RecipesSectionEntity {
 
     @objc(removeRecipeProfileEntity:)
     @NSManaged public func removeFromRecipeProfileEntity(_ values: NSSet)
-
 }
 
 extension RecipesSectionEntity : Identifiable {

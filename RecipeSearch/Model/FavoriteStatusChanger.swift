@@ -1,34 +1,34 @@
 //
-//  FavoriteStatusManager.swift
+//  FavoriteStatusChanger.swift
 //  RecipeSearch
 //
 //  Created by user on 30.11.2023.
 //
 import UIKit
 
-protocol FavoriteStatusManagerProtocol {
-    func toggleFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback)
+protocol FavoriteStatusChangerProtocol {
     var presentViewControllerClouser: ((UIViewController) -> Void)? {get set}
+    func toggleFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback)
 }
 
-class FavoriteStatusManager: FavoriteStatusManagerProtocol {
+class FavoriteStatusChanger: FavoriteStatusChangerProtocol {
     var presentViewControllerClouser: ((UIViewController) -> Void)?
     private var favoriteRecipesStorage: FavoriteRecipesStorageProtocol
-
+    
     init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol) {
         self.favoriteRecipesStorage = favoriteRecipesStorage
     }
     
     func toggleFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback){
         if selectedRecipe.isFavorite {
-            let updatedRecipe = handleRemoveFavorite(selectedRecipe)
+            let updatedRecipe = handleRemoveFavoriteStatus(selectedRecipe)
             onStatusUpdate(updatedRecipe.isFavorite)
         } else {
             presentSelectionMenu(for: selectedRecipe, onStatusUpdate: onStatusUpdate)
         }
     }
-
-    private func handleRemoveFavorite(_ recipe: RecipeProfileProtocol) -> RecipeProfileProtocol{
+    
+    private func handleRemoveFavoriteStatus(_ recipe: RecipeProfileProtocol) -> RecipeProfileProtocol{
         var modifiedRecipe = recipe
         modifiedRecipe.isFavorite = false
         try? favoriteRecipesStorage.removeFavoriteRecipe(modifiedRecipe)
@@ -37,16 +37,21 @@ class FavoriteStatusManager: FavoriteStatusManagerProtocol {
     
     private func presentSelectionMenu(for recipe: RecipeProfileProtocol, onStatusUpdate: @escaping UpdatedStatusCallback)   {
         guard let presentViewControllerClouser = presentViewControllerClouser else { return  }
+        let  selectionVC = SelectionPanelViewController()
+        let presenter = getPreparedPresenter(attach: selectionVC, recipe: recipe, callback: onStatusUpdate)
+        selectionVC.setPresenter(presenter: presenter)
         
-        let  selectionView = SelectionPanelViewController()
+        presentViewControllerClouser(selectionVC)
+    }
+    
+    private func getPreparedPresenter(attach vc: UIViewController, recipe: RecipeProfileProtocol, callback : @escaping UpdatedStatusCallback) -> SelectionMenuPresenterProtocol {
         let alertManager = AlertManager()
+        
         let presenter = SelectionMenuPresenter(recipeProfile: recipe, favoriteRecipesStorage: favoriteRecipesStorage, alertManager: alertManager)
-        presenter.attachView(selectionView)
-        selectionView.setPresenter(presenter: presenter)
-       
+        presenter.attachView(vc)
         presenter.onStatusUpdate =  { isFavorite in
-            onStatusUpdate(isFavorite)
+            callback(isFavorite)
         }
-        presentViewControllerClouser(selectionView)
+        return presenter
     }
 }

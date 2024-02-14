@@ -13,21 +13,27 @@ protocol RecipeSearchServiceProtocol {
 //MARK: - RecipeSreachService
 final class RecipeSreachService: RecipeSearchServiceProtocol {
     private var currentTask: URLSessionTask?
+    private var urlBuilder = URLBuilder()
+    
     func cancelPreviousRequests() {
         currentTask?.cancel()
     }
     func searchRecipes(selectedCategories categoryValues: [CategoryValueProtocol]?, with searchText: String,
                        completion: @escaping (Result<[RecipeProfileProtocol],NetworkError>) -> Void)  {
-        guard let url =  getURL(categoryValues, searchText) else {
+        
+        guard let url =  urlBuilder.buildURL(with: searchText, categoryValues: categoryValues) else {
             completion(.failure(.badURL))
             return
         }
+        
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "GET"
+        
         let urlConfiguration = URLSessionConfiguration.default
         let session = URLSession(configuration: urlConfiguration)
+     
+        
         currentTask = session.dataTask(with: urlRequest){ data, response, error in
-            
             if let error = error {
                 if (error as NSError).code == NSURLErrorNotConnectedToInternet {
                     completion(.failure(.notConnectedToInternet))
@@ -36,29 +42,34 @@ final class RecipeSreachService: RecipeSearchServiceProtocol {
                 }
                 return
             }
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("Invalid response") //ref.
-                return
-            }
-            if let errorHttpResponse = NetworkErrorHelper.handlerStatusCode(httpResponse.statusCode) {
-                completion(.failure(errorHttpResponse))
-            }
+            
             guard let data = data else {
                 completion(.failure(.noData))
                 return
             }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid response") //ref.
+                return
+            }
+            
+            if let errorHttpResponse = NetworkErrorHelper.handlerStatusCode(httpResponse.statusCode) {
+                completion(.failure(errorHttpResponse))
+            }
+            
             do {
                 let decoder = JSONDecoder()
                 let items = try decoder.decode(RecipesResult.self, from: data)
-                guard items.count != 0 else {return completion(.failure(.dataError(.notitems))) }
-                print ("items.count \(items.count)     items.hits.count \( items.hits.count)")
-                var result: [RecipeProfile] = []
-                for item in items.hits {
-                    guard let recipe =  item.recipe else { return }
-                    let totalCalories = Int(recipe.calories ?? 0)
-                    let recipeProfile = RecipeProfile(title: recipe.label, image: recipe.image, totalCalories: totalCalories, url: recipe.url, serving: recipe.yield, healthLabels: recipe.healthLabels, ingredientLines: recipe.ingredientLines)
-                    result.append(recipeProfile)
+                
+                guard !items.hits.isEmpty else {
+                    completion(.failure(.dataError(.notitems)))
+                    return
                 }
+                
+                let result: [RecipeProfile] = items.hits.compactMap({ item in
+                    guard let recipe = item.recipe else { return nil }
+                    return RecipeProfile(recipeResult: recipe)
+                })
                 completion(.success(result))
             }
             catch {
@@ -67,22 +78,5 @@ final class RecipeSreachService: RecipeSearchServiceProtocol {
         }
         currentTask?.resume()
     }
-    
-    private func getURL(_ categoryValues: [CategoryValueProtocol]?, _ text: String) -> URL? {
-        var urlComponents = URLComponents(string: "https://api.edamam.com/api/recipes/v2")!
-        var queryItems: [URLQueryItem] = [
-            URLQueryItem(name: "type", value: "any"),
-            URLQueryItem(name: "app_id", value: "71021edf"),
-            URLQueryItem(name: "app_key", value: "389c0530b12807d2bd5033fb2694567c"),
-            URLQueryItem(name: "q", value: text),
-        ]
-        if let values = categoryValues {
-            values.forEach { value in
-                queryItems.append(URLQueryItem(name: value.category.rawValue, value: value.title))
-            }
-        }
-        urlComponents.queryItems = queryItems
-        guard let url = urlComponents.url else { return nil }
-        return url
-    }
 }
+

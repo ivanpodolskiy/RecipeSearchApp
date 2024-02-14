@@ -15,10 +15,12 @@ class CustomAlert: UIView {
         messageLabel.text = message
         settingMainView()
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     override func layoutSubviews() {
+        super.layoutSubviews()
         setupSubviews()
         setupSubviewsConstraints()
         setupMainStackViewConstraints()
@@ -30,25 +32,38 @@ class CustomAlert: UIView {
         layer.masksToBounds = true
         layer.cornerRadius = 12
     }
+    
     fileprivate func dismiss() {
-        if let window = UIWindow.current, let backgroundView = window.subviews.last {
-            backgroundView.removeFromSuperview()
-        }
+        guard let window = UIWindow.current else { return }
+        let alert = getAlert(from: window.subviews)
+        alert.removeFromSuperview()
     }
-    private let titlesContainerView: UIView = {
+    
+    fileprivate func getAlert(from subviews: [UIView]) -> UIView  {
+        var alertIndex = subviews.count - 1
+        let stringType = "\(type(of: subviews[alertIndex]))"
+        if stringType == "_UIEditMenuContainerView" {
+            alertIndex -= 1
+        }
+      return  subviews[alertIndex]
+    }
+    
+    fileprivate let titlesContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    private let titleLabel: UILabel = {
+    
+    fileprivate let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 17)
         return label
     }()
-    private let messageLabel: UILabel = {
+    
+    fileprivate let messageLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -56,6 +71,7 @@ class CustomAlert: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
     fileprivate let mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -64,6 +80,7 @@ class CustomAlert: UIView {
         stackView.spacing = 5
         return stackView
     }()
+    
     fileprivate func setupSubviews() {
         addSubview(mainStackView)
         mainStackView.addArrangedSubview(titlesContainerView)
@@ -169,6 +186,7 @@ class TextFieldAlert: CustomAlert  {
         self.cancelHandler = cancelHandler
         self.textСheckingHandler = textСheckingHandler
         self.errorText = errorText
+        
         self.setTargets()
     }
     
@@ -178,7 +196,6 @@ class TextFieldAlert: CustomAlert  {
     
     private lazy var buttonsContainerView: ButtonsContainerView = {
         let view = ButtonsContainerView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.isActionButtonEnabled(false)
         view.backgroundColor = .systemBackground
         return view
@@ -186,10 +203,9 @@ class TextFieldAlert: CustomAlert  {
     
     private lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
         textField.keyboardAppearance = .alert
         textField.keyboardType = .default
-        textField.autocorrectionType = .default
+        textField.autocorrectionType = .no
         textField.placeholder = "Type text"
         textField.textColor = .selected
         textField.clearButtonMode = .whileEditing
@@ -204,17 +220,14 @@ class TextFieldAlert: CustomAlert  {
         label.textColor = .red
         return label
     }()
+    
     override func setupSubviews() {
         super.setupSubviews()
         mainStackView.addArrangedSubview(errorLabel)
         mainStackView.addArrangedSubview(textField)
         mainStackView.addArrangedSubview(buttonsContainerView)
-       
     }
-    override func setupSubviewsConstraints() {
-        super.setupSubviewsConstraints()
-        
-    }
+
     private func setTargets() {
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         buttonsContainerView.actionButton.addTarget(self, action: #selector(actionTap), for: .touchUpInside)

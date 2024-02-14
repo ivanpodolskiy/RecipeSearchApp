@@ -22,14 +22,18 @@ protocol UpdatingTextProtocol {
 }
 protocol SearchControllerDelegate: AnyObject, UpdatingTextProtocol  { }
 
-//MARK: - SearchPresenter
+fileprivate enum LabelText {
+    static let launch: String  = "Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works."
+    static let recipeNotFound: String = "Nothing in our recipes database matches what you are searching for! Please try again."
+}
+
 class SearchPresenter: SearchPresenterProtocol {
     private let recipesPresenter: RecipesPresenterProtocol
     private let categoryManager: CategoryManagerProtocol
     private let recipeService: RecipeSearchServiceProtocol
     private let alertManager: AlertManagerProtocol
     weak private var searchControllerDelegate: SearchControllerDelegate!
-
+    
     init(categoryManager: CategoryManagerProtocol, recipeService: RecipeSearchServiceProtocol, recipesPresenter: RecipesPresenterProtocol, alertManager: AlertManagerProtocol) {
         self.categoryManager = categoryManager
         self.recipeService = recipeService
@@ -38,42 +42,49 @@ class SearchPresenter: SearchPresenterProtocol {
     }
     
     func attachView(_ delegate: UIViewController) { searchControllerDelegate = delegate as? SearchControllerDelegate }
+   
+    func createRecpesView() -> UIViewController {
+        let recipesVC = VCFactory.defaultFactory.createVC(.recipesVC, presenter: recipesPresenter)
+        return recipesVC
+    }
+    
+    func createFilterView() -> UIViewController {
+        let filterPresnter = FilterPresenter(categoryManager: categoryManager)
+        let filterVC = VCFactory.defaultFactory.createVC(.filterVC, presenter: filterPresnter)
+        return filterVC
+    }
     
     func searchRecipes(from searchText: String) {
         recipeService.cancelPreviousRequests()
-        if searchText.isEmpty {
-            searchControllerDelegate.updateText("Enter a what you have to search, like \"coffee and croissant\" or \"chicken enchilada\" to see how it works.")
+        guard !searchText.isEmpty else {
+            searchControllerDelegate.updateText(LabelText.launch)
             return
         }
-        let values  = categoryManager.getActiveValues()
-        recipeService.searchRecipes(selectedCategories: values, with: searchText) { [weak self] result in
+        let activeCaregories  = categoryManager.getActiveValues()
+        recipeService.searchRecipes(selectedCategories: activeCaregories, with: searchText) { [weak self] result in
             guard let self = self else { return }
-            switch result {
-            case .success(let recipeArray):
-                self.recipesPresenter.updateItemsView(with: recipeArray)
-            case .failure(let error):
-                switch error {
-                case .dataError(.notitems):
-                    self.searchControllerDelegate.updateText("Nothing in our recipes database matches what you are searching for! Please try again.")
-                case .notConnectedToInternet:
-                    
-                    DispatchQueue.main.async {
-                        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .notification(title: "Network Error", message: "The request could not be sent. Checking the network connection."))
-                        self.alertManager.setAlert(alert)
-                        self.alertManager.showAlert()
-                    }
-                default: print("Error: \(error)")
-                }
+            updateDataWithResult(result)
+        }
+    }
+    
+    private func updateDataWithResult(_ result: Result<[RecipeProfileProtocol], NetworkError>) {
+        switch result {
+        case .success(let recipeArray):
+            self.recipesPresenter.updateItemsView(with: recipeArray)
+        case .failure(let error):
+            switch error {
+            case .dataError(.notitems):
+                searchControllerDelegate.updateText(LabelText.recipeNotFound)
+            case .notConnectedToInternet:
+                showErrorAlert(alertTitle: "Network Error", errorMessage: "The request could not be sent. Checking the network connection.")
+            default: print("Error: \(error)")
             }
         }
     }
     
-    func createRecpesView() -> UIViewController {
-        ElementsViewFactory.defaultFactory.createVC(.recipesView, presenter: recipesPresenter)
-    }
-    func createFilterView() -> UIViewController {
-        let filterPresnter = FilterPresenter(categoryManager: categoryManager)
-        return ElementsViewFactory.defaultFactory.createVC(.filterView, presenter: filterPresnter)
+    private func showErrorAlert(alertTitle: String, errorMessage: String) {
+        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .notification(title: alertTitle, message: errorMessage))
+        alertManager.setAlert(alert)
+        alertManager.showAlert()
     }
 }
-

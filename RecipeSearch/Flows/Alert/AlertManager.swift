@@ -14,9 +14,9 @@ protocol AlertManagerProtocol {
 }
 class AlertManager: AlertManagerProtocol{
     private var alert: CustomAlert?
-    private let windowService: WindowService
+    private let windowService: WindowServiceProtocol
     
-    init(windowService: WindowService = WindowService()) {
+    init(windowService: WindowServiceProtocol = WindowService()) {
         self.windowService = windowService
     }
     

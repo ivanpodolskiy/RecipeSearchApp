@@ -15,9 +15,14 @@ class EditableTextView: UIView {
        }
     }
     override func layoutSubviews() {
-        setLayout()
+        super.layoutSubviews()
+        addSubview(textLabel)
+        addSubview(textField)
+        textLabel.frame = bounds
+        textField.frame = bounds
     }
     override func reloadInputViews() {
+        super.reloadInputViews()
         isTextFieldMode = false
     }
     //MARK: - Outlets
@@ -37,24 +42,18 @@ class EditableTextView: UIView {
         textField.textColor = .systemBlue
         return textField
     }()
-    //MARK: - Setting Layout
-    private func setLayout() {
-        addSubview(textLabel)
-        addSubview(textField)
-        textLabel.frame = bounds
-        textField.frame = bounds
-    }
+    
     private func switchTextLableMode(_ isTextFieldMode: Bool) {
         textLabel.isHidden = isTextFieldMode
         textField.isHidden = !isTextFieldMode
+        
         if isTextFieldMode {
             textField.becomeFirstResponder()
         } else {
             textField.resignFirstResponder()
-            if let updatedText = textField.text, updatedText != textLabel.text   {
+            guard let updatedText = textField.text, updatedText != textLabel.text else { return }
                 textLabel.text = updatedText
                 updatingTextHandler?(updatedText)
-            }
         }
     }
 }

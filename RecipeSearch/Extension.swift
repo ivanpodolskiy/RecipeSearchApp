@@ -5,12 +5,12 @@
 //  Created by user on 10.05.2023.
 //
 
-import Foundation
 import UIKit
 
 protocol ReusableView: AnyObject {
     static var identifier: String { get }
 }
+
 extension UIColor {
     static var basic: UIColor {
         return UIColor(named: "basic")!
@@ -22,12 +22,20 @@ extension UIColor {
         return UIColor.white
     }
 }
+
+extension String {
+    func insertSymbolBeforeWord(insert symbol: String) -> String {
+        return symbol + self
+    }
+}
+
 extension [String] {
     func toString(separator: String) -> String {
         let stringText = self.joined(separator: separator)
         return stringText
     }
 }
+
 extension UITabBar {
     open override func sizeThatFits(_ size: CGSize) -> CGSize {
         super.sizeThatFits(size)
@@ -36,6 +44,7 @@ extension UITabBar {
         return sizeThatFits
     }
 }
+
 extension CGFloat {
     static func itemWidth(for width: CGFloat, spacing: CGFloat, itemsInRow: CGFloat) -> CGFloat {
         let totalSpacing: CGFloat = 2 * spacing + (itemsInRow - 1) * spacing

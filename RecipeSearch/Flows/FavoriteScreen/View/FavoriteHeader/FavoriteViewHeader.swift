@@ -26,6 +26,7 @@ class FavoriteViewHeader: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     override func prepareForReuse() {
+        super.prepareForReuse()
         editingView.reloadInputViews()
         titleLabel.reloadInputViews()
     }

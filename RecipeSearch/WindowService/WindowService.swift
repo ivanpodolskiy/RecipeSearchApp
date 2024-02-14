@@ -6,19 +6,19 @@
 //
 import UIKit
 
-protocol WindowServiceProtocol {
-    var currentWindow: UIWindow? { get }
-    func addViewToWindow(_ view: UIView)
-    func removeViewFromWindow(_ view: UIView)
-}
-
 protocol WindowServiceSubviewsKeeper {
     func getSubviews() -> [UIView]?
 }
 protocol WindowServiceRemover {
+    func removeViewFromWindow(_ view: UIView)
     func removeLastSubview()
 }
-                                            
+
+protocol WindowServiceProtocol: WindowServiceRemover, WindowServiceSubviewsKeeper  {
+    var currentWindow: UIWindow? { get }
+    func addViewToWindow(_ view: UIView)
+}
+
 class WindowService: WindowServiceProtocol {
     var currentWindow: UIWindow? {
         UIWindow.current
@@ -30,11 +30,8 @@ class WindowService: WindowServiceProtocol {
     }
     
     func removeViewFromWindow(_ view: UIView) {
-        guard let window = currentWindow else { return }
-        if view.isDescendant(of: window) {
-            view.removeFromSuperview()
-        }
-        
+        guard let window = currentWindow, view.isDescendant(of: window)else  { return }
+        view.removeFromSuperview()
     }
 }
 
@@ -43,9 +40,10 @@ extension WindowService: WindowServiceSubviewsKeeper {
         return currentWindow?.subviews
     }
 }
+
 extension WindowService: WindowServiceRemover {
     func removeLastSubview() {
-        guard let subiews = getSubviews(), let lastSubiview = subiews.last else { return }
+        guard let subviews = getSubviews(), let lastSubiview = subviews.last else { return }
         removeViewFromWindow(lastSubiview)
     }
 }

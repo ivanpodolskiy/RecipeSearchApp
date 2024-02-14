@@ -11,15 +11,18 @@ enum CategoryType: String{
 }
 protocol CategoryValueProtocol {
     var title: String { get }
-    var category: CategoryType { get }
+    var type: CategoryType { get }
+    
     mutating func setOriginalStatus()
     mutating   func selectValue()
     func getStatus() -> Bool
 }
+
 struct CategoryValue: CategoryValueProtocol {
     let title: String
-    let category: CategoryType
+    let type: CategoryType
     private(set) var status = false
+    
     mutating func selectValue() {
         status.toggle()
     }

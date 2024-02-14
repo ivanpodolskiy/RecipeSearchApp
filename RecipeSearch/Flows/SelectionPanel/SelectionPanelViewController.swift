@@ -11,7 +11,7 @@ class SelectionPanelViewController: UIViewController {
     private let buttonHeight: CGFloat = 50
     private let stackViewSpacing: CGFloat = 20
     private let firstButtonTitle: String = "Create new section"
-    
+
     private var presenter: SelectionMenuPresenterProtocol?
     
     func setPresenter(presenter: SelectionMenuPresenterProtocol) {

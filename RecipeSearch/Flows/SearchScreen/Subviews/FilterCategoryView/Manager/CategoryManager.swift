@@ -11,15 +11,16 @@ protocol CategoryManagerProtocol {
     func changeStatus(_ selectedValueIndex: Int) -> [CategoryValueProtocol]
     func setOriginalStatus()
 }
-//ref.
+
 class CategoryManager {
     private var type: CategoryType = .diet
-    private var dietValues: [CategoryValueProtocol] = [CategoryValue(title: "balanced", category: .diet), CategoryValue(title: "high-fiber",  category: .diet), CategoryValue(title: "keto-friendly", category: .health), CategoryValue(title: "kosher", category: .health), CategoryValue(title: "low-fat", category: .diet), CategoryValue(title: "high-protein", category: .diet), CategoryValue(title: "low-carb", category: .diet), CategoryValue(title: "low-sodium", category: .diet), CategoryValue(title: "low-sugar", category: .health), CategoryValue(title: "pescatarian", category: .health), CategoryValue(title: "red-meat-free", category: .health), CategoryValue(title: "vegan", category: .health), CategoryValue(title: "vegetarian", category: .health) ]
-    private var allergyValues: [CategoryValueProtocol] = [CategoryValue(title: "alcohol-free",  category: .health), CategoryValue(title: "celery-free", category: .health), CategoryValue(title: "crustacean-free", category: .health), CategoryValue(title: "dairy-free", category: .health),  CategoryValue(title: "egg-free",  category: .health), CategoryValue(title: "fish-free", category: .health), CategoryValue(title: "soy-free", category: .health), CategoryValue(title: "shellfish-free", category: .health), CategoryValue(title: "peanut-free", category: .health), CategoryValue(title: "mustard-free", category: .health)]
+    
+    private var dietValues: [CategoryValueProtocol] = [CategoryValue(title: "balanced", type: .diet), CategoryValue(title: "high-fiber",  type: .diet), CategoryValue(title: "keto-friendly", type: .health), CategoryValue(title: "kosher", type: .health), CategoryValue(title: "low-fat", type: .diet), CategoryValue(title: "high-protein", type: .diet), CategoryValue(title: "low-carb", type: .diet), CategoryValue(title: "low-sodium", type: .diet), CategoryValue(title: "low-sugar", type: .health), CategoryValue(title: "pescatarian", type: .health), CategoryValue(title: "red-meat-free", type: .health), CategoryValue(title: "vegan", type: .health), CategoryValue(title: "vegetarian", type: .health) ]
+    
+    private var allergyValues: [CategoryValueProtocol] = [CategoryValue(title: "alcohol-free",  type: .health), CategoryValue(title: "celery-free", type: .health), CategoryValue(title: "crustacean-free", type: .health), CategoryValue(title: "dairy-free", type: .health),  CategoryValue(title: "egg-free",  type: .health), CategoryValue(title: "fish-free", type: .health), CategoryValue(title: "soy-free", type: .health), CategoryValue(title: "shellfish-free", type: .health), CategoryValue(title: "peanut-free", type: .health), CategoryValue(title: "mustard-free", type: .health)]
 }
 
 extension CategoryManager: CategoryManagerProtocol {
-    //MARK: - убрать в CategoryStatusUpdater
     func changeStatus(_ selectedValueIndex: Int) -> [CategoryValueProtocol] {
         switch type {
         case .diet: dietValues[selectedValueIndex].selectValue()
@@ -28,7 +29,7 @@ extension CategoryManager: CategoryManagerProtocol {
             return  allergyValues
                      }
     }
-    //MARK: - убрать в CattegoryDataProvider
+
     func getCategoryData(categoryType: CategoryType?, callBack: ([CategoryValueProtocol], CategoryType) -> Void) {
         switch categoryType {
         case .diet:
@@ -45,7 +46,7 @@ extension CategoryManager: CategoryManagerProtocol {
             }
         }
     }
-    //MARK: - убрать в CategoryFilter
+
     func getActiveValues() -> [CategoryValueProtocol]? {
         var filteredValues = [CategoryValue]()
         guard let sumValues = dietValues + allergyValues as? [CategoryValue] else { return nil}
@@ -54,7 +55,7 @@ extension CategoryManager: CategoryManagerProtocol {
         }
         return filteredValues
     }
-    //MARK: - убрать в CategoryStatusClearer
+
     func setOriginalStatus() {
         func setStatusFalse(type: inout [CategoryValueProtocol]) {
             for i in 0..<type.count { type[i].setOriginalStatus() }

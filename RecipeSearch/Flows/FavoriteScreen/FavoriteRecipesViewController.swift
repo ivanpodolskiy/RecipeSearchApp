@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import CoreData
 
 class FavoriteRecipesViewController: UIViewController {
     private var presenter: FavoriteRecipesPresenterProtocol?
@@ -16,31 +15,25 @@ class FavoriteRecipesViewController: UIViewController {
             isEnabledRightBarButton(status)
         }
     }
+    
     func setPresenter(_ presenter: FavoriteRecipesPresenterProtocol) {
         self.presenter = presenter
     }
+    
+    override func loadView() {
+        super.loadView()
+        presenter?.fetchFavoriteRecipes()
+    }
+    
     override func viewDidLoad() {
-        
         super.viewDidLoad()
-        view.addSubview(collectionView)
-
         view.backgroundColor = .white
+        view.addSubview(collectionView)
         registerCollectionView()
-        navigationItem.leftBarButtonItem = getLeftBarButtonItem()
-        navigationItem.rightBarButtonItem = getRightBarButtomItem()
+        setupNavigationItem()
         updateCollectionViewLayout()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        if let presenter = presenter { presenter.fetchFavoriteRecipes() }
-    }
-    override func viewDidLayoutSubviews() {
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
-        ])
-    }
+    
     private func registerCollectionView() {
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
         collectionView.register(FavoriteViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FavoriteViewHeader.identifier)
@@ -48,6 +41,36 @@ class FavoriteRecipesViewController: UIViewController {
         collectionView.dataSource = self
     }
     
+    private func setupNavigationItem() {
+        navigationItem.leftBarButtonItem = getLeftBarButtonItem()
+        navigationItem.rightBarButtonItem = getRightBarButtomItem()
+    }
+    
+    private func getLeftBarButtonItem() ->  UIBarButtonItem {
+        let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeAllSections(sender: )))
+        barButtonItem.isEnabled = false
+        return barButtonItem
+    }
+    
+    private func getRightBarButtomItem() -> UIBarButtonItem {
+        let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addSection(sender: )))
+        return barButtonItem
+    }
+    
+    private func isEnabledRightBarButton(_ status:Bool ) {
+        navigationItem.leftBarButtonItem?.isEnabled = status
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
+        ])
+    }
+  
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -55,31 +78,22 @@ class FavoriteRecipesViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    private func getLeftBarButtonItem() ->  UIBarButtonItem {
-        let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(removeAllSections(sender: )))
-        barButtonItem.isEnabled = false
-        return barButtonItem
-    }
-    private func getRightBarButtomItem() -> UIBarButtonItem {
-        let barButtonItem =  UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addSection(sender: )))
-        return barButtonItem
-    }
-    private func isEnabledRightBarButton(_ status:Bool ) {
-        navigationItem.leftBarButtonItem?.isEnabled = status
-    }
-    //MARK: - UICollectionViewCompositionalLayout
+    
     private func updateCollectionViewLayout(){
         let collectionViewlLayout =  getCollectionViewLayout()
         collectionView.setCollectionViewLayout(collectionViewlLayout, animated: false)
     }
+    
     private func getCollectionViewLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, environment) -> NSCollectionLayoutSection? in
-            let hasItems = self.hasItemsInSection(section: sectionIndex)// Replace with your data source
+            /// Replace with your data source
+            let hasItems = self.hasItemsInSection(section: sectionIndex)
             let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension:
                     .fractionalHeight(1)))
             let heightDimension: NSCollectionLayoutDimension = hasItems ? .estimated(300)  : .estimated(1)
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(250), heightDimension: heightDimension ), subitems: [item])
             let sectionLayout = NSCollectionLayoutSection(group: group)
+            
             if hasItems {
                 sectionLayout.orthogonalScrollingBehavior = .groupPaging
                 sectionLayout.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 16, bottom: 20, trailing: 16)
@@ -94,39 +108,17 @@ class FavoriteRecipesViewController: UIViewController {
         }
         return layout
     }
+    
     private func hasItemsInSection(section: Int) -> Bool {
         guard let favoriteSections = favoriteSections else { return false }
         guard let recipes = favoriteSections[section].recipes, recipes.count != 0  else { return false }
         return true
     }
+    
     private func supplementaryHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem {
         let supplementaryItem =  NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(25)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         supplementaryItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 23)
         return supplementaryItem
-    }
-    
-    private func showAlert(_ alert: UIView) {
-        view.addSubview(alert)
-    }
-}
-//MARK: - Action | Alerts
-extension FavoriteRecipesViewController {
-    private func removeNeededSection(_ indexSection: Int) {
-        presenter?.removeSection(indexSection)
-    }
-    @objc private func removeAllSections(sender: UIBarButtonItem) {
-        presenter?.removeAllSections()
-    }
-    @objc private func addSection(sender: UIBarButtonItem) {
-        presenter?.addSection()
-    }
-    @objc  private func switchFavoriteStatus(sender: UIButton) {
-        let buttonPosition = sender.convert(CGPoint.zero, to: collectionView)
-        if let indexPath = collectionView.indexPathForItem(at: buttonPosition) {
-            let section = indexPath.section
-            let row = indexPath.row//  need to get indexPath.row's cell
-            presenter?.removeRecipe(indexRow: row, indexSection: section)
-        }
     }
 }
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
@@ -135,11 +127,13 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
         guard let  favoriteCategories = favoriteSections else { return 0}
         return favoriteCategories.count
     }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let categories = favoriteSections else { return 0}
         guard let recipes = categories[section].recipes else { return 0}
         return recipes.count
     }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
         guard let favoriteCategories = favoriteSections else { return cell }
@@ -149,6 +143,7 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
         cell.favoriteButton.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
         return cell
     }
+    
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
@@ -160,7 +155,7 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
             header.setSectionDesctiption(title: titleSection, countItems: count ?? 0)
             header.updatingTitleHandler = { [ weak self] title in
                 guard let self = self else { return }
-                presenter?.renameSection(title: title, indexSection: indexPath.section)
+                presenter?.renameSection(title, atSection: indexPath.section)
             }
             header.deleteActionHandler = { [weak self] in
                 guard let self = self else { return}
@@ -169,6 +164,29 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
             return header
         default:
             return UICollectionReusableView()
+        }
+    }
+}
+//MARK: - Action | Alerts
+extension FavoriteRecipesViewController {
+    private func removeNeededSection(_ indexSection: Int) {
+        presenter?.removeSection(indexSection)
+    }
+    
+    @objc private func removeAllSections(sender: UIBarButtonItem) {
+        presenter?.removeAllSections()
+    }
+    
+    @objc private func addSection(sender: UIBarButtonItem) {
+        presenter?.addSection()
+    }
+    
+    @objc  private func switchFavoriteStatus(sender: UIButton) {
+        let buttonPosition = sender.convert(CGPoint.zero, to: collectionView)
+        if let indexPath = collectionView.indexPathForItem(at: buttonPosition) {
+            let section = indexPath.section
+            let row = indexPath.row//  need to get indexPath.row's cell
+            presenter?.removeRecipe(atRow: row, atSection: section)
         }
     }
 }
@@ -181,17 +199,6 @@ extension FavoriteRecipesViewController: UICollectionViewDelegate {
         presenter?.pushRecipeProfileScreen(with: recipe, onStatusUpdate: nil)
     }
 }
-//MARK: - Header Methods
-extension FavoriteRecipesViewController {
-    private func updateCountForHeaderLabel(_ sectionIndex: Int) {
-        let supplementaryViews = self.collectionView.visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
-        guard let sectionHeader = supplementaryViews.first(where: { header in
-            return header.tag == sectionIndex
-        }) as? FavoriteViewHeader else { return }
-        let count = favoriteSections?[sectionIndex].recipes?.count ?? 0
-        sectionHeader.setCountItems(count)
-    }
-}
 //MARK: - FavoriteRecipesDelegate
 extension FavoriteRecipesViewController: FavoriteRecipesDelegate {    
     func updateCollectionView(_ updatedData: [FavoriteRecipesSectionProtocol]) {
@@ -200,6 +207,7 @@ extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
             self.collectionView.reloadData()
         }
     }
+    
     func removeFavoriteRecipe(section: Int, index: Int, currectFavoriteRecipesCategories: [FavoriteRecipesSectionProtocol] ) {
         self.favoriteSections = currectFavoriteRecipesCategories
         DispatchQueue.main.async {
@@ -211,16 +219,18 @@ extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
             }
         }
     }
-    func removeFavoriteSection(indexSection: Int, currentFavoriteSections: [FavoriteRecipesSectionProtocol]) {
+    
+    func removeFavoriteSection(atSection: Int, currentFavoriteSections: [FavoriteRecipesSectionProtocol]) {
         self.favoriteSections = currentFavoriteSections
             DispatchQueue.main.async {
                 self.collectionView.performBatchUpdates( {
-                    self.collectionView.deleteSections(IndexSet(integer: indexSection) )
+                    self.collectionView.deleteSections(IndexSet(integer: atSection) )
                 }) { _ in
                     self.collectionView.reloadData()
                 }
             }
     }
+    
     func removeAllSections() {
         self.favoriteSections = []
         DispatchQueue.main.async {
@@ -231,10 +241,25 @@ extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
             })
         }
     }
+    
     func presentAlert(_ alert: UIAlertController) {
         present(alert, animated: true)
     }
+    
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        navigationController?.pushViewController(viewController, animated: true)
+        guard let navigationController = navigationController else { return }
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: true)
+    }
+}
+//MARK: - Header Methods
+extension FavoriteRecipesViewController {
+    private func updateCountForHeaderLabel(_ sectionIndex: Int) {
+        let supplementaryViews = self.collectionView.visibleSupplementaryViews(ofKind: UICollectionView.elementKindSectionHeader)
+        guard let sectionHeader = supplementaryViews.first(where: { header in
+            return header.tag == sectionIndex
+        }) as? FavoriteViewHeader else { return }
+        let count = favoriteSections?[sectionIndex].recipes?.count ?? 0
+        sectionHeader.setCountItems(count)
     }
 }

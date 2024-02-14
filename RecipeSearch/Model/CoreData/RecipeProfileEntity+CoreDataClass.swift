@@ -13,12 +13,16 @@ import CoreData
 public class RecipeProfileEntity: NSManagedObject {
     convenience init(contex: NSManagedObjectContext, recipeProfile: RecipeProfileProtocol) {
         self.init(context: contex)
-        self.image = recipeProfile.stringImage
+        self.image = recipeProfile.imageURL
         self.title = recipeProfile.title
         self.url = recipeProfile.url
         self.totalCalories = Int64(recipeProfile.totalCalories)
-        self.healthLabels = recipeProfile.healthLabels
-        self.serving = Int64(recipeProfile.serving)
-        self.ingredients = recipeProfile.ingredientLines
+        self.healthLabels = recipeProfile.categories
+        self.serving = Int64(recipeProfile.cookingInfo.serving)
+        self.ingredients = recipeProfile.cookingInfo.ingredients
+        self.timeCooking = Int64(recipeProfile.cookingInfo.timeCooking)
+        self.proteins = Int64(recipeProfile.macronutrientsInfo.proteins.quantity)
+        self.fats = Int64(recipeProfile.macronutrientsInfo.fats.quantity)
+        self.carbohydrates = Int64(recipeProfile.macronutrientsInfo.carbohydrates.quantity)        
     }
 }

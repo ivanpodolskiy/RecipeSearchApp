@@ -8,7 +8,7 @@
 import UIKit
 
 protocol SelectingProtocol {
-    func selectExistingSection(_ title: String)
+    func selectExistingSection(_ titleSection: String)
     func addNewSection()
 }
 protocol SelectionMenuPresenterProtocol: PresenterProtocol, SelectingProtocol, UpdateStatusProtocol {
@@ -17,6 +17,7 @@ protocol SelectionMenuPresenterProtocol: PresenterProtocol, SelectingProtocol, U
 protocol SelectionMenuDelegate: AnyObject, DelegateViewProtocol {
     func dismiss()
 }
+
 class SelectionMenuPresenter: SelectionMenuPresenterProtocol {
     var onStatusUpdate: UpdatedStatusCallback?
     private var recipeProfile: RecipeProfileProtocol
@@ -30,29 +31,41 @@ class SelectionMenuPresenter: SelectionMenuPresenterProtocol {
         self.recipeProfile = recipeProfile
         self.alertManager = alertManager
     }
+    
     func attachView(_ view: UIViewController) {
         selectionMenu = view as? SelectionMenuDelegate
     }
     
     func fetchSectionTitles() -> [String]? {
-        return favoriteRecipesStorage.fetchAllTitleSections()
+        guard let sectionTitles = favoriteRecipesStorage.fetchAllTitleSections() else { return nil }
+        return sectionTitles
     }
     
-    func selectExistingSection(_ title: String) {
-        guard let recipeeEntity = try? favoriteRecipesStorage.createRecipeProfileEntity(from: recipeProfile) else { return }
-        try? favoriteRecipesStorage.addFavoriteRecipe(recipeeEntity, nameSection: title, sectionExists: true)
+    func selectExistingSection(_ sectionTitle: String) {
+        try? addRecipeToStorage(recipeProfile, toSection: sectionTitle)
         onStatusUpdate?(true)
         selectionMenu?.dismiss()
     }
     
+    private func addRecipeToStorage(_ recipeProfile: RecipeProfileProtocol, toSection sectionTitle: String) throws {
+        guard let recipeeEntity = try? favoriteRecipesStorage.createRecipeProfileEntity(from: recipeProfile) else { return }
+        try? favoriteRecipesStorage.addFavoriteRecipe(recipeeEntity, nameSection: sectionTitle, sectionExists: true)
+    }
+    
     func addNewSection() {
-        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .textField(title: "Creating", message: "Type name for new section", actionHandler: { [weak self] title  in
-            guard let self = self , let title = title as? String else { return}
-            guard let recipeeEntity = try? favoriteRecipesStorage.createRecipeProfileEntity(from: recipeProfile) else { return }
+        addSectionThroughShowingAlert(alertTitle: "Creating", message: "Type name for new section") { [weak self] title in
+            guard let self = self,
+                    let recipeeEntity = try? favoriteRecipesStorage.createRecipeProfileEntity(from: recipeProfile) else { return }
             try? favoriteRecipesStorage.addFavoriteRecipe(recipeeEntity, nameSection: title, sectionExists: true)
-            
             onStatusUpdate?(true)
             selectionMenu?.dismiss()
+        }
+    }
+    
+    private func addSectionThroughShowingAlert(alertTitle: String, message: String, addMethod: @escaping (String) -> ()) {
+        let alert = AlertFactory.defaultFactory.getCustomAlert(type: .textField(title: alertTitle, message: message, actionHandler: { titleSelectedSection in
+            guard let title = titleSelectedSection as? String else { return}
+            addMethod(title)
         }, cancelHandler: nil, textСheckingHandler: { [weak self] title in
             guard let self = self else  { return false }
             return favoriteRecipesStorage.addNewSectionCD(with: title)

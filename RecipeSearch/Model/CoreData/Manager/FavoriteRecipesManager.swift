@@ -28,6 +28,7 @@ protocol FavoriteRecipesStorageProtocol: SectionsFavoriteRecipesFetchingProtocol
     func addFavoriteRecipe(_ recipeProfileEntity: RecipeProfileEntity, nameSection: String, sectionExists: Bool) throws
     func addNewSectionCD(with title: String) -> Bool
 }
+
 //MARK: - Storage Manager for Favorite Recipes
 class StorageManagerFR: FavoriteRecipesStorageProtocol {
     private let context: NSManagedObjectContext

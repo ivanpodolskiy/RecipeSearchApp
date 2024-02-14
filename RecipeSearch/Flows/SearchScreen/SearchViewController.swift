@@ -7,19 +7,24 @@
 
 import UIKit
 
-enum TypeDescription {
+fileprivate enum TypeDescription {
     case searching
     case filterSetting
-    case dataError
+    case dataError(description: String)
 }
-enum ChildVC {
+
+fileprivate enum ChildType {
     case filter
     case recipesCollection
 }
 
 class SearchViewController: UIViewController{
-    var presenter: SearchPresenterProtocol?
+    private var presenter: SearchPresenterProtocol?
     private var searchTimer: Timer?
+    
+    func setPresenter(_ presenter: SearchPresenterProtocol) {
+        self.presenter = presenter
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,8 +41,8 @@ class SearchViewController: UIViewController{
     private var constraintDescriptionFiltering: [NSLayoutConstraint]!
     private lazy var slideInTransitioningDelegate = PanelTransition()
     
-    private var filterController: FilterViewController!
-    private var collectionView: RecipesViewController!
+    private  var filterController: FilterViewController?
+    private  var collectionView: RecipesViewController?
     
     private let searchController: UISearchController = {
         let searchController = UISearchController()
@@ -52,58 +57,65 @@ class SearchViewController: UIViewController{
     
     private var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .gray
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
+        label.textColor = .gray
         return label
     }()
     
-    //MARK: - View functions
-    private func setDescriptionLabel() {
+    private func addDescriptionLabel() {
         view.addSubview(descriptionLabel)
     }
-    private func setChildViewController(_ selectedVC: ChildVC) {
-        func setVC(vc: UIViewController) {
-            view.addSubview(vc.view)
-            addChild(vc)
-            vc.didMove(toParent: self)
-        }
-        switch selectedVC {
+    
+    private func setChildViewController(_ selectedChild: ChildType) {
+        initAndSetupChildVC(typeVC: selectedChild, setupMethod: { child, constraintMethod in
+            child.view.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(child.view)
+            addChild(child)
+            child.didMove(toParent: self)
+            constraintMethod()
+        })
+    }
+    
+    private func initAndSetupChildVC(typeVC: ChildType, setupMethod: (UIViewController, () -> ()) -> ()) {
+        switch typeVC {
         case .filter:
             guard let filterView = presenter?.createFilterView() as? FilterViewController else { return }
             filterController = filterView
-            setVC(vc: filterController)
-            setFilterConstraint()
+            
+            setupMethod(filterController!, setFilterConstraint)
         case .recipesCollection:
             guard let recipesView = presenter?.createRecpesView() as? RecipesViewController else { return}
             collectionView = recipesView
-            setVC(vc: collectionView)
-            setCollectionConstraint()
+            setupMethod(collectionView!, setCollectionConstraint)
         }
     }
-    private func dismissChildViewController(_ selectedChild: ChildVC) {
-        var childVC: UIViewController!
-        func dismis() {
+    
+    private func removeChild(_ selectedChild: ChildType) {
+        deinitChildVC(typeVC: selectedChild) { childVC in
             childVC.willMove(toParent: nil)
             childVC.view.removeFromSuperview()
-            childVC.removeFromParent() //ref.
-        }
-        switch selectedChild {
-        case .filter:
-            if filterController != nil {
-            childVC =  filterController } else { return }
-            dismis()
-            filterController = nil
-        case .recipesCollection:
-            if collectionView != nil {
-            childVC =  collectionView } else { return }
-            dismis()
-            collectionView = nil
+            childVC.removeFromParent()
         }
     }
-    private func showDisplayedDescription(for type:  TypeDescription, with description: String = "") {
+    
+    private func deinitChildVC(typeVC: ChildType, removingMethod: (UIViewController) -> ()) {
+        switch typeVC {
+        case .filter:
+            guard let filterController = filterController else { return }
+            removingMethod(filterController)
+            self.filterController = nil
+        case .recipesCollection:
+            guard let collectionView = collectionView else { return }
+            removingMethod(collectionView)
+            self.filterController = nil
+        }
+    }
+    
+    private func showDisplayedDescription(for type:  TypeDescription) {
         descriptionLabel.isHidden = false
-        setDescriptionLabel()
+        addDescriptionLabel()
+        
         switch type {
         case .searching:
             setupSearchDescriptionConstraint()
@@ -111,13 +123,14 @@ class SearchViewController: UIViewController{
         case .filterSetting:
             setupFilterDescription()
             descriptionLabel.text = "Here you can change your filtering settings"
-        case .dataError:
+        case .dataError(let description):
             setupSearchDescriptionConstraint()
             descriptionLabel.text = description
         }
     }
     //MARK: - Layouts
     private func setFilterConstraint() {
+        guard let filterController = filterController else { return }
         NSLayoutConstraint.activate([
             filterController.view.topAnchor.constraint(equalTo: searchController.searchBar.searchTextField.bottomAnchor),
             filterController.view.leftAnchor.constraint(equalTo: searchController.searchBar.leftAnchor, constant: 32),
@@ -125,7 +138,9 @@ class SearchViewController: UIViewController{
             filterController.view.heightAnchor.constraint(equalToConstant: 160),
         ])
     }
+    
     private func setCollectionConstraint() {
+        guard let collectionView = collectionView else { return }
         NSLayoutConstraint.activate([
             collectionView.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.view.leftAnchor.constraint(equalTo: view.leftAnchor),
@@ -133,6 +148,7 @@ class SearchViewController: UIViewController{
             collectionView.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
+    
     private func setupSearchDescriptionConstraint() {
         if constraintDescriptionSearching == nil {
             constraintDescriptionSearching = [descriptionLabel.topAnchor.constraint(equalTo:  view.safeAreaLayoutGuide.topAnchor, constant: 5),
@@ -145,11 +161,13 @@ class SearchViewController: UIViewController{
         }
         NSLayoutConstraint.activate(constraintDescriptionSearching)
     }
+    
     private func setupFilterDescription(){
         if constraintDescriptionFiltering == nil {
-            constraintDescriptionFiltering = [descriptionLabel.topAnchor.constraint(equalTo: filterController.view.bottomAnchor, constant: 10),
+            constraintDescriptionFiltering = [descriptionLabel.topAnchor.constraint(equalTo: filterController!.view.bottomAnchor, constant: 10),
                                               descriptionLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)]
         }
+        
         if constraintDescriptionFiltering != nil {
             NSLayoutConstraint.deactivate(constraintDescriptionSearching)
             constraintDescriptionSearching = nil
@@ -159,37 +177,48 @@ class SearchViewController: UIViewController{
 }
 //MARK: - UISearchBarDelegate
 extension SearchViewController: UISearchControllerDelegate {
-    func willPresentSearchController(_ searchController: UISearchController) { //ref. -
-        dismissChildViewController(.filter)
+    func willPresentSearchController(_ searchController: UISearchController) {
+        removeChild(.filter)
         showDisplayedDescription(for: .searching)
         searchController.searchBar.showsBookmarkButton = false
     }
 }
+
 extension SearchViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {//ref.     delete
-        dismissChildViewController(.recipesCollection)
+        removeChild(.recipesCollection)
         showDisplayedDescription(for: .searching)
         searchController.searchBar.showsBookmarkButton = true
         searchController.searchBar.setImage(UIImage(systemName: "slider.horizontal.3"), for: .bookmark, state: .normal)
     }
+    
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         if filterController != nil {
-            searchBar.setImage(UIImage(systemName: "slider.horizontal.3"), for: .bookmark, state: .normal)
-            dismissChildViewController(.filter)
+            changeSearchBarImage(in: searchBar, imageSystemName: "slider.horizontal.3")
+            removeChild(.filter)
             showDisplayedDescription(for: .searching)
         } else {
-            searchBar.setImage(UIImage(systemName: "xmark"), for: .bookmark, state: .normal)
+            changeSearchBarImage(in: searchBar, imageSystemName: "xmark")
             setChildViewController(.filter)
             showDisplayedDescription(for: .filterSetting)
         }
     }
+    
+    private func changeSearchBarImage(in searchBar: UISearchBar, imageSystemName: String) {
+        searchBar.setImage(UIImage(systemName: imageSystemName), for: .bookmark, state: .normal)
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchTimer?.invalidate()
+        searchTimer?.invalidate()
         if descriptionLabel.isHidden == false  {
             descriptionLabel.isHidden = true
             descriptionLabel.removeFromSuperview()
             setChildViewController(.recipesCollection)
         }
+        serchRecipe(use: searchText)
+    }
+    
+    private func serchRecipe(use searchText: String) {
         let interval: TimeInterval  = 0.3
         searchTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false, block: { [weak self] _ in
             guard let self = self else { return }
@@ -201,9 +230,8 @@ extension SearchViewController: UISearchBarDelegate {
 extension SearchViewController: SearchControllerDelegate {
     func updateText(_ userFriendlyDescription: String) {
         DispatchQueue.main.async {
-            self.showDisplayedDescription(for: .dataError, with: userFriendlyDescription)
-            self.dismissChildViewController(.recipesCollection)
-            
+            self.showDisplayedDescription(for: .dataError(description: userFriendlyDescription))
+            self.removeChild(.recipesCollection)
         }
     }
     
@@ -213,4 +241,3 @@ extension SearchViewController: SearchControllerDelegate {
         }
     }
 }
-

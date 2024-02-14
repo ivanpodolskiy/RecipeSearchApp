@@ -23,8 +23,12 @@ extension RecipeProfileEntity {
     @NSManaged public var title: String?
     @NSManaged public var totalCalories: Int64
     @NSManaged public var url: String?
+    @NSManaged public var timeCooking: Int64
+    @NSManaged public var carbohydrates: Int64
+    @NSManaged public var fats: Int64
+    @NSManaged public var proteins: Int64
+    
     @NSManaged public var recipesSectionEntity: RecipesSectionEntity?
-
 }
 
 extension RecipeProfileEntity : Identifiable {

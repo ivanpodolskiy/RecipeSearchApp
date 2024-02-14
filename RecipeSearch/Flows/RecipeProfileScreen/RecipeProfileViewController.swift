@@ -8,44 +8,49 @@
 import UIKit
 
 class RecipeProfileViewController: UIViewController  {
-    private var presenter: RecipeProfilePresenterProtocol!
+    private var presenter: RecipeProfilePresenterProtocol
     
-    //MARK: - Ountlets
-    private let detailRecipeView = DetailRecipeHeaderView()
+    private var  detailRecipeView: DetailsCompositeView
     private let ingredientsView = IngredientsView()
-    private let catehoriesView = CategoriesView()
-    private let transition = PanelTransition()
+    private let categoriesView = CategoriesView()
+    
+    init(presenter: RecipeProfilePresenterProtocol!, detailRecipeView: DetailsCompositeView) {
+        self.presenter = presenter
+        self.detailRecipeView = detailRecipeView
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func loadView() {
+        super.loadView()
+        presenter.loadData()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .white
+        addSubviewAndSetupLayout()
+        setupLayoutConstraint()
+    }
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
-    
-    func setPreseter(presenter: RecipeProfilePresenterProtocol) {
-        self.presenter = presenter
-    }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        hidesBottomBarWhenPushed = true
-        view.backgroundColor = .white
-        presenter.loadRecipe()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        addSubviewAndSetupLayout()
-        setTargets()
-    }
-    
     private func addSubviewAndSetupLayout() {
+        detailRecipeView.view.translatesAutoresizingMaskIntoConstraints = false
+        ingredientsView.translatesAutoresizingMaskIntoConstraints = false
+        categoriesView.translatesAutoresizingMaskIntoConstraints = false
+        
+        addChild(detailRecipeView)
         view.addSubview(scrollView)
-        view.addSubview(ingredientsView)
-        view.addSubview(catehoriesView)
-        scrollView.addSubview(detailRecipeView)
+        scrollView.addSubview(detailRecipeView.view)
         scrollView.addSubview(ingredientsView)
-        scrollView.addSubview(catehoriesView)
-        setupLayoutConstraint()
+        scrollView.addSubview(categoriesView)
     }
     
     private func setupLayoutConstraint() {
@@ -55,64 +60,27 @@ class RecipeProfileViewController: UIViewController  {
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            detailRecipeView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            detailRecipeView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            detailRecipeView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            detailRecipeView.view.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 5),
+            detailRecipeView.view.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            detailRecipeView.view.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
             
-            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.bottomAnchor, constant: 10),
+            ingredientsView.topAnchor.constraint(equalTo: detailRecipeView.view.bottomAnchor, constant: 10),
             ingredientsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-            ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -15),
+            ingredientsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
             
-            catehoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor, constant: 10),
-            catehoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
-            catehoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -30),
-            catehoriesView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
+            categoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor),
+            categoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            categoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -20),
+            categoriesView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
         ])
-    }
-    private func setTargets() {
-        detailRecipeView.informationView.buttonFavorite.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
-        detailRecipeView.informationView.linkButton.addTarget(self, action: #selector(showWebScreen(sender: )), for: .touchUpInside)
-    }
-    //MARK: - Actions
-    @objc func showWebScreen(sender: UIButton) {
-        presenter.pushWebViewController()
-    }
-    @objc func switchFavoriteStatus(sender: UILabel) {
-        presenter.switchFavoriteStatus(nil, with: nil)
     }
 }
 //MARK: - RecipeProfileDelegate
 extension RecipeProfileViewController: RecipeProfileDelegate {
-    func presentCustomSheet(_ viewController: UIViewController) {
-        viewController.transitioningDelegate = transition
-        viewController.modalPresentationStyle = .custom
-        DispatchQueue.main.async { self.present(viewController, animated: true) }
-    }
-    
-    func presentError(_ userFriendlyDescription: String) {
-        print(userFriendlyDescription)
-    }
-    
-    func sendDataToController(recipe: RecipeProfileProtocol) {
-        setData(recipe)
-    }
-    
-    private func setData(_ recipe: RecipeProfileProtocol) {
-        self.detailRecipeView.loadDataToViews(title: recipe.title, isFavorite: recipe.isFavorite)
-        self.ingredientsView.setInformation(ingredients: recipe.ingredientLines)
-        self.detailRecipeView.informationView.valuesView.setData(countServings: recipe.serving,  countCalories: recipe.calories) //ref.
-        self.catehoriesView.setText(recipe.healthLabels)
-    }
-    
-    func setImage(image: UIImage?) {
-        self.detailRecipeView.loadImage(image: image ??   UIImage(named: "placeholder")!)
-    }
-    
-    func updateFavoriteStatus(_ isFavorite: Bool) {
-        detailRecipeView.updateButtonColor(isFavorite: isFavorite)
-    }
-    
-    func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        navigationController?.pushViewController(viewController, animated: animated)
+    func loadData(categoriesList: [String], cookingInfo: CookingInfo) {
+        categoriesView.setText(categoriesList)
+        ingredientsView.setDataAndsetupUI(ingredients: cookingInfo.ingredients,
+                                          servingCount: cookingInfo.serving,
+                                          timeCooking: cookingInfo.timeCooking)
     }
 }

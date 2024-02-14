@@ -5,7 +5,6 @@
 //  Created by user on 09.10.2023.
 //
 
-import Foundation
 import UIKit
 
 //MARK: Presenter Protocols
@@ -20,39 +19,39 @@ protocol RecipesControllerDelegate: AnyObject, SheetDelegate, NavigationDelegate
 //MARK: - RecipesPresenter
 class RecipesPresenter: RecipesPresenterProtocol {
     private let favoriteRecipesStorage: FavoriteRecipesStorageProtocol
-    private var favoriteStatusManager: FavoriteStatusManagerProtocol
-    weak var recipeControllerDelegate:  RecipesControllerDelegate?
+    private var favoriteStatusChanger: FavoriteStatusChangerProtocol
+    weak var recipesCollectionDelegate:  RecipesControllerDelegate?
 
-    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, favoriteStatusManager: FavoriteStatusManagerProtocol) {
+    init(favoriteRecipesStorage: FavoriteRecipesStorageProtocol, favoriteStatusChanger: FavoriteStatusChangerProtocol) {
         self.favoriteRecipesStorage = favoriteRecipesStorage
-        self.favoriteStatusManager = favoriteStatusManager
+        self.favoriteStatusChanger = favoriteStatusChanger
     }
     
     func attachView(_ delegate: UIViewController) { 
-        recipeControllerDelegate = delegate as? RecipesControllerDelegate
+        recipesCollectionDelegate = delegate as? RecipesControllerDelegate
     }
 
     func updateItemsView(with recipes:  [RecipeProfileProtocol]) {
         if let updatetRecipes = try? favoriteRecipesStorage.getUpdatedRecipeArray(from: recipes) {
-            recipeControllerDelegate?.updateItems(recipe: updatetRecipes)
+            recipesCollectionDelegate?.updateItems(recipe: updatetRecipes)
         }
     }
     
-    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?) {
+    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, atIndex index: Int?) {
         guard let selectedRecipe = selectedRecipe, let index = index else { return }
-        favoriteStatusManager.presentViewControllerClouser = {[ weak self] viewController  in
+        favoriteStatusChanger.presentViewControllerClouser = {[ weak self] viewController  in
             guard let self = self else { return }
-            self.recipeControllerDelegate?.presentCustomSheet(viewController)
+            self.recipesCollectionDelegate?.presentCustomSheet(viewController)
         }
-        favoriteStatusManager.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedStatus in
+        favoriteStatusChanger.toggleFavoriteStatus(selectedRecipe) { [weak self] updatedStatus in
             guard let self = self,  let updatedStatus = updatedStatus else { return }
-            self.recipeControllerDelegate?.updateFavoriteStatus(isFavorite: updatedStatus, index: index)
+            self.recipesCollectionDelegate?.updateFavoriteStatus(isFavorite: updatedStatus, index: index)
         }
     }
     
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int) {
         guard let cell = cell as? RecipeCell else { return }
-        let urlString = recipeProfile.stringImage
+        let urlString = recipeProfile.imageURL
         ImageLoader.loadImage(from: urlString) { result in
             switch result {
             case .success( let image) :
@@ -64,9 +63,14 @@ class RecipesPresenter: RecipesPresenterProtocol {
         cell.setupCell(with: recipeProfile, tag: tag)
     }
     
-    func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?) {
-        let presenter = RecipeProfilePresenter(favoriteStatusManager: favoriteStatusManager, recipeProfile: recipe, onStatusUpdate: onStatusUpdate)
-        let recipeProfileController = ElementsViewFactory.defaultFactory.createVC(.profileView, presenter: presenter)
-        recipeControllerDelegate?.pushViewController(recipeProfileController, animated: true)
+    func pushRecipeProfileScreen(with recipeProfile: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?) {
+        ///REF.builder?
+        let detailPresenter = DetailsPresenter(favoriteStatusChanger: favoriteStatusChanger, recipeProfile: recipeProfile, onStatusUpdate: onStatusUpdate)
+        let detailVC = VCFactory.defaultFactory.createVC(.detailsVC, presenter: detailPresenter)
+        
+        let profilePresenter = RecipeProfilePresenter(recipeProfile: recipeProfile)
+        let profileVC = RecipeProfileViewController(presenter: profilePresenter, detailRecipeView: detailVC as! DetailsCompositeView)
+        profilePresenter.attachView(profileVC)
+        recipesCollectionDelegate?.pushViewController(profileVC, animated: true)
     }
 }

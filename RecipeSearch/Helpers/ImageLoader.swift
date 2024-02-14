@@ -28,7 +28,9 @@ class ImageLoader {
                 completion(.failure(.decodingError))
                 return
             }
-            DispatchQueue.main.async { completion(.success(image)) }
+            DispatchQueue.main.async {
+                completion(.success(image))
+            }
         }.resume()
     }
 }

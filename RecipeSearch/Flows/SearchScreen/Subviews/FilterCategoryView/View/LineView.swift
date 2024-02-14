@@ -26,6 +26,7 @@ class LineView: UIView {
         return path
     }()
     override  func draw(_ rect: CGRect) {
+        super.draw(rect)
         path.removeAllPoints()
         UIColor.selected.setStroke()
         super.draw(rect)

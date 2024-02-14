@@ -1,5 +1,5 @@
 //
-//  CatehoriesView.swift
+//  CategoriesView.swift
 //  RecipeSearch
 //
 //  Created by user on 17.05.2023.
@@ -8,43 +8,68 @@
 import UIKit
 
 class CategoriesView: UIView {
-    private(set) lazy var categoriesLabel: UILabel = {
+    private let titleText: String = "Categories: "
+    private let textColor = UIColor(red: 84 / 255, green: 166 / 255, blue: 122 / 255, alpha: 1.0)
+    private let categoriesBackgroundColor = UIColor(red: 208 / 255, green: 233 / 255, blue: 220 / 255, alpha: 1.0)
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .basic
+        label.textAlignment = .left
+        label.text = titleText
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        return label
+    }()
+    private lazy var categoriesLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
+        label.textColor = textColor
         label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 20, weight: .regular)
+        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         return label
     }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor(red: 165/255.0, green: 166/255.0, blue: 246/255.0, alpha: 1)
-        layer.cornerRadius = 20
-        layer.shadowRadius = 4
-        layer.shadowOpacity = 0.25
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        layer.shadowColor = UIColor.black.cgColor
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private lazy var containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = categoriesBackgroundColor
+        view.layer.cornerRadius = 12
+        
+        view.layer.shadowRadius = 3
+        view.layer.shadowOpacity = 0.3
+        view.layer.shadowOffset = CGSize(width: 2, height: 2)
+        view.layer.shadowColor = UIColor.black.cgColor
+        
+        return view
+    }()
+    
     override func layoutSubviews() {
-        addSubview(categoriesLabel)
+        super.layoutSubviews()
+        addSubview(titleLabel)
+        addSubview(containerView)
+        containerView.addSubview(categoriesLabel)
+
         NSLayoutConstraint.activate([
-            categoriesLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
-            categoriesLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
-            categoriesLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            categoriesLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5)
+            titleLabel.topAnchor.constraint(equalTo: topAnchor),
+            titleLabel.leftAnchor.constraint(equalTo: leftAnchor),
+            titleLabel.rightAnchor.constraint(equalTo: rightAnchor),
+            
+            containerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 3),
+            containerView.leftAnchor.constraint(equalTo: leftAnchor),
+            containerView.rightAnchor.constraint(equalTo: rightAnchor),
+            
+            categoriesLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5),
+            categoriesLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
+            categoriesLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
+            categoriesLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
         ])
     }
 }
 //MARK: - Extension
 extension CategoriesView {
     func setText(_ text: [String]) {
-        let string = text.toString(separator: " ")
+        let string = text.toString(separator: " \u{2022} ")
         categoriesLabel.text = string
     }
 }

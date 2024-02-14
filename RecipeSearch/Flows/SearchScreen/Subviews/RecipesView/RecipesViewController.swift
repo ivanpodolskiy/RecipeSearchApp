@@ -7,11 +7,27 @@
 
 import UIKit
 
-class RecipesViewController: UIViewController{    
+class RecipesViewController: UIViewController{  
+    private var lastCurrentOffset: CGFloat = 0
+
     private var presenter: RecipesPresenterProtocol!
     private var recipes: [RecipeProfileProtocol]?
-    private var lastCurrentOffset: CGFloat = 0
     private let transition = PanelTransition()
+    
+    private var isCollectionHidden: Bool = true {
+        willSet { self.collectionView.isHidden = newValue }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .selected
+        view.translatesAutoresizingMaskIntoConstraints = false
+        setupCollectionView()
+    }
+    
+    func setPresenter(_ presenter: RecipesPresenterProtocol) {
+        self.presenter = presenter
+    }
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -23,25 +39,14 @@ class RecipesViewController: UIViewController{
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
-    
-    func setPresenter(_ presenter: RecipesPresenterProtocol) {
-        self.presenter = presenter
-    }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .selected
-        view.translatesAutoresizingMaskIntoConstraints = false
-        setupCollectionView()
-    }
-    private var isCollectionHidden: Bool = true {
-        willSet { self.collectionView.isHidden = newValue }
-    } 
+       
     private func setupCollectionView() {
         collectionView.frame = view.bounds
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
         collectionView.register(RecipesViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: RecipesViewHeader.indentifier)
+        
         activeLayoutForCollectioView()
     }
     
@@ -54,17 +59,11 @@ class RecipesViewController: UIViewController{
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-  
-    @objc func switchFavoriteStatus(sender: UIButton) {
-        let index = sender.tag // i need to get indexPath.row's cell
-        guard let selectedRecipe = recipes?[index] else { return }
-        presenter.switchFavoriteStatus(selectedRecipe, with: index)
-    }
 }
 //MARK: - UICollectionViewDataSource, UICollectionViewDelegate
 extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let result = recipes else { return 0}
+        guard let result = recipes else { return 0 }
         return result.count
     }
     
@@ -74,12 +73,19 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
         headerView.setRecipesCount(number: recipes.count)
         return headerView
     }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
         guard let recipe = recipes?[indexPath.row] else { return cell}
         presenter.configureCell(cell, with: recipe, tag: indexPath.row)
-        cell.favoriteButton.addTarget(self, action: #selector(switchFavoriteStatus), for: .touchUpInside)
+        cell.addTargetToButton(#selector(switchFavoriteStatus))
         return cell
+    }
+    
+    @objc private func switchFavoriteStatus(sender: UIButton) {
+        let index = sender.tag //ref. i need to get indexPath.row's cell
+        guard let selectedRecipe = recipes?[index] else { return }
+        presenter.switchFavoriteStatus(selectedRecipe, atIndex: index)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -94,6 +100,7 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
             }
         }
     }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         CGSize(width: collectionView.bounds.width, height: 50)
     }
@@ -147,6 +154,7 @@ extension RecipesViewController: RecipesControllerDelegate {
             self.collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
         }
     }
+    
     func updateItems(recipe result: [RecipeProfileProtocol]?) {
         recipes = result
         DispatchQueue.main.async {
@@ -157,8 +165,9 @@ extension RecipesViewController: RecipesControllerDelegate {
             })
         }
     }
+    
     func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        if let navigationController = navigationController {
-            navigationController.pushViewController(viewController, animated: animated) }
-    }
+        guard let navigationController = navigationController else { return }
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController.pushViewController(viewController, animated: animated) }
 }

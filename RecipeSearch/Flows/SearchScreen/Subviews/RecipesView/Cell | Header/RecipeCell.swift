@@ -122,7 +122,11 @@ extension RecipeCell {
             self.imageRecipe.image = image
         }
     }
-     func setColorToFavoriteButton(isFavorite status: Bool) {
+    func addTargetToButton(_ action: Selector){
+        favoriteButton.addTarget(self, action: action, for: .touchUpInside)
+    }
+        
+     private func setColorToFavoriteButton(isFavorite status: Bool) {
              switch status {
              case false: favoriteButton.tintColor = .white
              case true: favoriteButton.tintColor = .yellow

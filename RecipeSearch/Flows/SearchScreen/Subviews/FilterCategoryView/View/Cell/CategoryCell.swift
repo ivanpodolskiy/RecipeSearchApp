@@ -10,14 +10,15 @@ import UIKit
 class CategoryCell: UICollectionViewCell  {
     private let label: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 1
         label.textAlignment = .left
         label.font = UIFont(name: "Helvetica", size: 18)
         label.lineBreakMode = .byWordWrapping
-        label.textColor = UIColor.blue // поменять цверт .ref
+        label.textColor = UIColor.blue 
         return label
     }()
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.addSubview(label)

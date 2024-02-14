@@ -11,29 +11,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     
-   private func launchAnimataion(animationView: UIView, for window: UIWindow, tabBarFrame: CGRect) {
-        window.addSubview(animationView)
-        animationView.frame = window.bounds
-        let positionOnX: CGFloat = 15
-        let positionOnY: CGFloat = 14
-        let width = (tabBarFrame.width) - positionOnX * 2
-        let height: CGFloat = 77
-        let frame =  CGRect(x: positionOnX, y: ((tabBarFrame.minY) - positionOnY) , width: width, height: height)
-        
-        lazy var movingAnimation =  {
-            UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
-                animationView.frame =  frame
-                animationView.layer.cornerRadius = height / 2
-            }
-        }()
-        lazy var disappearingAnimator = {
-            UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) { animationView.layer.opacity = 0 }
-        }()
-        movingAnimation.addCompletion {_ in disappearingAnimator.startAnimation() }
-        disappearingAnimator.addCompletion {  _ in animationView.removeFromSuperview() }
-        movingAnimation.startAnimation()
-    }
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
@@ -46,6 +23,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         launchAnimataion(animationView: animationView, for: window, tabBarFrame: tabBarController.tabBar.frame)
     }
 
+    private func launchAnimataion(animationView: UIView, for window: UIWindow, tabBarFrame: CGRect) {
+         window.addSubview(animationView)
+         animationView.frame = window.bounds
+         let positionOnX: CGFloat = 15
+         let positionOnY: CGFloat = 14
+         let width = (tabBarFrame.width) - positionOnX * 2
+         let height: CGFloat = 77
+         let frame =  CGRect(x: positionOnX, y: ((tabBarFrame.minY) - positionOnY) , width: width, height: height)
+         
+         let movingAnimation =  {
+             UIViewPropertyAnimator(duration:0.5, curve: .easeOut) {
+                 animationView.frame =  frame
+                 animationView.layer.cornerRadius = height / 2
+             }
+         }()
+        
+        let disappearingAnimator = {
+             UIViewPropertyAnimator(duration: 0.2, curve: .easeIn) { animationView.layer.opacity = 0 }
+         }()
+        
+         movingAnimation.addCompletion {_ in disappearingAnimator.startAnimation() }
+         disappearingAnimator.addCompletion {  _ in animationView.removeFromSuperview() }
+         movingAnimation.startAnimation()
+     }
+     
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

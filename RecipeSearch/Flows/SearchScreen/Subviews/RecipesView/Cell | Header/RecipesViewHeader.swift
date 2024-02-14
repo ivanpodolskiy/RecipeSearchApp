@@ -14,6 +14,7 @@ class RecipesViewHeader: UICollectionReusableView {
             recipesCountLabel.isHidden = false
         }
     }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setLayoutConstraint()
@@ -21,10 +22,12 @@ class RecipesViewHeader: UICollectionReusableView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         self.recipesCountLabel.isHidden = true
     }
+    
     private let recipesCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -33,6 +36,7 @@ class RecipesViewHeader: UICollectionReusableView {
         label.textColor = .selected
         return label
     }()
+    
     private func setLayoutConstraint() {
         addSubview(recipesCountLabel)
         NSLayoutConstraint.activate([
@@ -41,6 +45,7 @@ class RecipesViewHeader: UICollectionReusableView {
             recipesCountLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
         ])
     }
+    
     private func setText(use count: Int) {
         switch count {
         case 1... : recipesCountLabel.text = "Found \(count) recipes"
@@ -55,4 +60,3 @@ extension RecipesViewHeader {
         countFoundedRecipes = number
     }
 }
-

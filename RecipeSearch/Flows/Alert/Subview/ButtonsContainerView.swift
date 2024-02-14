@@ -30,6 +30,7 @@ class ButtonsContainerView: UIView {
     }()
     
     override func layoutSubviews() {
+        super.layoutSubviews()
         addSubview(actionButton)
         addSubview(cancelButton)
         setupSubviewsConstraints()

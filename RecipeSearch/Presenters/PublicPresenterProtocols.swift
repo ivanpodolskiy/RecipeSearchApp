@@ -15,13 +15,17 @@ protocol PresenterProtocol {
     func attachView(_ view: UIViewController)
 }
 protocol FavoriteStatusProtocol {
-    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, with index: Int?)
+    func switchFavoriteStatus(_ selectedRecipe: RecipeProfileProtocol?, atIndex index: Int?)
 }
 protocol ConfigureCellProtocol {
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int)
 }
 protocol RecipeNavigationProtocol {
     func pushRecipeProfileScreen(with recipe: RecipeProfileProtocol, onStatusUpdate: UpdatedStatusCallback?)
+}
+
+protocol NavigationWebViewProtocol {
+    func pushWebViewController() -> Void
 }
 protocol UpdateStatusProtocol {
     var onStatusUpdate: UpdatedStatusCallback? {get}
@@ -31,6 +35,7 @@ protocol DelegateViewProtocol {}
 protocol NavigationDelegate {
     func pushViewController(_ viewController: UIViewController, animated: Bool)
 }
+
 protocol SheetDelegate {
     func presentCustomSheet(_ viewController: UIViewController)
 }

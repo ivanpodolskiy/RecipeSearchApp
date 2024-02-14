@@ -9,7 +9,6 @@ import UIKit
 import WebKit
 
 class WebViewController: UIViewController {
-    
     init?(title: String, url: String) {
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -19,43 +18,49 @@ class WebViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func loadView() {
-        super.loadView()
-        webView.navigationDelegate = self
-        self.progressView.alpha = 0
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.addSubview(webView)
-        view.addSubview(progressView)
-        self.tabBarController?.tabBar.isHidden = true
-        
-        webView.frame = view.bounds
-        progressView.frame = CGRect(x: 10, y: 93, width: view.frame.size.width - 20, height: 50)
-        webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
+        tabBarController?.tabBar.isHidden = true
+        addSubviewsAndSetupLayout()
     }
     
-    //MARK: - Outlets
-    private let webView: WKWebView = {
+    private func addSubviewsAndSetupLayout() {
+        view.addSubview(webView)
+        view.addSubview(progressView)
+        setupLayout()
+    }
+    
+    private func setupLayout() {
+        webView.frame = view.bounds
+        progressView.frame = CGRect(x: 10, y: 93, width: view.frame.size.width - 20, height: 50)
+    }
+
+    private lazy var webView: WKWebView = {
         let webView = WKWebView()
+        webView.navigationDelegate = self
+        webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         return webView
     }()
     
     private let progressView: UIProgressView = {
         let progressView = UIProgressView()
+        progressView.alpha = 0
         progressView.trackTintColor = .white
         progressView.progressTintColor = .basic
         return progressView
     }()
     
-    //MARK: - Functions
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "estimatedProgress" {
-            DispatchQueue.main.async {
-                self.progressView.progress = Float(self.webView.estimatedProgress)
-            }
+           let estimatedProgress = Float(self.webView.estimatedProgress)
+            updateProgress(estimatedProgress)
+        }
+    }
+    
+    private func updateProgress(_ progress: Float) {
+        DispatchQueue.main.async {
+            self.progressView.progress = progress
         }
     }
     
@@ -67,6 +72,12 @@ class WebViewController: UIViewController {
         }
         return true
     }
+}
+//MARK: - WKNavigationDelegate
+extension WebViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        showProgressView()
+    }
     
     private func showProgressView() {
         DispatchQueue.main.async {
@@ -74,21 +85,16 @@ class WebViewController: UIViewController {
         }
     }
     
-    private func hideProgressView() {
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) { self.progressView.alpha = 0 }
-        }
-    }
-}
-//MARK: - WKNavigationDelegate
-extension WebViewController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        showProgressView()
-    }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideProgressView()
     }
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         hideProgressView()
+    }
+    
+    private func hideProgressView() {
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) { self.progressView.alpha = 0 }
+        }
     }
 }

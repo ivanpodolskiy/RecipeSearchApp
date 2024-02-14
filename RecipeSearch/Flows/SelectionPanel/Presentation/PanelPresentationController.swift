@@ -34,6 +34,7 @@ class PanelPresentationController: UIPresentationController {
     }
     
     override func containerViewDidLayoutSubviews() {
+        super.containerViewDidLayoutSubviews()
         ativeLayoutConstraint()
     }
     
@@ -76,3 +77,4 @@ class PanelPresentationController: UIPresentationController {
         }
     }
 }
+

@@ -8,7 +8,6 @@
 import UIKit
 
 class FavoriteRecipeCell: UICollectionViewCell {
-    //MARK: - Outlets
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
@@ -29,8 +28,7 @@ class FavoriteRecipeCell: UICollectionViewCell {
         image.clipsToBounds = true
         return image
     }()
-    
-    //MARK: - View Functions
+
     override func prepareForReuse() {
         super.prepareForReuse()
         self.titleRecipe.text = nil
@@ -41,11 +39,15 @@ class FavoriteRecipeCell: UICollectionViewCell {
         super.layoutSubviews()
         contentView.addSubview(imageRecipe)
         contentView.addSubview(titleRecipe)
-
+        activateLayoutConstraint()
+    }
+    
+    private func activateLayoutConstraint() {
         NSLayoutConstraint.activate([
             imageRecipe.topAnchor.constraint(equalTo: topAnchor),
             imageRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             imageRecipe.rightAnchor.constraint(equalTo: rightAnchor),
+            
             titleRecipe.topAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: 5),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
