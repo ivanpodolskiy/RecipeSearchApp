@@ -76,9 +76,11 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
-        guard let recipe = recipes?[indexPath.row] else { return cell}
+        guard let recipe = recipes?[indexPath.row] else { 
+            return cell
+        }
         presenter.configureCell(cell, with: recipe, tag: indexPath.row)
-        cell.addTargetToButton(#selector(switchFavoriteStatus))
+        cell.addTargetToButton(target: self, action: #selector(switchFavoriteStatus))
         return cell
     }
     

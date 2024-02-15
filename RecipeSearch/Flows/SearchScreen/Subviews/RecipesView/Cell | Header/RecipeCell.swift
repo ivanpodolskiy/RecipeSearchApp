@@ -117,21 +117,24 @@ extension RecipeCell {
         }
     }
     
+    private func setColorToFavoriteButton(isFavorite status: Bool) {
+            switch status {
+            case false: favoriteButton.tintColor = .white
+            case true: favoriteButton.tintColor = .yellow
+        }
+    }
+    
     func setImage(_ image: UIImage) {
         DispatchQueue.main.async {
             self.imageRecipe.image = image
         }
     }
-    func addTargetToButton(_ action: Selector){
-        favoriteButton.addTarget(self, action: action, for: .touchUpInside)
+    
+    func addTargetToButton(target: Any, action: Selector){
+        favoriteButton.addTarget(target, action: action, for: .touchUpInside)
     }
         
-     private func setColorToFavoriteButton(isFavorite status: Bool) {
-             switch status {
-             case false: favoriteButton.tintColor = .white
-             case true: favoriteButton.tintColor = .yellow
-         }
-     }
+   
 }
 extension RecipeCell: ReusableView {
     static var identifier: String {

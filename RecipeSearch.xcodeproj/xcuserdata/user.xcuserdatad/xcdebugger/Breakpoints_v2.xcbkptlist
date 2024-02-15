@@ -3446,84 +3446,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "107DD69C-9A58-451E-8584-FE8C27C0175A"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "206"
-            endingLineNumber = "206"
-            landmarkName = "updateCollectionView(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "107DD69C-9A58-451E-8584-FE8C27C0175A - 74279831ea1a551a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "RecipeSearch.FavoriteRecipesViewController.removeFavoriteSection(indexSection: Swift.Int, currentFavoriteSections: Swift.Array&lt;RecipeSearch.FavoriteRecipesSectionProtocol&gt;) -&gt; ()"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "192"
-                  endingLineNumber = "192"
-                  offsetFromSymbolStart = "219">
-               </Location>
-               <Location
-                  uuid = "107DD69C-9A58-451E-8584-FE8C27C0175A - 8013760dff8628d5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in RecipeSearch.FavoriteRecipesViewController.removeFavoriteSection(indexSection: Swift.Int, currentFavoriteSections: Swift.Array&lt;RecipeSearch.FavoriteRecipesSectionProtocol&gt;) -&gt; ()"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "193"
-                  endingLineNumber = "193"
-                  offsetFromSymbolStart = "79">
-               </Location>
-               <Location
-                  uuid = "107DD69C-9A58-451E-8584-FE8C27C0175A - 86500c0d5a6bff16"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "RecipeSearch.FavoriteRecipesViewController.updateCollectionView(Swift.Array&lt;RecipeSearch.FavoriteRecipesSectionProtocol&gt;) -&gt; ()"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "192"
-                  endingLineNumber = "192"
-                  offsetFromSymbolStart = "187">
-               </Location>
-               <Location
-                  uuid = "107DD69C-9A58-451E-8584-FE8C27C0175A - 4fdee6d72243145a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in RecipeSearch.FavoriteRecipesViewController.updateCollectionView(Swift.Array&lt;RecipeSearch.FavoriteRecipesSectionProtocol&gt;) -&gt; ()"
-                  moduleName = "RecipeSearch"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "193"
-                  endingLineNumber = "193"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "F67665E1-B62D-48B3-BED4-2E50B19209F0"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -3852,22 +3774,6 @@
                   offsetFromSymbolStart = "36">
                </Location>
             </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4F01FB42-6C3A-4A38-8084-51D5545E9FD2"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "RecipeSearch/Presenters/SearchScreenPresenters/RecipesPresenter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
-            landmarkName = "switchFavoriteStatus(_:with:)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -4619,6 +4525,102 @@
             startingLineNumber = "23"
             endingLineNumber = "23"
             landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EB0B5E4A-77FD-4E6D-BE54-357064BCBB03"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RecipeSearch/Flows/SearchScreen/Subviews/RecipesView/RecipesViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "updateFavoriteStatus(isFavorite:index:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E90449FA-D036-4C1D-B210-E8D22FD7A261"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RecipeSearch/Flows/SearchScreen/Subviews/RecipesView/RecipesViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
+            landmarkName = "collectionView(_:cellForItemAt:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6A47B119-3900-4B2D-86CF-FE8B001BCB55"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RecipeSearch/Flows/SearchScreen/Subviews/RecipesView/RecipesViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
+            landmarkName = "collectionView(_:didSelectItemAt:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6A47B119-3900-4B2D-86CF-FE8B001BCB55 - c66231729b8c2c60"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RecipeSearch.RecipesViewController.switchFavoriteStatus(sender: __C.UIButton) -&gt; ()"
+                  moduleName = "RecipeSearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/SearchScreen/Subviews/RecipesView/RecipesViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "94"
+                  endingLineNumber = "94"
+                  offsetFromSymbolStart = "270">
+               </Location>
+               <Location
+                  uuid = "6A47B119-3900-4B2D-86CF-FE8B001BCB55 - bd4942c281808144"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "RecipeSearch.RecipesViewController.collectionView(_: __C.UICollectionView, didSelectItemAt: Foundation.IndexPath) -&gt; ()"
+                  moduleName = "RecipeSearch"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/user/Desktop/Swift/RecipeSearch/RecipeSearch/Flows/SearchScreen/Subviews/RecipesView/RecipesViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "94"
+                  endingLineNumber = "94"
+                  offsetFromSymbolStart = "157">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "97C3FF90-4A4D-40F4-90E7-98BB69CB661F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "RecipeSearch/Flows/FavoriteScreen/FavoriteRecipesViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "updateCollectionView(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

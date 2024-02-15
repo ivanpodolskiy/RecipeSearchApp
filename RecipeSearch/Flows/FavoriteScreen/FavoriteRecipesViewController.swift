@@ -20,8 +20,8 @@ class FavoriteRecipesViewController: UIViewController {
         self.presenter = presenter
     }
     
-    override func loadView() {
-        super.loadView()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         presenter?.fetchFavoriteRecipes()
     }
     
@@ -70,7 +70,7 @@ class FavoriteRecipesViewController: UIViewController {
             collectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
     }
-  
+    
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
@@ -200,7 +200,7 @@ extension FavoriteRecipesViewController: UICollectionViewDelegate {
     }
 }
 //MARK: - FavoriteRecipesDelegate
-extension FavoriteRecipesViewController: FavoriteRecipesDelegate {    
+extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
     func updateCollectionView(_ updatedData: [FavoriteRecipesSectionProtocol]) {
         self.favoriteSections = updatedData
         DispatchQueue.main.async {
@@ -222,13 +222,13 @@ extension FavoriteRecipesViewController: FavoriteRecipesDelegate {
     
     func removeFavoriteSection(atSection: Int, currentFavoriteSections: [FavoriteRecipesSectionProtocol]) {
         self.favoriteSections = currentFavoriteSections
-            DispatchQueue.main.async {
-                self.collectionView.performBatchUpdates( {
-                    self.collectionView.deleteSections(IndexSet(integer: atSection) )
-                }) { _ in
-                    self.collectionView.reloadData()
-                }
+        DispatchQueue.main.async {
+            self.collectionView.performBatchUpdates( {
+                self.collectionView.deleteSections(IndexSet(integer: atSection) )
+            }) { _ in
+                self.collectionView.reloadData()
             }
+        }
     }
     
     func removeAllSections() {
