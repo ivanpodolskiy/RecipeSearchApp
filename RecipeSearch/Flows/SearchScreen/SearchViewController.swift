@@ -20,10 +20,11 @@ fileprivate enum ChildType {
 
 class SearchViewController: UIViewController{
     private var presenter: SearchPresenterProtocol?
-    private var searchTimer: Timer?
+    private var throttle: Throttler?
     
     func setPresenter(_ presenter: SearchPresenterProtocol) {
         self.presenter = presenter
+        self.throttle = Throttler()
     }
     
     override func viewDidLoad() {
@@ -209,21 +210,23 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchTimer?.invalidate()
         if descriptionLabel.isHidden == false  {
-            descriptionLabel.isHidden = true
-            descriptionLabel.removeFromSuperview()
-            setChildViewController(.recipesCollection)
+            showRecipesCollection()
         }
         serchRecipe(use: searchText)
     }
     
+    private func showRecipesCollection() {
+        descriptionLabel.isHidden = true
+        descriptionLabel.removeFromSuperview()
+        setChildViewController(.recipesCollection)
+    }
+    
     private func serchRecipe(use searchText: String) {
-        let interval: TimeInterval  = 0.3
-        searchTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false, block: { [weak self] _ in
+        throttle?.throttle(delay: 0.3) { [weak self] in
             guard let self = self else { return }
-            self.presenter?.searchRecipes(from: searchText)
-        })
+            presenter?.searchRecipes(from: searchText)
+        }
     }
 }
 //MARK: - SearchControllerDelegate

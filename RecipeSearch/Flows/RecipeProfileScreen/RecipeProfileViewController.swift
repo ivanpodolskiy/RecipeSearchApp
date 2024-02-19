@@ -37,6 +37,8 @@ class RecipeProfileViewController: UIViewController  {
     
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView(frame: .zero)
+        scrollView.isScrollEnabled = true
+        scrollView.isUserInteractionEnabled = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
@@ -55,7 +57,7 @@ class RecipeProfileViewController: UIViewController  {
     
     private func setupLayoutConstraint() {
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -71,7 +73,7 @@ class RecipeProfileViewController: UIViewController  {
             categoriesView.topAnchor.constraint(equalTo: ingredientsView.bottomAnchor),
             categoriesView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             categoriesView.rightAnchor.constraint(equalTo: view.rightAnchor, constant:  -20),
-            categoriesView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
+            categoriesView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: -10)
         ])
     }
 }

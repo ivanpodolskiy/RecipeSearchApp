@@ -111,7 +111,7 @@ extension RecipesViewController: UICollectionViewDelegate, UICollectionViewDataS
 extension RecipesViewController: UICollectionViewDelegateFlowLayout{
     private enum LayoutConstant {
         static let spacing: CGFloat = 10
-        static let itemHeight: CGFloat = 252
+        static let itemHeight: CGFloat = 240
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: LayoutConstant.spacing, left: LayoutConstant.spacing, bottom: LayoutConstant.spacing, right: LayoutConstant.spacing)

@@ -17,7 +17,7 @@ fileprivate struct EdamamAPI: APIProtocol {
 }
 
 class URLBuilder {
-    let apiData: APIProtocol
+    private let apiData: APIProtocol
     init(apiData: APIProtocol) {
         self.apiData = apiData
     }
@@ -28,6 +28,7 @@ class URLBuilder {
     
     func buildURL(with text: String, categoryValues: [CategoryValueProtocol]?) -> URL? {
         guard var urlComponents = URLComponents(string: apiData.baseURL) else { return nil }
+        
          var queryItems = [
              URLQueryItem(name: "type", value: "any"),
              URLQueryItem(name: "app_id", value: apiData.appID),

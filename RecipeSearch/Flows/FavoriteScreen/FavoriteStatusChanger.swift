@@ -40,7 +40,6 @@ class FavoriteStatusChanger: FavoriteStatusChangerProtocol {
         let  selectionVC = SelectionPanelViewController()
         let presenter = getPreparedPresenter(attach: selectionVC, recipe: recipe, callback: onStatusUpdate)
         selectionVC.setPresenter(presenter: presenter)
-        
         presentViewControllerClouser(selectionVC)
     }
     

@@ -25,11 +25,12 @@ class RecipeCell: UICollectionViewCell  {
    }()
     private(set) lazy var titleRecipe: UILabel = {
         let title = UILabel()
+        title.numberOfLines = 0
         title.layer.cornerRadius = 4
         title.clipsToBounds = true
         title.translatesAutoresizingMaskIntoConstraints = false
         title.textAlignment = .center
-        title.font = UIFont.boldSystemFont(ofSize: 20)
+        title.font = UIFont.boldSystemFont(ofSize: 16)
         title.textColor = UIColor.basic
         return title
     }()
@@ -39,7 +40,7 @@ class RecipeCell: UICollectionViewCell  {
         description.clipsToBounds = true
         description.textColor = UIColor(red: 123 / 255.0, green: 137 / 255.0, blue: 134 / 255.0, alpha: 1.0)
         description.textAlignment = .center
-        description.font = UIFont.systemFont(ofSize: 20, weight: .regular)
+        description.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         description.translatesAutoresizingMaskIntoConstraints = false
         return description
     }()
@@ -89,18 +90,18 @@ class RecipeCell: UICollectionViewCell  {
             imageRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             imageRecipe.heightAnchor.constraint(equalTo: widthAnchor),
             
-            titleRecipe.topAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: 5),
+            titleRecipe.topAnchor.constraint(equalTo: imageRecipe.bottomAnchor, constant: 2),
             titleRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             titleRecipe.rightAnchor.constraint(equalTo: rightAnchor),
             
-            descriptionRecipe.topAnchor.constraint(equalTo: titleRecipe.bottomAnchor, constant: 2),
+            descriptionRecipe.topAnchor.constraint(equalTo: titleRecipe.bottomAnchor),
             descriptionRecipe.leftAnchor.constraint(equalTo: leftAnchor),
             descriptionRecipe.rightAnchor.constraint(equalTo: rightAnchor),
-            descriptionRecipe.bottomAnchor.constraint(equalTo: bottomAnchor),
+            descriptionRecipe.heightAnchor.constraint(equalToConstant: 20),
+            descriptionRecipe.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor),
             
-            
-            favoriteButton.topAnchor.constraint(equalTo: topAnchor),
-            favoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10),
+            favoriteButton.topAnchor.constraint(equalTo: topAnchor, constant: 2),
+            favoriteButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -2),
             favoriteButton.widthAnchor.constraint(equalToConstant: 30),
             favoriteButton.heightAnchor.constraint(equalToConstant: 30),
         ])
@@ -133,8 +134,6 @@ extension RecipeCell {
     func addTargetToButton(target: Any, action: Selector){
         favoriteButton.addTarget(target, action: action, for: .touchUpInside)
     }
-        
-   
 }
 extension RecipeCell: ReusableView {
     static var identifier: String {

@@ -35,7 +35,7 @@ class FavoriteRecipesViewController: UIViewController {
     }
     
     private func registerCollectionView() {
-        collectionView.register(RecipeCell.self, forCellWithReuseIdentifier: RecipeCell.identifier)
+        collectionView.register(FavoriteRecipeCell.self, forCellWithReuseIdentifier: FavoriteRecipeCell.identifier)
         collectionView.register(FavoriteViewHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: FavoriteViewHeader.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -90,8 +90,8 @@ class FavoriteRecipesViewController: UIViewController {
             let hasItems = self.hasItemsInSection(section: sectionIndex)
             let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension:
                     .fractionalHeight(1)))
-            let heightDimension: NSCollectionLayoutDimension = hasItems ? .estimated(300)  : .estimated(1)
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(250), heightDimension: heightDimension ), subitems: [item])
+            let heightDimension: NSCollectionLayoutDimension = hasItems ? .estimated(250)  : .estimated(1)
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .absolute(200), heightDimension: heightDimension ), subitems: [item])
             let sectionLayout = NSCollectionLayoutSection(group: group)
             
             if hasItems {
@@ -135,12 +135,12 @@ extension FavoriteRecipesViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecipeCell.identifier, for: indexPath) as! RecipeCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoriteRecipeCell.identifier, for: indexPath) as! FavoriteRecipeCell
         guard let favoriteCategories = favoriteSections else { return cell }
         guard let recipes = favoriteCategories[indexPath.section].recipes else { return cell}
         let recipe = recipes[indexPath.row]
         presenter?.configureCell(cell, with: recipe, tag: indexPath.row)
-        cell.favoriteButton.addTarget(self, action: #selector(switchFavoriteStatus(sender: )), for: .touchUpInside)
+        cell.addTargetToButton(target: self, action: #selector(switchFavoriteStatus(sender: )))
         return cell
     }
     

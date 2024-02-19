@@ -28,7 +28,6 @@ protocol FavoriteRecipesStorageProtocol: SectionsFavoriteRecipesFetchingProtocol
     func addFavoriteRecipe(_ recipeProfileEntity: RecipeProfileEntity, nameSection: String, sectionExists: Bool) throws
     func addNewSectionCD(with title: String) -> Bool
 }
-
 //MARK: - Storage Manager for Favorite Recipes
 class StorageManagerFR: FavoriteRecipesStorageProtocol {
     private let context: NSManagedObjectContext
@@ -107,7 +106,6 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
             }
         }
         try saveContext()
-
     }
     
     func removeFavoriteRecipe(_ recipe: RecipeProfileProtocol) throws {
@@ -144,7 +142,6 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         do { try context.execute(batchDeleteRequest) } catch { throw CoreDataError.deletionError }
        try saveContext()
     }
-    
     //MARK: Private Fucntions:
     private func creatingnCheck(_ title: String) throws {
         if (try? fetchNeededSectionCD(title)) != nil { throw CoreDataError.addSectionError  }
@@ -160,6 +157,7 @@ class StorageManagerFR: FavoriteRecipesStorageProtocol {
         guard let sectionArrayCD = try? context.fetch(RecipesSectionEntity.fetchRequest()) else { throw CoreDataError.fetchError}
         return sectionArrayCD
     }
+    
     private func fetchNeededSectionCD(_ name: String) throws -> RecipesSectionEntity? {
         guard let sectionArrayCD = try? context.fetch(RecipesSectionEntity.fetchRequest()) else { throw CoreDataError.fetchError }
         for neededSectionCD in sectionArrayCD { if neededSectionCD.nameSection == name { return neededSectionCD } }

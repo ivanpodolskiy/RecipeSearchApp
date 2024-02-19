@@ -55,13 +55,13 @@ class SearchPresenter: SearchPresenterProtocol {
     }
     
     func searchRecipes(from searchText: String) {
-        recipeService.cancelPreviousRequests()
+        let activeCaregories  = categoryManager.getActiveValues()
         guard !searchText.isEmpty else {
             searchControllerDelegate.updateText(LabelText.launch)
             return
         }
-        let activeCaregories  = categoryManager.getActiveValues()
-        recipeService.searchRecipes(selectedCategories: activeCaregories, with: searchText) { [weak self] result in
+        
+        recipeService.searchRecipes(selectedCategories: activeCaregories, with: searchText) {  [weak self] result in
             guard let self = self else { return }
             updateDataWithResult(result)
         }

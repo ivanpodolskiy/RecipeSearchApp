@@ -11,7 +11,6 @@ import CoreData
 
 
 extension RecipeProfileEntity {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<RecipeProfileEntity> {
         return NSFetchRequest<RecipeProfileEntity>(entityName: "RecipeProfileEntity")
     }

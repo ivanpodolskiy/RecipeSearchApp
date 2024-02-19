@@ -47,16 +47,6 @@ struct MacronutrientsInfo {
         self.carbohydrates = Macronutrient(type: .carbohydrates, quantity: carbohydrates)
     }
     
-    
-//    mutating func set(_ macronutrient: Macronutrient) {
-//        switch macronutrient.type {
-//        case .proteins : proteins.quantity = macronutrient.quantity
-//        case .fats : self.fats.quantity = macronutrient.quantity
-//        case .carbohydrates : self.carbohydrates.quantity = macronutrient.quantity
-//        }
-//        
-//    }
-    
     func percentage(for type: MacronutrientType) -> Float {
         var numerator: Float
         

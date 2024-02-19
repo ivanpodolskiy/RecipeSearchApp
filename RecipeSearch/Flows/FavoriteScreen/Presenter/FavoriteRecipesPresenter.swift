@@ -55,7 +55,7 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
     }
     
     func configureCell(_ cell: UICollectionViewCell, with recipeProfile: RecipeProfileProtocol, tag: Int) {
-        guard let cell = cell as? RecipeCell else { return }
+        guard let cell = cell as? FavoriteRecipeCell else { return }
         let imageURL = recipeProfile.imageURL
         
         ImageLoader.loadImage(from: imageURL) { result in
@@ -64,7 +64,7 @@ class FavoriteRecipesPresenter: FavoriteRecipesPresenterProtocol {
             case .failure(let error) : print ("Error insede RecipesPresenter: \(error.localizedDescription)")
             }
         }
-        cell.setupCell(with: recipeProfile, tag: tag)
+        cell.setupCell(with: recipeProfile)
     }
     
     

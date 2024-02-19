@@ -55,15 +55,18 @@ class CategoriesView: UIView {
             titleLabel.leftAnchor.constraint(equalTo: leftAnchor),
             titleLabel.rightAnchor.constraint(equalTo: rightAnchor),
             
+            
             containerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 3),
             containerView.leftAnchor.constraint(equalTo: leftAnchor),
             containerView.rightAnchor.constraint(equalTo: rightAnchor),
+            containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             categoriesLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5),
             categoriesLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 10),
             categoriesLabel.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -10),
             categoriesLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
         ])
+   
     }
 }
 //MARK: - Extension

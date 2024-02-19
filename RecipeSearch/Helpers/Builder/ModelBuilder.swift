@@ -26,7 +26,7 @@ class SerachScreenBuilder: Builder {
     }
     
     private func getPreparedPresenter(attach vc: UIViewController) -> SearchPresenterProtocol {
-        let searchService = RecipeSreachService()
+        let searchService = RecipeSreachService(networking: NetworkService())
         let categoryManager = CategoryManager()
         let alertManager = AlertManager()
         let recipesPresenter = getRecipePresenter()

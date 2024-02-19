@@ -47,12 +47,10 @@ class DetailsCompositeView: UIViewController {
     private lazy var containerDisplayView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        
         view.layer.shadowRadius = 3
         view.layer.shadowOpacity = 0.3
         view.layer.shadowOffset = CGSize(width: 2, height: 3)
         view.layer.shadowColor = UIColor.black.cgColor
-
         view.layer.cornerRadius = 12
         view.backgroundColor = .basic
         return view

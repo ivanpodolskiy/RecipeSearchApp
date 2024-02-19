@@ -21,4 +21,3 @@ struct Macronutrient: MacronutrientProtocol {
     let type: MacronutrientType
     let quantity: Int
 }
-

@@ -21,4 +21,5 @@ enum NetworkError: Error {
     case unknown(Int)
     case notConnectedToInternet
     case dataError(DataError)
+    case invalidResponse
 }
