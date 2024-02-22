@@ -15,7 +15,7 @@ extension UIColor {
     static var basic: UIColor {
         return UIColor(named: "basic")!
     }
-    static var selected: UIColor { //ref.
+    static var selected: UIColor {
         return UIColor(red: 161 / 255.0, green: 225 / 255.0, blue: 136 / 255.0, alpha: 1.0)
     }
     static var notSelected: UIColor {
